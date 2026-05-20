@@ -77,6 +77,8 @@ function MultiSelectFilter({
 
 interface PortfolioFiltersProps {
   total: number;
+  /** Number of records currently loaded into the UI (for infinite scroll display). */
+  loadedCount?: number;
   searchQuery?: string;
   onSearchQueryChange?: (value: string) => void;
   therapeuticAreas?: string[];
@@ -107,6 +109,7 @@ interface PortfolioFiltersProps {
 
 export function PortfolioFilters({
   total,
+  loadedCount,
   searchQuery = "",
   onSearchQueryChange,
   therapeuticAreas = [],
@@ -149,8 +152,16 @@ export function PortfolioFilters({
           />
         </div>
         <p className="text-sm text-muted-foreground" data-testid="studies-results-count">
-          Showing <span className="font-semibold text-foreground">1–25</span> of{" "}
-          <span className="font-semibold text-foreground">{total}</span> studies
+          {loadedCount != null ? (
+            <>
+              <span className="font-semibold text-foreground">{loadedCount.toLocaleString()}</span> loaded &bull;{" "}
+              <span className="font-semibold text-foreground">{total.toLocaleString()}</span> total
+            </>
+          ) : (
+            <>
+              <span className="font-semibold text-foreground">{total.toLocaleString()}</span> studies
+            </>
+          )}
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">

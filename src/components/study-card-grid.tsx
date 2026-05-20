@@ -33,7 +33,7 @@ function ProgressBar({ pct, performance }: { pct: number; performance: Study["pe
 
 export function StudyCardGrid({ studies }: { studies: Study[] }) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
       {studies.map((s) => {
         const pct = s.target ? Math.round((s.actual / s.target) * 100 * 10) / 10 : 0;
         return (
@@ -41,7 +41,7 @@ export function StudyCardGrid({ studies }: { studies: Study[] }) {
             key={s.id}
             to="/studies/$studyId"
             params={{ studyId: s.id }}
-            className="group block rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
+            className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export function StudyCardGrid({ studies }: { studies: Study[] }) {
               </div>
             </div>
 
-            <div className="mt-4 flex items-end justify-between">
+            <div className="mt-4 flex flex-1 items-end justify-between">
               <div>
                 <p className="text-[11px] text-muted-foreground">6-month trend</p>
                 <Sparkline
