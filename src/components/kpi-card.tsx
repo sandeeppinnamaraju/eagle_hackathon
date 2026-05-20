@@ -2,11 +2,13 @@ import { cn } from "@/lib/utils";
 import { Sparkline } from "./sparkline";
 import { HelpCircle, FileText } from "lucide-react";
 
+export type KpiCardAccent = "primary" | "success" | "warning" | "danger" | "info" | "violet" | "teal";
+
 interface Props {
   label: string;
   value: string;
   sub?: string;
-  accent: "primary" | "success" | "warning" | "danger" | "info" | "violet" | "teal";
+  accent: KpiCardAccent;
   spark?: number[];
 }
 
