@@ -1,154 +1,144 @@
-import { Link } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
-import { ChevronsUpDown, Columns3, Check } from "lucide-react";
+import { ChevronsUpDown, Columns3 } from "lucide-react";
 import type { Study } from "@/lib/data";
+import type { StudySortDirection, StudySortKey } from "@/lib/study-sorting";
 import { PriorityBadge, PerformanceBadge } from "./badges";
 
 interface Props {
   studies: Study[];
+  totalCount?: number;
+  visibleCount?: number;
+  sortBy?: StudySortKey | null;
+  sortDirection?: StudySortDirection;
+  onSortChange?: (key: StudySortKey) => void;
 }
 
-const COLUMNS = [
-  { key: "id", label: "Study ID" },
-  { key: "phase", label: "Phase" },
-  { key: "therapeuticArea", label: "Therapeutic Area" },
-  { key: "indication", label: "Indication" },
-  { key: "portfolio", label: "Portfolio / Program" },
-  { key: "status", label: "Status" },
-  { key: "priority", label: "Priority" },
-  { key: "target", label: "Target" },
-  { key: "actual", label: "Actual" },
-  { key: "percent", label: "% vs Plan" },
-  { key: "countries", label: "Countries" },
-  { key: "sites", label: "Sites" },
-  { key: "performance", label: "Performance" },
-] as const;
-
-type ColKey = (typeof COLUMNS)[number]["key"];
-
-export function StudyTable({ studies }: Props) {
-  const [visible, setVisible] = useState<Record<ColKey, boolean>>(
-    () => Object.fromEntries(COLUMNS.map((c) => [c.key, true])) as Record<ColKey, boolean>,
-  );
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [open]);
-
-  const show = (k: ColKey) => visible[k];
-  const toggle = (k: ColKey) =>
-    setVisible((v) => ({ ...v, [k]: !v[k] }));
+export function StudyTable({
+  studies,
+  totalCount,
+  visibleCount,
+  sortBy,
+  sortDirection = "asc",
+  onSortChange,
+}: Props) {
+  const rowsPerPage = 25;
+  const total = totalCount ?? studies.length;
+  const visible = visibleCount ?? studies.length;
+  const start = total === 0 ? 0 : 1;
+  const end = Math.min(visible, total);
+  const currentPage = total === 0 ? 0 : Math.max(1, Math.ceil(end / rowsPerPage));
+  const totalPages = total === 0 ? 0 : Math.max(1, Math.ceil(total / rowsPerPage));
+  const columnCount = 13;
+  const toRowTestId = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   return (
-    <div className="rounded-xl border border-border bg-card shadow-card">
+    <div className="rounded-xl border border-border bg-card shadow-card" data-testid="studies-table-container">
       <div className="flex items-center justify-end border-b border-border px-4 py-2.5">
-        <div ref={ref} className="relative">
-          <button
-            onClick={() => setOpen((o) => !o)}
-            className="inline-flex items-center gap-1.5 rounded-md border border-input px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted"
-          >
-            <Columns3 className="h-3.5 w-3.5" />
-            Columns
-          </button>
-          {open && (
-            <div className="absolute right-0 z-20 mt-1 w-56 rounded-md border border-border bg-popover p-1 shadow-md">
-              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                Toggle columns
-              </div>
-              {COLUMNS.map((c) => (
-                <button
-                  key={c.key}
-                  onClick={() => toggle(c.key)}
-                  className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm text-foreground hover:bg-muted"
-                >
-                  <span>{c.label}</span>
-                  {visible[c.key] && <Check className="h-3.5 w-3.5 text-primary" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <button data-testid="studies-table-columns-button" className="inline-flex items-center gap-1.5 rounded-md border border-input px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted">
+          <Columns3 className="h-3.5 w-3.5" />
+          Columns
+        </button>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm" data-testid="studies-table">
           <thead>
             <tr className="border-b border-border text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {COLUMNS.filter((c) => visible[c.key]).map((c) => (
-                <th key={c.key} className="whitespace-nowrap px-4 py-3 font-semibold">
-                  <span className="inline-flex items-center gap-1">
-                    {c.label}
-                    {(c.key === "percent" || c.key === "performance") && (
-                      <ChevronsUpDown className="h-3 w-3" />
+              {[
+                { label: "Study ID", sortKey: "id" as const },
+                { label: "Phase", sortKey: "phase" as const },
+                { label: "Therapeutic Area", sortKey: "therapeuticArea" as const },
+                { label: "Indication", sortKey: "indication" as const },
+                { label: "Portfolio / Program", sortKey: "portfolioProgram" as const },
+                { label: "Status", sortKey: "status" as const },
+                { label: "Priority", sortKey: "priority" as const },
+                { label: "Target", sortKey: "target" as const },
+                { label: "Actual", sortKey: "actual" as const },
+                { label: "% vs Plan", sortKey: "percentVsPlan" as const },
+                { label: "Countries", sortKey: "countries" as const },
+                { label: "Sites", sortKey: "sites" as const },
+                { label: "Performance", sortKey: "performance" as const },
+              ].map((header) => {
+                const sortable = Boolean(header.sortKey && onSortChange);
+                const isActive = header.sortKey != null && sortBy === header.sortKey;
+                return (
+                  <th key={header.label} className="whitespace-nowrap px-4 py-3 font-semibold">
+                    {sortable ? (
+                      <button
+                        type="button"
+                        onClick={() => onSortChange?.(header.sortKey!)}
+                        data-testid={`studies-table-sort-${header.sortKey}`}
+                        className="inline-flex items-center gap-1 hover:text-foreground"
+                      >
+                        {header.label}
+                        <ChevronsUpDown className="h-3 w-3" />
+                        {isActive && <span className="text-[10px]">{sortDirection === "asc" ? "▲" : "▼"}</span>}
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center gap-1">
+                        {header.label}
+                        {header.sortKey && <ChevronsUpDown className="h-3 w-3" />}
+                      </span>
                     )}
-                  </span>
-                </th>
-              ))}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
-            {studies.map((s) => (
-              <tr
-                key={s.id}
-                className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40"
-              >
-                {show("id") && (
-                  <td className="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-primary">
-                    <Link to="/studies/$studyId" params={{ studyId: s.id }} className="hover:underline">
-                      {s.id}
-                    </Link>
+            {total === 0 ? (
+              <tr data-testid="studies-table-empty-state">
+                <td colSpan={columnCount} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                  No Studies Found
+                </td>
+              </tr>
+            ) : (
+              studies.map((s, index) => (
+                <tr
+                  key={`${s.id}-${index}`}
+                  data-testid={`study-row-${toRowTestId(s.id)}`}
+                  className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40"
+                >
+                  <td data-testid={`study-row-${toRowTestId(s.id)}-id`} className="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-primary hover:underline">
+                    {s.id}
                   </td>
-                )}
-                {show("phase") && <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.phase}</td>}
-                {show("therapeuticArea") && <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.therapeuticArea}</td>}
-                {show("indication") && (
+                  <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.phase}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.therapeuticArea}</td>
                   <td className="max-w-[200px] truncate px-4 py-3 text-foreground" title={s.indication}>
                     {s.indication}
                   </td>
-                )}
-                {show("portfolio") && (
                   <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                     {s.portfolio} / <span className="font-mono text-xs">{s.program}</span>
                   </td>
-                )}
-                {show("status") && <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.status}</td>}
-                {show("priority") && <td className="whitespace-nowrap px-4 py-3"><PriorityBadge value={s.priority} /></td>}
-                {show("target") && <td className="px-4 py-3 text-right tabular-nums text-foreground">{s.target.toLocaleString()}</td>}
-                {show("actual") && <td className="px-4 py-3 text-right tabular-nums text-foreground">{s.actual.toLocaleString()}</td>}
-                {show("percent") && (
+                  <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.status}</td>
+                  <td className="whitespace-nowrap px-4 py-3"><PriorityBadge value={s.priority} /></td>
+                  <td className="px-4 py-3 text-right tabular-nums text-foreground">{s.target.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-right tabular-nums text-foreground">{s.actual.toLocaleString()}</td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums text-foreground">
                     {s.percentVsPlan != null ? `${s.percentVsPlan}%` : "—"}
                   </td>
-                )}
-                {show("countries") && <td className="px-4 py-3 text-center tabular-nums text-foreground">{s.countries}</td>}
-                {show("sites") && <td className="px-4 py-3 text-center tabular-nums text-foreground">{s.sites}</td>}
-                {show("performance") && <td className="whitespace-nowrap px-4 py-3"><PerformanceBadge value={s.performance} /></td>}
-              </tr>
-            ))}
+                  <td className="px-4 py-3 text-center tabular-nums text-foreground">{s.countries}</td>
+                  <td className="px-4 py-3 text-center tabular-nums text-foreground">{s.sites}</td>
+                  <td className="whitespace-nowrap px-4 py-3"><PerformanceBadge value={s.performance} /></td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
       <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">
         <div className="flex items-center gap-2 text-muted-foreground">
           <span>Rows per page:</span>
-          <select className="rounded-md border border-input bg-card px-2 py-1 text-foreground">
+          <select data-testid="studies-table-rows-per-page" className="rounded-md border border-input bg-card px-2 py-1 text-foreground">
             <option>25</option>
             <option>50</option>
           </select>
         </div>
-        <p className="text-muted-foreground">1–25 of 36</p>
+        <p className="text-muted-foreground" data-testid="studies-table-range">{start}–{end} of {total}</p>
         <div className="flex items-center gap-2">
-          <button className="rounded-md border border-input px-3 py-1 text-muted-foreground hover:bg-muted disabled:opacity-40" disabled>
+          <button data-testid="studies-table-previous" className="rounded-md border border-input px-3 py-1 text-muted-foreground hover:bg-muted disabled:opacity-40" disabled>
             Previous
           </button>
-          <span className="text-muted-foreground">1 / 2</span>
-          <button className="rounded-md border border-input px-3 py-1 text-foreground hover:bg-muted">
+          <span className="text-muted-foreground" data-testid="studies-table-page">{currentPage} / {totalPages}</span>
+          <button data-testid="studies-table-next" className="rounded-md border border-input px-3 py-1 text-foreground hover:bg-muted">
             Next
           </button>
         </div>
