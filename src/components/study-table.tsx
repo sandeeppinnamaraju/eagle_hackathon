@@ -7,6 +7,8 @@ interface Props {
   studies: Study[];
   totalCount?: number;
   visibleCount?: number;
+  /** When provided, footer shows "{visibleCount} loaded • {totalCount} total" instead of page range. */
+  useInfiniteScrollDisplay?: boolean;
   sortBy?: StudySortKey | null;
   sortDirection?: StudySortDirection;
   onSortChange?: (key: StudySortKey) => void;
@@ -16,6 +18,7 @@ export function StudyTable({
   studies,
   totalCount,
   visibleCount,
+  useInfiniteScrollDisplay = false,
   sortBy,
   sortDirection = "asc",
   onSortChange,
@@ -60,7 +63,7 @@ export function StudyTable({
                 const sortable = Boolean(header.sortKey && onSortChange);
                 const isActive = header.sortKey != null && sortBy === header.sortKey;
                 return (
-                  <th key={header.label} className="whitespace-nowrap px-4 py-3 font-semibold">
+                  <th key={header.label} className="whitespace-nowrap px-4 py-3 align-middle font-semibold">
                     {sortable ? (
                       <button
                         type="button"
@@ -97,27 +100,27 @@ export function StudyTable({
                   data-testid={`study-row-${toRowTestId(s.id)}`}
                   className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40"
                 >
-                  <td data-testid={`study-row-${toRowTestId(s.id)}-id`} className="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-primary hover:underline">
+                  <td data-testid={`study-row-${toRowTestId(s.id)}-id`} className="whitespace-nowrap px-4 py-3 align-middle font-mono text-xs font-semibold text-primary hover:underline">
                     {s.id}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.phase}</td>
-                  <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.therapeuticArea}</td>
-                  <td className="max-w-[200px] truncate px-4 py-3 text-foreground" title={s.indication}>
+                  <td className="whitespace-nowrap px-4 py-3 align-middle text-foreground">{s.phase}</td>
+                  <td className="whitespace-nowrap px-4 py-3 align-middle text-foreground">{s.therapeuticArea}</td>
+                  <td className="max-w-[200px] truncate px-4 py-3 align-middle text-foreground" title={s.indication}>
                     {s.indication}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                  <td className="whitespace-nowrap px-4 py-3 align-middle text-muted-foreground">
                     {s.portfolio} / <span className="font-mono text-xs">{s.program}</span>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-foreground">{s.status}</td>
-                  <td className="whitespace-nowrap px-4 py-3"><PriorityBadge value={s.priority} /></td>
-                  <td className="px-4 py-3 text-right tabular-nums text-foreground">{s.target.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right tabular-nums text-foreground">{s.actual.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-foreground">
+                  <td className="whitespace-nowrap px-4 py-3 align-middle text-foreground">{s.status}</td>
+                  <td className="whitespace-nowrap px-4 py-3 align-middle"><PriorityBadge value={s.priority} /></td>
+                  <td className="px-4 py-3 align-middle text-right tabular-nums text-foreground">{s.target.toLocaleString()}</td>
+                  <td className="px-4 py-3 align-middle text-right tabular-nums text-foreground">{s.actual.toLocaleString()}</td>
+                  <td className="px-4 py-3 align-middle text-right font-semibold tabular-nums text-foreground">
                     {s.percentVsPlan != null ? `${s.percentVsPlan}%` : "—"}
                   </td>
-                  <td className="px-4 py-3 text-center tabular-nums text-foreground">{s.countries}</td>
-                  <td className="px-4 py-3 text-center tabular-nums text-foreground">{s.sites}</td>
-                  <td className="whitespace-nowrap px-4 py-3"><PerformanceBadge value={s.performance} /></td>
+                  <td className="px-4 py-3 align-middle text-center tabular-nums text-foreground">{s.countries}</td>
+                  <td className="px-4 py-3 align-middle text-center tabular-nums text-foreground">{s.sites}</td>
+                  <td className="whitespace-nowrap px-4 py-3 align-middle"><PerformanceBadge value={s.performance} /></td>
                 </tr>
               ))
             )}
@@ -125,23 +128,11 @@ export function StudyTable({
         </table>
       </div>
       <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <span>Rows per page:</span>
-          <select data-testid="studies-table-rows-per-page" className="rounded-md border border-input bg-card px-2 py-1 text-foreground">
-            <option>25</option>
-            <option>50</option>
-          </select>
-        </div>
-        <p className="text-muted-foreground" data-testid="studies-table-range">{start}–{end} of {total}</p>
-        <div className="flex items-center gap-2">
-          <button data-testid="studies-table-previous" className="rounded-md border border-input px-3 py-1 text-muted-foreground hover:bg-muted disabled:opacity-40" disabled>
-            Previous
-          </button>
-          <span className="text-muted-foreground" data-testid="studies-table-page">{currentPage} / {totalPages}</span>
-          <button data-testid="studies-table-next" className="rounded-md border border-input px-3 py-1 text-foreground hover:bg-muted">
-            Next
-          </button>
-        </div>
+        <p className="text-muted-foreground" data-testid="studies-table-range">
+          {useInfiniteScrollDisplay
+            ? <>{end.toLocaleString()} loaded &bull; {total.toLocaleString()} total</>
+            : <>{start}–{end} of {total}</>}
+        </p>
       </div>
     </div>
   );
