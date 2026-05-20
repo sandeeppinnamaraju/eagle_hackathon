@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { ChevronsUpDown, Columns3 } from "lucide-react";
 import type { Study } from "@/lib/data";
 import type { StudySortDirection, StudySortKey } from "@/lib/study-sorting";
@@ -100,8 +101,10 @@ export function StudyTable({
                   data-testid={`study-row-${toRowTestId(s.id)}`}
                   className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40"
                 >
-                  <td data-testid={`study-row-${toRowTestId(s.id)}-id`} className="whitespace-nowrap px-4 py-3 align-middle font-mono text-xs font-semibold text-primary hover:underline">
-                    {s.id}
+                  <td data-testid={`study-row-${toRowTestId(s.id)}-id`} className="whitespace-nowrap px-4 py-3 align-middle font-mono text-xs font-semibold text-primary">
+                    <Link to="/studies/$studyId" params={{ studyId: s.id }} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {s.id}
+                    </Link>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 align-middle text-foreground">{s.phase}</td>
                   <td className="whitespace-nowrap px-4 py-3 align-middle text-foreground">{s.therapeuticArea}</td>
