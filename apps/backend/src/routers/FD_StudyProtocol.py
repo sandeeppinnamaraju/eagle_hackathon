@@ -478,49 +478,6 @@ def db_version():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch DB version: {e}")
 
-
-
-# Endpoint to return summary details for all studies
-@router.get("/study/summary/all")
-def get_all_study_summaries():
-    conn_params = get_conn_params()
-    try:
-        with psycopg2.connect(**conn_params) as conn:
-            with conn.cursor() as cursor:
-                cursor.execute("""
-                    SELECT
-                        study_id, phase, therapeutic_area, indication, title, portfolio, program,
-                        study_status, project_priority, target_enrollment, actual_enrollment,
-                        enrollment_plan_percent, countries_count, sites_count, performance_status
-                    FROM public.study_data
-                """)
-                studies = []
-                for row in cursor.fetchall():
-                    (sid, phase, ta, indication, title, portfolio, program, status, priority,
-                     target, actual, percent_vs_plan, countries, sites, performance) = row
-                    trend = f"t({sites}, {actual})"
-                    studies.append({
-                        "id": sid,
-                        "phase": phase,
-                        "therapeuticArea": ta,
-                        "indication": indication,
-                        "title": title,
-                        "portfolio": portfolio,
-                        "program": program,
-                        "status": status,
-                        "priority": priority,
-                        "target": target,
-                        "actual": actual,
-                        "percentVsPlan": percent_vs_plan,
-                        "countries": countries,
-                        "sites": sites,
-                        "performance": performance,
-                        "trend": trend
-                    })
-                return studies
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch study summaries: {e}")
-
 @router.get("/db/schema")
 def db_schema():
     try:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from eagle_hackathon.apps.backend.src.FD_StudyProtocol import router as studyProtocol_router
-from eagle_hackathon.apps.backend.src.FD_ProtocolSimilarity import router as protocolSimilarity_router
+from eagle_hackathon.apps.backend.src.routers.FD_StudyProtocol import router as studyProtocol_router
+from eagle_hackathon.apps.backend.src.routers.FD_ProtocolSimilarity import router as protocolSimilarity_router
 
 app = FastAPI(title="FlightDeck APIs", version="1.0.0")
 
