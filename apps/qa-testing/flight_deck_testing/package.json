@@ -1,0 +1,25 @@
+{
+  "name": "playwright-hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node utils/runPlaywrightWithEvidence.js",
+    "test:headed": "node utils/runPlaywrightWithEvidence.js --headed",
+    "test:dashboard": "node utils/runPlaywrightWithEvidence.js tests/dashboard-ac.spec.js --project=chromium --workers=1",
+    "test:dashboard:headed": "node utils/runPlaywrightWithEvidence.js tests/dashboard-ac.spec.js --project=chromium --workers=1 --headed",
+    "evidence:zip": "node utils/packageEvidence.js",
+    "test:evidence": "node utils/runPlaywrightWithEvidence.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.8.0"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
