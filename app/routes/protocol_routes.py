@@ -9,11 +9,7 @@ from app.similarity_engine import (
 )
 
 from app.services.protocol_service import (
-
-    get_protocol_by_id,
-
-    get_protocol_sites
-
+    get_protocol_details
 )
 
 # =========================================
@@ -64,7 +60,7 @@ def search_protocols(
     )
 
     # =====================================
-    # RETURN FRONTEND-READY RESPONSE
+    # RETURN FRONTEND CONTRACT
     # =====================================
 
     return {
@@ -89,7 +85,7 @@ def search_protocols(
 
 
 # =========================================
-# GET PROTOCOL DETAIL
+# GET PROTOCOL DETAIL DASHBOARD
 # =========================================
 
 @router.get("/protocol/{protocol_id}")
@@ -99,10 +95,10 @@ def get_protocol_detail(
 ):
 
     # =====================================
-    # FETCH MAIN PROTOCOL
+    # FETCH FULL DASHBOARD PAYLOAD
     # =====================================
 
-    protocol = get_protocol_by_id(
+    dashboard = get_protocol_details(
         protocol_id
     )
 
@@ -110,7 +106,7 @@ def get_protocol_detail(
     # HANDLE NOT FOUND
     # =====================================
 
-    if not protocol:
+    if not dashboard:
 
         return {
 
@@ -121,25 +117,13 @@ def get_protocol_detail(
         }
 
     # =====================================
-    # FETCH PROTOCOL SITES
-    # =====================================
-
-    sites = get_protocol_sites(
-        protocol_id
-    )
-
-    # =====================================
-    # RETURN DETAIL RESPONSE
+    # RETURN DASHBOARD RESPONSE
     # =====================================
 
     return {
 
         "success": True,
 
-        "protocol": protocol,
-
-        "sites": sites,
-
-        "total_sites": len(sites)
+        **dashboard
 
     }
