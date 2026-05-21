@@ -332,12 +332,10 @@ def get_average_velocity_vs_plan():
                 )
 
                 average_velocity_vs_plan = round(float(cursor.fetchone()[0]), 2)
-                return {"average_velocity_vs_plan": average_velocity_vs_plan}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch average velocity vs plan: {e}")
 
-
-@app.get("/studies/kpi-details")
+@app.get("/study/kpi-details")
 def get_kpi_details():
     conn_params = get_conn_params()
     try:
@@ -346,24 +344,20 @@ def get_kpi_details():
                 cursor.execute(
                     """
                     SELECT
-                        -- Active studies count
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
                         ) AS active_studies_count,
 
-                        -- On-track count
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
                               AND UPPER(COALESCE(performance_status, '')) = 'ON_TRACK'
                         ) AS on_track_count,
 
-                        -- Off-track or at-risk count
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
                               AND UPPER(COALESCE(performance_status, '')) IN ('OFF_TRACK', 'AT_RISK')
                         ) AS off_track_or_at_risk_count,
 
-                        -- Enrollment vs target
                         COALESCE(
                             SUM(actual_enrollment) FILTER (
                                 WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
@@ -375,7 +369,6 @@ def get_kpi_details():
                             ), 0
                         ) AS total_target_enrollment,
 
-                        -- Velocity vs plan average
                         COALESCE(
                             AVG(enrollment_plan_percent) FILTER (
                                 WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
@@ -431,4 +424,3 @@ def get_kpi_details():
                 }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch KPI details: {e}")
-
