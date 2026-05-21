@@ -1,6 +1,8 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
 from app.services.protocol_service import get_protocols
+
 
 # =========================================
 # BUILD SEARCHABLE PROTOCOL DOCUMENTS
@@ -17,21 +19,37 @@ def build_protocol_documents():
     for row in rows:
 
         protocol = {
+
             "protocol_id": row[0],
+
             "title": row[1],
+
             "phase": row[2],
+
             "therapeutic_area": row[3],
+
             "indication": row[4],
+
             "full_summary": row[5],
+
             "inclusion_criteria": row[6],
+
             "exclusion_criteria": row[7],
+
             "target_enrollment": row[8],
+
             "actual_enrollment": row[9],
+
             "planned_start_date": row[10],
+
             "actual_end_date": row[11],
+
             "planned_duration_months": row[12],
+
             "actual_duration_months": row[13],
+
             "lessons_learned": row[14]
+
         }
 
         # =====================================
@@ -62,6 +80,7 @@ def build_protocol_documents():
 
     return protocols, corpus
 
+
 # =========================================
 # CREATE TF-IDF MODEL
 # =========================================
@@ -71,27 +90,85 @@ def create_search_model():
     protocols, corpus = build_protocol_documents()
 
     vectorizer = TfidfVectorizer(
+
         stop_words="english",
+
         lowercase=True,
+
         ngram_range=(1, 2),
+
         max_features=15000
+
     )
 
-    tfidf_matrix = vectorizer.fit_transform(corpus)
+    tfidf_matrix = vectorizer.fit_transform(
+        corpus
+    )
 
     return protocols, vectorizer, tfidf_matrix
+
+
+# =========================================
+# GET MATCH LABEL
+# =========================================
+
+def get_match_label(score):
+
+    if score >= 70:
+
+        return "High match"
+
+    elif score >= 40:
+
+        return "Moderate match"
+
+    else:
+
+        return "Low match"
+
+
+# =========================================
+# BUILD PREVIEW BULLETS
+# =========================================
+
+def build_preview_list(text):
+
+    if not text:
+
+        return []
+
+    lines = text.split("\n")
+
+    cleaned = []
+
+    for line in lines:
+
+        line = line.strip()
+
+        if len(line) > 10:
+
+            cleaned.append(line)
+
+    return cleaned[:2]
+
 
 # =========================================
 # SEARCH SIMILAR PROTOCOLS
 # =========================================
 
 def search_similar_protocols(
+
     query,
-    therapeutic_area=None,
+
+    therapeutic_areas=None,
+
     top_k=10
+
 ):
 
-    protocols, vectorizer, tfidf_matrix = create_search_model()
+    protocols, vectorizer, tfidf_matrix = (
+        create_search_model()
+    )
 
     # =====================================
     # BOOST IMPORTANT QUERY TERMS
@@ -122,30 +199,40 @@ def search_similar_protocols(
     )
 
     # =====================================
-    # CALCULATE COSINE SIMILARITY
+    # CALCULATE SIMILARITY
     # =====================================
 
     similarity_scores = cosine_similarity(
+
         query_vector,
+
         tfidf_matrix
+
     )[0]
 
     ranked_results = []
 
-    for idx, score in enumerate(similarity_scores):
+    # =====================================
+    # PROCESS RESULTS
+    # =====================================
+
+    for idx, score in enumerate(
+        similarity_scores
+    ):
 
         protocol = protocols[idx]
 
         # =================================
-        # THERAPEUTIC FILTER
+        # MULTI-SELECT THERAPEUTIC FILTER
         # =================================
 
-        if therapeutic_area:
+        if therapeutic_areas:
 
             if (
                 protocol["therapeutic_area"]
-                != therapeutic_area
+                not in therapeutic_areas
             ):
+
                 continue
 
         # =================================
@@ -154,13 +241,13 @@ def search_similar_protocols(
 
         bonus = 0
 
-        title_text = (
-            str(protocol["title"]).lower()
-        )
+        title_text = str(
+            protocol["title"]
+        ).lower()
 
-        indication_text = (
-            str(protocol["indication"]).lower()
-        )
+        indication_text = str(
+            protocol["indication"]
+        ).lower()
 
         query_text = query.lower()
 
@@ -170,6 +257,7 @@ def search_similar_protocols(
             "nsclc" in query_text
             and "nsclc" in indication_text
         ):
+
             bonus += 0.10
 
         # EGFR boost
@@ -178,6 +266,7 @@ def search_similar_protocols(
             "egfr" in query_text
             and "egfr" in title_text
         ):
+
             bonus += 0.15
 
         # metastatic boost
@@ -186,6 +275,7 @@ def search_similar_protocols(
             "metastatic" in query_text
             and "metastatic" in title_text
         ):
+
             bonus += 0.08
 
         # Phase II boost
@@ -194,26 +284,104 @@ def search_similar_protocols(
             "phase ii" in query_text
             and protocol["phase"] == "PHASE_II"
         ):
+
             bonus += 0.05
 
-        final_score = score + bonus
+        # =================================
+        # FINAL SCORE
+        # =================================
 
-        ranked_results.append({
-            "similarity_score": round(
-                float(final_score * 100),
-                2
+        final_score = round(
+            float((score + bonus) * 100),
+            2
+        )
+
+        # =================================
+        # FRONTEND-READY RESULT
+        # =================================
+
+        result = {
+
+            "rank": 0,
+
+            "protocol_id": protocol[
+                "protocol_id"
+            ],
+
+            "title": protocol[
+                "title"
+            ],
+
+            "phase": protocol[
+                "phase"
+            ],
+
+            "therapeutic_area": protocol[
+                "therapeutic_area"
+            ],
+
+            "indication": protocol[
+                "indication"
+            ],
+
+            "similarity_score": final_score,
+
+            "match_label": get_match_label(
+                final_score
             ),
+
+            "inclusion_preview": (
+                build_preview_list(
+                    protocol[
+                        "inclusion_criteria"
+                    ]
+                )
+            ),
+
+            "exclusion_preview": (
+                build_preview_list(
+                    protocol[
+                        "exclusion_criteria"
+                    ]
+                )
+            ),
+
+            # FULL PROTOCOL OBJECT
+            # FOR DETAILS PAGE
             "protocol": protocol
-        })
+
+        }
+
+        ranked_results.append(result)
 
     # =====================================
     # SORT RESULTS
     # =====================================
 
     ranked_results = sorted(
+
         ranked_results,
-        key=lambda x: x["similarity_score"],
+
+        key=lambda x: x[
+            "similarity_score"
+        ],
+
         reverse=True
+
     )
+
+    # =====================================
+    # ADD RANKING
+    # =====================================
+
+    for idx, result in enumerate(
+        ranked_results
+    ):
+
+        result["rank"] = idx + 1
+
+    # =====================================
+    # RETURN TOP RESULTS
+    # =====================================
 
     return ranked_results[:top_k]

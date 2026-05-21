@@ -9,8 +9,11 @@ from app.similarity_engine import (
 )
 
 from app.services.protocol_service import (
+
     get_protocol_by_id,
+
     get_protocol_sites
+
 )
 
 # =========================================
@@ -18,6 +21,7 @@ from app.services.protocol_service import (
 # =========================================
 
 router = APIRouter()
+
 
 # =========================================
 # SEARCH PROTOCOLS API
@@ -44,24 +48,46 @@ def search_protocols(
     """
 
     # =====================================
-    # RUN SEARCH ENGINE
+    # RUN SIMILARITY ENGINE
     # =====================================
 
     results = search_similar_protocols(
+
         query=full_query,
-        therapeutic_area=request.therapeutic_area,
+
+        therapeutic_areas=(
+            request.therapeutic_areas
+        ),
+
         top_k=request.top_k
+
     )
 
     # =====================================
-    # RETURN RESPONSE
+    # RETURN FRONTEND-READY RESPONSE
     # =====================================
 
     return {
+
         "success": True,
+
+        "query": {
+
+            "summary": request.summary,
+
+            "therapeutic_areas": (
+                request.therapeutic_areas
+            )
+
+        },
+
         "total_results": len(results),
+
         "results": results
+
     }
+
+
 # =========================================
 # GET PROTOCOL DETAIL
 # =========================================
@@ -87,12 +113,15 @@ def get_protocol_detail(
     if not protocol:
 
         return {
+
             "success": False,
+
             "message": "Protocol not found"
+
         }
 
     # =====================================
-    # FETCH SITES
+    # FETCH PROTOCOL SITES
     # =====================================
 
     sites = get_protocol_sites(
@@ -100,12 +129,17 @@ def get_protocol_detail(
     )
 
     # =====================================
-    # RETURN AGGREGATED RESPONSE
+    # RETURN DETAIL RESPONSE
     # =====================================
 
     return {
+
         "success": True,
+
         "protocol": protocol,
+
         "sites": sites,
+
         "total_sites": len(sites)
+
     }

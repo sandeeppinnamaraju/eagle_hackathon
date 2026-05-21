@@ -1,14 +1,23 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+
+
+# =========================================
+# SEARCH REQUEST MODEL
+# =========================================
 
 class ProtocolSearchRequest(BaseModel):
 
+    # REQUIRED
     summary: str
 
+    # OPTIONAL
     inclusion_criteria: Optional[str] = ""
 
     exclusion_criteria: Optional[str] = ""
 
-    therapeutic_area: Optional[str] = None
+    # MULTI-SELECT DROPDOWN
+    therapeutic_areas: Optional[List[str]] = []
 
-    top_k: Optional[int] = 10
+    # RESULT COUNT
+    top_k: int = 10
