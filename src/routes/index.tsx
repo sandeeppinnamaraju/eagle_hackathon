@@ -92,7 +92,7 @@ function PortfolioPage() {
       </span>
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">Portfolio Dashboard</h1>
-        <InsightsButton />
+        {/* <InsightsButton /> */}
       </div>
 
       <DataStateBanner error={error} className="mt-4" />

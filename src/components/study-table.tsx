@@ -36,12 +36,12 @@ export function StudyTable({
 
   return (
     <div className="rounded-xl border border-border bg-card shadow-card" data-testid="studies-table-container">
-      <div className="flex items-center justify-end border-b border-border px-4 py-2.5">
+      {/* <div className="flex items-center justify-end border-b border-border px-4 py-2.5">
         <button data-testid="studies-table-columns-button" className="inline-flex items-center gap-1.5 rounded-md border border-input px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted">
           <Columns3 className="h-3.5 w-3.5" />
           Columns
         </button>
-      </div>
+      </div> */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm" data-testid="studies-table">
           <thead>
