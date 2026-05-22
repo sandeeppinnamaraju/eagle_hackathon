@@ -4,7 +4,23 @@ const { spawnSync } = require('child_process');
 
 const ROOT = process.cwd();
 const TEST_RESULTS_DIR = path.join(ROOT, 'test-results');
+const PLAYWRIGHT_REPORT_DIR = path.join(ROOT, 'playwright-report');
 const EVIDENCE_DIR = path.join(ROOT, 'evidence');
+const JSON_REPORT_FILE = path.join(EVIDENCE_DIR, 'latest-playwright-report.json');
+
+function getFallbackReportFile() {
+  if (!fs.existsSync(EVIDENCE_DIR)) return null;
+
+  const files = fs
+    .readdirSync(EVIDENCE_DIR, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && /report\.json$/i.test(entry.name))
+    .map((entry) => path.join(EVIDENCE_DIR, entry.name));
+
+  if (files.length === 0) return null;
+
+  files.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+  return files[0];
+}
 
 function sanitize(value) {
   return value
@@ -33,6 +49,24 @@ function walkFiles(dirPath, files = []) {
   return files;
 }
 
+function tryReadJson(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+
+  try {
+    const buffer = fs.readFileSync(filePath);
+
+    const asUtf8 = buffer.toString('utf8');
+    try {
+      return JSON.parse(asUtf8);
+    } catch {
+      const asUtf16 = buffer.toString('utf16le').replace(/^\uFEFF/, '');
+      return JSON.parse(asUtf16);
+    }
+  } catch {
+    return null;
+  }
+}
+
 function timestamp() {
   const now = new Date();
   const yyyy = now.getFullYear();
@@ -45,16 +79,46 @@ function timestamp() {
 }
 
 function collectEvidenceFiles() {
-  if (!fs.existsSync(TEST_RESULTS_DIR)) {
-    throw new Error('test-results folder was not found. Run tests first.');
+  const collected = [];
+  const selectedJsonReport = fs.existsSync(JSON_REPORT_FILE) ? JSON_REPORT_FILE : getFallbackReportFile();
+
+  if (fs.existsSync(TEST_RESULTS_DIR)) {
+    const allTestResultFiles = walkFiles(TEST_RESULTS_DIR);
+    for (const filePath of allTestResultFiles) {
+      const fileName = path.basename(filePath);
+      if (fileName === '.last-run') continue;
+
+      collected.push({
+        sourceGroup: 'test-results',
+        relativePath: path.relative(TEST_RESULTS_DIR, filePath),
+        filePath,
+      });
+    }
   }
 
-  const allFiles = walkFiles(TEST_RESULTS_DIR);
-  return allFiles.filter((filePath) => {
-    const fileName = path.basename(filePath);
-    if (fileName === '.last-run') return false;
-    return true;
-  });
+  if (fs.existsSync(PLAYWRIGHT_REPORT_DIR)) {
+    const reportFiles = walkFiles(PLAYWRIGHT_REPORT_DIR);
+    for (const filePath of reportFiles) {
+      collected.push({
+        sourceGroup: 'playwright-report',
+        relativePath: path.relative(PLAYWRIGHT_REPORT_DIR, filePath),
+        filePath,
+      });
+    }
+  }
+
+  if (selectedJsonReport && fs.existsSync(selectedJsonReport)) {
+    collected.push({
+      sourceGroup: 'json-report',
+      relativePath: path.basename(selectedJsonReport),
+      filePath: selectedJsonReport,
+    });
+  }
+
+  return {
+    files: collected,
+    selectedJsonReport,
+  };
 }
 
 function buildEvidenceBundle(files, bundleDirName) {
@@ -63,14 +127,13 @@ function buildEvidenceBundle(files, bundleDirName) {
 
   const usedNames = new Set();
 
-  for (const filePath of files) {
-    const relative = path.relative(TEST_RESULTS_DIR, filePath);
-    const parts = relative.split(path.sep);
-    const scenarioPart = parts.length > 1 ? parts[0] : 'misc';
+  for (const file of files) {
+    const parts = file.relativePath.split(path.sep);
+    const scenarioPart = parts.length > 1 ? parts[0] : file.sourceGroup;
     const scenarioName = sanitize(scenarioPart) || 'scenario';
 
-    const baseName = path.parse(filePath).name;
-    const extension = path.extname(filePath);
+    const baseName = path.parse(file.filePath).name;
+    const extension = path.extname(file.filePath);
     const cleanedBase = sanitize(baseName) || 'artifact';
 
     let targetName = `${scenarioName}__${cleanedBase}${extension}`;
@@ -82,10 +145,50 @@ function buildEvidenceBundle(files, bundleDirName) {
     }
 
     usedNames.add(targetName);
-    fs.copyFileSync(filePath, path.join(bundleDir, targetName));
+    fs.copyFileSync(file.filePath, path.join(bundleDir, targetName));
   }
 
   return bundleDir;
+}
+
+function writeSummary(bundleDir, files, reportFilePath) {
+  const report = tryReadJson(reportFilePath);
+  const lines = [];
+  const now = new Date().toISOString();
+
+  lines.push('# Evidence Summary');
+  lines.push('');
+  lines.push(`Generated: ${now}`);
+
+  if (report && report.stats) {
+    const expected = Number(report.stats.expected || 0);
+    const unexpected = Number(report.stats.unexpected || 0);
+    const skipped = Number(report.stats.skipped || 0);
+    const flaky = Number(report.stats.flaky || 0);
+    const total = expected + unexpected + skipped;
+
+    lines.push(`Passed: ${expected}`);
+    lines.push(`Failed: ${unexpected}`);
+    lines.push(`Skipped: ${skipped}`);
+    lines.push(`Flaky: ${flaky}`);
+    lines.push(`Total: ${total}`);
+  } else {
+    lines.push('Run stats: unavailable (no parseable report JSON found).');
+  }
+
+  lines.push(`Collected artifacts: ${files.length}`);
+
+  const summaryContent = `${lines.join('\n')}\n`;
+  const bundleSummaryPath = path.join(bundleDir, 'run-summary.md');
+  const latestSummaryPath = path.join(EVIDENCE_DIR, 'latest-evidence-summary.md');
+
+  fs.writeFileSync(bundleSummaryPath, summaryContent, 'utf8');
+  fs.writeFileSync(latestSummaryPath, summaryContent, 'utf8');
+
+  return {
+    bundleSummaryPath,
+    latestSummaryPath,
+  };
 }
 
 function zipBundle(bundleDir, zipPath) {
@@ -109,16 +212,22 @@ function main() {
   const bundleName = `evidence-bundle-${stamp}`;
   const zipPath = path.join(EVIDENCE_DIR, `test-evidence-${stamp}.zip`);
 
-  const files = collectEvidenceFiles();
-  if (files.length === 0) {
-    throw new Error('No evidence files found under test-results.');
+  const collected = collectEvidenceFiles();
+  if (collected.files.length === 0) {
+    throw new Error('No evidence files found. Run tests first.');
   }
 
-  const bundleDir = buildEvidenceBundle(files, bundleName);
+  const bundleDir = buildEvidenceBundle(collected.files, bundleName);
+  const summaryPaths = writeSummary(bundleDir, collected.files, collected.selectedJsonReport);
   zipBundle(bundleDir, zipPath);
 
-  console.log(`Evidence files collected: ${files.length}`);
+  console.log(`Evidence files collected: ${collected.files.length}`);
+  if (collected.selectedJsonReport) {
+    console.log(`Report source: ${collected.selectedJsonReport}`);
+  }
   console.log(`Bundle folder: ${bundleDir}`);
+  console.log(`Bundle summary: ${summaryPaths.bundleSummaryPath}`);
+  console.log(`Latest summary: ${summaryPaths.latestSummaryPath}`);
   console.log(`Zip file: ${zipPath}`);
 }
 

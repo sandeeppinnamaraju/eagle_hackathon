@@ -1,5 +1,6 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 function runCommand(command, args) {
   return spawnSync(command, args, {
@@ -8,6 +9,8 @@ function runCommand(command, args) {
 }
 
 function main() {
+  fs.mkdirSync(path.join(process.cwd(), 'evidence'), { recursive: true });
+
   const playwrightArgs = process.argv.slice(2);
   const testRun = runCommand('npx', ['playwright', 'test', ...playwrightArgs]);
 
