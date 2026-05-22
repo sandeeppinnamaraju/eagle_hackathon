@@ -1,4 +1,5 @@
-import { test, expect, APIResponse } from '@playwright/test';
+import { APIResponse } from '@playwright/test';
+import { test, expect } from '../utils/stepTest';
 
 const STUDIES_PATH = '/api/study-protocol/studies';
 

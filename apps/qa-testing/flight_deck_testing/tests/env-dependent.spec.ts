@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../utils/stepTest';
 
 const RUN_ENV_DEPENDENT = process.env.RUN_ENV_DEPENDENT === 'true';
 const KPI_PATH = '/api/study-protocol/kpi-details';

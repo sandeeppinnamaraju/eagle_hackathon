@@ -193,7 +193,6 @@ function writeSummary(bundleDir, files, reportFilePath) {
 
 function zipBundle(bundleDir, zipPath) {
   const sourcePattern = path.join(bundleDir, '*');
-
   const command = `Compress-Archive -Path \"${sourcePattern}\" -DestinationPath \"${zipPath}\" -Force`;
   const result = spawnSync('powershell', ['-NoProfile', '-Command', command], {
     stdio: 'pipe',
@@ -201,6 +200,9 @@ function zipBundle(bundleDir, zipPath) {
   });
 
   if (result.status !== 0) {
+    console.error('Compress-Archive failed.');
+    console.error('stdout:', result.stdout);
+    console.error('stderr:', result.stderr);
     throw new Error(result.stderr || result.stdout || 'Failed to create zip archive.');
   }
 }

@@ -21,7 +21,7 @@ module.exports = defineConfig({
     headless: true,
     screenshot: 'on',
     trace: 'retain-on-failure',
-    video: 'retain-on-failure',
+    video: 'on',
     extraHTTPHeaders: {
       Accept: 'application/json',
       'ngrok-skip-browser-warning': 'true',

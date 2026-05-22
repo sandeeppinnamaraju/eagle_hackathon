@@ -1,14 +1,30 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../utils/stepTest');
 const { EXPECTED_COLUMNS } = require('../fixtures/dashboardData');
 
 test.describe('Study Portfolio Dashboard', () => {
-  test.beforeEach(async ({ page }) => {
+  test.describe.configure({ mode: 'serial' });
+
+  let context;
+  let page;
+
+  const openDashboard = async () => {
     await page.goto('https://stainless-steven-exclusion-material.trycloudflare.com/');
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: 'Portfolio Dashboard' })).toBeVisible();
+  };
+
+  test.beforeAll(async ({ browser }) => {
+    context = await browser.newContext();
+    page = await context.newPage();
+    await openDashboard();
   });
 
-  test('table toggle shows table with all required columns', async ({ page }) => {
+  test.afterAll(async () => {
+    await context.close();
+  });
+
+  test('table toggle shows table with all required columns', async () => {
+    await openDashboard();
     await page.getByRole('button', { name: 'Table' }).first().click();
 
     const table = page.locator('table, [role="table"]').first();
@@ -23,7 +39,8 @@ test.describe('Study Portfolio Dashboard', () => {
     }
   });
 
-  test('study overview navigation works and required columns are visible', async ({ page }) => {
+  test('study overview navigation works and required columns are visible', async () => {
+    await openDashboard();
     await page.getByRole('link', { name: 'Study Overview' }).first().click();
     await page.waitForLoadState('networkidle');
 
@@ -42,7 +59,8 @@ test.describe('Study Portfolio Dashboard', () => {
     }
   });
 
-  test('search works without breaking', async ({ page }) => {
+  test('search works without breaking', async () => {
+    await openDashboard();
     const search = page
       .getByPlaceholder('Search by ID, title...')
       .or(page.locator('input[placeholder*="Search"], input[type="search"], input').first())
@@ -60,7 +78,8 @@ test.describe('Study Portfolio Dashboard', () => {
     }
   });
 
-  test('filters basic interaction does not break', async ({ page }) => {
+  test('filters basic interaction does not break', async () => {
+    await openDashboard();
     const possibleFilters = ['Therapeutic Area', 'Phase', 'Study Status'];
 
     for (const name of possibleFilters) {
@@ -75,7 +94,8 @@ test.describe('Study Portfolio Dashboard', () => {
     expect(true).toBeTruthy();
   });
 
-  test('sorting click works when header exists', async ({ page }) => {
+  test('sorting click works when header exists', async () => {
+    await openDashboard();
     await page.getByRole('button', { name: 'Table' }).first().click();
     const table = page.locator('table, [role="table"]').first();
     await expect(table).toBeVisible();
@@ -100,7 +120,8 @@ test.describe('Study Portfolio Dashboard', () => {
     test.skip();
   });
 
-  test('empty state handled safely', async ({ page }) => {
+  test('empty state handled safely', async () => {
+    await openDashboard();
     const search = page
       .getByPlaceholder('Search by ID, title...')
       .or(page.locator('input[placeholder*="Search"], input[type="search"], input').first())

@@ -1,5 +1,4 @@
-const { test, expect } = require('@playwright/test');
-
+const { test, expect } = require('../utils/stepTest');
 const URL = 'https://stainless-steven-exclusion-material.trycloudflare.com/protocol-search';
 
 test.describe('Story 3 - Protocol Similarity Search', () => {
@@ -38,12 +37,13 @@ test.describe('Story 3 - Protocol Similarity Search', () => {
         const resultsContainer = page.locator('article, table, [role="table"], [class*="card"]').first();
         const resultItems = page.locator('article, table tbody tr, [role="row"], [class*="card"]');
         const emptyState = page.getByText(/no results|no similar protocols|nothing found|empty|0 protocols matched/i).first();
-        const detailsLink = page.locator('a:has-text("View details"), a[href*="mode=detail"]').first();
 
         if ((await resultItems.count()) > 0 || (await resultsContainer.count()) > 0) {
             await expect(resultsContainer).toBeVisible();
 
             // 5-6. Click first result if available and validate details view basic load
+            const detailsLink = page.locator('a:has-text("Details"), [role="link"]:has-text("Details")').first();
+
             if (await detailsLink.count()) {
                 await detailsLink.click({ force: true }).catch(() => {});
                 await page.waitForLoadState('networkidle').catch(() => {});
