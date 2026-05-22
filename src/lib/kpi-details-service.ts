@@ -4,8 +4,10 @@ import type {
   KpiDetailsData,
   KpiDetailsResult,
 } from "@/lib/kpi-details-types";
+import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
-const KPI_DETAILS_API_PATH = "/studies/kpi-details";
+const KPI_DETAILS_API_PATH = "/api/study-protocol/kpi-details";
+const KPI_DETAILS_API_FALLBACK_URL = "/api/study-protocol/kpi-details";
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA !== "false";
 
 const isFiniteNumber = (value: unknown): value is number =>
@@ -65,7 +67,13 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value != null;
 
 const fetchFromApi = async (signal?: AbortSignal): Promise<KpiDetailsData> => {
-  const response = await fetch(KPI_DETAILS_API_PATH, { signal });
+  const response = await fetch(
+    withApiBaseUrl(KPI_DETAILS_API_PATH, KPI_DETAILS_API_FALLBACK_URL),
+    withApiRequestConfig({
+      method: "GET",
+      signal,
+    }),
+  );
 
   if (!response.ok) {
     throw new Error(`Failed to fetch KPI details: ${response.status}`);
@@ -81,13 +89,7 @@ const fetchFromApi = async (signal?: AbortSignal): Promise<KpiDetailsData> => {
 
 export const kpiDetailsService = {
   async getKpiDetails(signal?: AbortSignal): Promise<KpiDetailsResult> {
-    if (useMockData) {
-      return {
-        data: getMockData(),
-        source: "mock",
-        error: null,
-      };
-    }
+    
 
     try {
       const data = await fetchFromApi(signal);

@@ -1,7 +1,9 @@
 import { buildStudiesQueryParams } from "@/lib/query-param-builder";
 import type { IStudiesService, StudiesPage, StudiesQuery } from "@/lib/studies-service-types";
+import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
-const STUDIES_API_PATH = "/api/studies";
+const STUDIES_API_PATH = "/api/study-protocol/studies";
+const STUDIES_API_FALLBACK_URL = "/api/study-protocol/studies";
 
 /**
  * Real API implementation of IStudiesService.
@@ -13,7 +15,14 @@ const STUDIES_API_PATH = "/api/studies";
 export const apiStudiesService: IStudiesService = {
   async getStudies(query: StudiesQuery, signal?: AbortSignal): Promise<StudiesPage> {
     const qs = buildStudiesQueryParams(query);
-    const response = await fetch(`${STUDIES_API_PATH}?${qs}`, { signal });
+    const studiesUrl = withApiBaseUrl(STUDIES_API_PATH, STUDIES_API_FALLBACK_URL);
+    const response = await fetch(
+      `${studiesUrl}?${qs}`,
+      withApiRequestConfig({
+        method: "GET",
+        signal,
+      }),
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to fetch studies: ${response.status}`);
