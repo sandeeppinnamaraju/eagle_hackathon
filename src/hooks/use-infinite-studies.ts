@@ -49,6 +49,8 @@ export interface UseInfiniteStudiesResult {
   setSearch: (value: string) => void;
   /** Current filter values. */
   filters: StudiesFilters;
+  /** Current applied studies API query after debounce/filter state. */
+  activeQuery: StudiesQuery;
   /** Current sort key. */
   sortBy: StudySortKey | null;
   /** Current sort direction. */
@@ -219,6 +221,23 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
   const makeSingleClear = (field: keyof Omit<StudiesFilters, "therapeuticAreas">) =>
     () => setFiltersState((prev) => ({ ...prev, [field]: null }));
 
+  const activeQuery = useMemo<StudiesQuery>(
+    () => ({
+      page: 1,
+      limit,
+      search: debouncedSearch,
+      therapeuticAreas: filters.therapeuticAreas,
+      phase: filters.phase,
+      status: filters.status,
+      portfolio: filters.portfolio,
+      program: filters.program,
+      region: filters.region,
+      sortBy,
+      sortOrder,
+    }),
+    [debouncedSearch, filters, limit, sortBy, sortOrder],
+  );
+
   // These are stable because setFiltersState is stable
   const togglePhase = useMemo(() => makeSingleToggle("phase"), []); // eslint-disable-line react-hooks/exhaustive-deps
   const clearPhases = useMemo(() => makeSingleClear("phase"), []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -252,6 +271,7 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
     search: rawSearch,
     setSearch: setRawSearch,
     filters,
+    activeQuery,
     sortBy,
     sortOrder,
     handleSortChange,

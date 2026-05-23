@@ -11,6 +11,7 @@ import { useKpiDetails } from "@/hooks/use-kpi-details";
 import { useInfiniteStudies } from "@/hooks/use-infinite-studies";
 import { studies as allMockStudies } from "@/lib/data";
 import { getStudyRegion } from "@/hooks/use-study-filters";
+import type { KpiDetailsQuery } from "@/lib/kpi-details-types";
 
 const toSortedUnique = (values: string[]) =>
   Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
@@ -41,6 +42,7 @@ function PortfolioPage() {
     search,
     setSearch,
     filters,
+    activeQuery,
     sortBy,
     sortOrder,
     handleSortChange,
@@ -58,7 +60,28 @@ function PortfolioPage() {
     clearRegions,
   } = useInfiniteStudies();
 
-  const { data: kpiData, isLoading: isKpiLoading } = useKpiDetails();
+  const kpiQuery = useMemo<KpiDetailsQuery>(
+    () => ({
+      search: activeQuery.search,
+      therapeuticAreas: activeQuery.therapeuticAreas,
+      phase: activeQuery.phase,
+      status: activeQuery.status,
+      portfolio: activeQuery.portfolio,
+      program: activeQuery.program,
+      region: activeQuery.region,
+    }),
+    [
+      activeQuery.search,
+      activeQuery.therapeuticAreas,
+      activeQuery.phase,
+      activeQuery.status,
+      activeQuery.portfolio,
+      activeQuery.program,
+      activeQuery.region,
+    ],
+  );
+
+  const { data: kpiData, isLoading: isKpiLoading } = useKpiDetails(kpiQuery);
 
   // Auto-switch to table view when the user types a search query
   useEffect(() => {

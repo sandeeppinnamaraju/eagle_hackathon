@@ -1,3 +1,5 @@
+import type { StudiesQuery } from "@/lib/studies-service-types";
+
 export interface KpiDetailsApiResponse {
   active_studies?: { count?: unknown } | null;
   on_track?: { percentage?: unknown; count?: unknown } | null;
@@ -9,6 +11,8 @@ export interface KpiDetailsApiResponse {
   } | null;
   schedule_adherence?: {
     percentage?: unknown;
+    actual_enrollment?: unknown;
+    planned_enrollment?: unknown;
     completed?: unknown;
     planned?: unknown;
   } | null;
@@ -39,6 +43,11 @@ export interface KpiDetailsData {
     average: number;
   };
 }
+
+export type KpiDetailsQuery = Pick<
+  StudiesQuery,
+  "search" | "therapeuticAreas" | "phase" | "status" | "portfolio" | "program" | "region"
+>;
 
 export interface KpiDetailsResult {
   data: KpiDetailsData;
