@@ -115,7 +115,8 @@ interface EligibilityCriteriaSectionProps {
   exclusion: string;
   onInclusionChange: (value: string) => void;
   onExclusionChange: (value: string) => void;
-  max: number;
+  inclusionMax: number;
+  exclusionMax: number;
 }
 
 export function EligibilityCriteriaSection({
@@ -123,7 +124,8 @@ export function EligibilityCriteriaSection({
   exclusion,
   onInclusionChange,
   onExclusionChange,
-  max,
+  inclusionMax,
+  exclusionMax,
 }: EligibilityCriteriaSectionProps) {
   return (
     <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -134,7 +136,7 @@ export function EligibilityCriteriaSection({
         <CountedTextarea
           value={inclusion}
           onChange={onInclusionChange}
-          max={max}
+          max={inclusionMax}
           rows={4}
           placeholder="Age range, diagnosis, prior treatment, biomarker status..."
           className="w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:border-success focus:outline-none focus:ring-2 focus:ring-success/20"
@@ -148,7 +150,7 @@ export function EligibilityCriteriaSection({
         <CountedTextarea
           value={exclusion}
           onChange={onExclusionChange}
-          max={max}
+          max={exclusionMax}
           rows={4}
           placeholder="Comorbidities, contraindications, prior treatments..."
           className="w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:border-danger focus:outline-none focus:ring-2 focus:ring-danger/20"

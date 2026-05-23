@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { kpiDetailsService } from "@/lib/kpi-details-service";
-import type { KpiDetailsData } from "@/lib/kpi-details-types";
+import type { KpiDetailsData, KpiDetailsQuery } from "@/lib/kpi-details-types";
 
 export interface UseKpiDetailsResult {
   data: KpiDetailsData | null;
@@ -9,7 +9,7 @@ export interface UseKpiDetailsResult {
   isUsingFallback: boolean;
 }
 
-export function useKpiDetails(): UseKpiDetailsResult {
+export function useKpiDetails(query: KpiDetailsQuery): UseKpiDetailsResult {
   const [data, setData] = useState<KpiDetailsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -20,7 +20,7 @@ export function useKpiDetails(): UseKpiDetailsResult {
 
     async function load() {
       setIsLoading(true);
-      const result = await kpiDetailsService.getKpiDetails(controller.signal);
+      const result = await kpiDetailsService.getKpiDetails(query, controller.signal);
 
       if (controller.signal.aborted) return;
 
@@ -37,7 +37,7 @@ export function useKpiDetails(): UseKpiDetailsResult {
     });
 
     return () => controller.abort();
-  }, []);
+  }, [query]);
 
   return {
     data,

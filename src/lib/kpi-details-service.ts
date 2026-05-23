@@ -2,13 +2,14 @@ import { fallbackScheduleAdherence, mockKpiData } from "@/lib/mockKpiData";
 import type {
   KpiDetailsApiResponse,
   KpiDetailsData,
+  KpiDetailsQuery,
   KpiDetailsResult,
 } from "@/lib/kpi-details-types";
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
+import { buildKpiDetailsQueryParams } from "@/lib/query-param-builder";
 
 const KPI_DETAILS_API_PATH = "/api/study-protocol/kpi-details";
 const KPI_DETAILS_API_FALLBACK_URL = "/api/study-protocol/kpi-details";
-const useMockData = import.meta.env.VITE_USE_MOCK_DATA !== "false";
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
@@ -51,10 +52,13 @@ const toKpiDetailsData = (payload: KpiDetailsApiResponse): KpiDetailsData => ({
       fallbackScheduleAdherence.percentage,
     ),
     completed: toNonNegativeNumber(
-      payload.schedule_adherence?.completed,
+      payload.schedule_adherence?.actual_enrollment ?? payload.schedule_adherence?.completed,
       fallbackScheduleAdherence.completed,
     ),
-    planned: toNonNegativeNumber(payload.schedule_adherence?.planned, fallbackScheduleAdherence.planned),
+    planned: toNonNegativeNumber(
+      payload.schedule_adherence?.planned_enrollment ?? payload.schedule_adherence?.planned,
+      fallbackScheduleAdherence.planned,
+    ),
   },
   velocityVsPlan: {
     average: toNonNegativeNumber(payload.velocity_vs_plan?.average, mockKpiData.velocity_vs_plan.average),
@@ -66,9 +70,21 @@ const getMockData = (): KpiDetailsData => toKpiDetailsData(mockKpiData);
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value != null;
 
-const fetchFromApi = async (signal?: AbortSignal): Promise<KpiDetailsData> => {
+const hasAnyKpiSections = (payload: KpiDetailsApiResponse): boolean =>
+  [
+    payload.active_studies,
+    payload.on_track,
+    payload.off_track_or_at_risk,
+    payload.enrollment_vs_target,
+    payload.schedule_adherence,
+    payload.velocity_vs_plan,
+  ].some((section) => isRecord(section));
+
+const fetchFromApi = async (query: KpiDetailsQuery, signal?: AbortSignal): Promise<KpiDetailsData> => {
+  const kpiDetailsUrl = withApiBaseUrl(KPI_DETAILS_API_PATH, KPI_DETAILS_API_FALLBACK_URL);
+  const qs = buildKpiDetailsQueryParams(query);
   const response = await fetch(
-    withApiBaseUrl(KPI_DETAILS_API_PATH, KPI_DETAILS_API_FALLBACK_URL),
+    qs ? `${kpiDetailsUrl}?${qs}` : kpiDetailsUrl,
     withApiRequestConfig({
       method: "GET",
       signal,
@@ -84,15 +100,17 @@ const fetchFromApi = async (signal?: AbortSignal): Promise<KpiDetailsData> => {
     throw new Error("Unexpected KPI API response shape");
   }
 
+  if (!hasAnyKpiSections(payload as KpiDetailsApiResponse)) {
+    throw new Error("Empty KPI API response");
+  }
+
   return toKpiDetailsData(payload as KpiDetailsApiResponse);
 };
 
 export const kpiDetailsService = {
-  async getKpiDetails(signal?: AbortSignal): Promise<KpiDetailsResult> {
-    
-
+  async getKpiDetails(query: KpiDetailsQuery, signal?: AbortSignal): Promise<KpiDetailsResult> {
     try {
-      const data = await fetchFromApi(signal);
+      const data = await fetchFromApi(query, signal);
       return {
         data,
         source: "api",

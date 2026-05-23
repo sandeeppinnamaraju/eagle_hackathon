@@ -102,7 +102,7 @@ export function StudyTable({
                   className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/40"
                 >
                   <td data-testid={`study-row-${toRowTestId(s.id)}-id`} className="whitespace-nowrap px-4 py-3 align-middle font-mono text-xs font-semibold text-primary">
-                    <Link to="/studies/$studyId" params={{ studyId: s.id }} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    <Link to="/studies/$studyId" params={{ studyId: s.id }} className="hover:underline">
                       {s.id}
                     </Link>
                   </td>

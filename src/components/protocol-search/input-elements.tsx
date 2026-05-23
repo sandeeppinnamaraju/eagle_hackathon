@@ -94,6 +94,8 @@ export function CountedTextarea({
   placeholder: string;
   className: string;
 }) {
+  const remaining = Math.max(0, max - value.length);
+
   return (
     <div className="relative mt-2">
       <textarea
@@ -104,7 +106,7 @@ export function CountedTextarea({
         className={className}
       />
       <span className="pointer-events-none absolute bottom-2 right-3 text-xs text-muted-foreground">
-        {value.length}/{max}
+        {remaining} remaining
       </span>
     </div>
   );
