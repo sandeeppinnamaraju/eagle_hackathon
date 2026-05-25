@@ -1,0 +1,206 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "protocal-search.spec.js",
+      "file": "protocal-search.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Story 3 - Protocol Similarity Search",
+          "file": "protocal-search.spec.js",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "protocol search flow stays stable and handles data variations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 30944,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T08:51:10.301Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-001-page-goto-24b769d6ac562b96a3b741ff9d1b0ae99769fe67.png"
+                        },
+                        {
+                          "name": "step-002: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-002-locator-fill-f6103031cad63aad4772297af13899d9c094b694.png"
+                        },
+                        {
+                          "name": "step-003: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-003-locator-click-171522f15ec230eaaec5a008f55926c0771403b7.png"
+                        },
+                        {
+                          "name": "step-004: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-004-locator-click-24b54ae004b3d62b8c47c640e340ca656d9ffa7e.png"
+                        },
+                        {
+                          "name": "step-005: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-005-page-goto-0037bd9372ad20254078996c508502860d9e16e4.png"
+                        },
+                        {
+                          "name": "step-006: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-006-locator-fill-42675a4ee6c1baa6eb1bd3a182067b3192dd4544.png"
+                        },
+                        {
+                          "name": "step-007: locator-press",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-007-locator-press-a9ed94347fc3adb8a37ffda5f1529d85f0f0134a.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-f3a461934de31e6965a4",
+              "file": "protocal-search.spec.js",
+              "line": 5,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-25T08:51:06.133Z",
+    "duration": 163780.97400000002,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
