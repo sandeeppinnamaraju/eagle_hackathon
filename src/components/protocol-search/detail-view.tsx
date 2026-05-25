@@ -1,6 +1,4 @@
-import { useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
-import { protocolResults } from "@/lib/data";
 import {
   AIInsightsSection,
   CriteriaSections,
@@ -10,22 +8,17 @@ import {
   SitesUsedSection,
 } from "@/components/protocol-search/detail-sections";
 import {
-  DETAIL_ENROLLMENT,
-  DETAIL_EXCLUSION_ITEMS,
-  DETAIL_INCLUSION_ITEMS,
-  DETAIL_SITES,
-} from "@/components/protocol-search/constants";
-import {
   ProtocolSearchModeLink,
   ProtocolSearchPageShell,
 } from "@/components/protocol-search/shared";
+import { useProtocolDetail } from "@/hooks/use-protocol-detail";
 
 interface ProtocolSearchDetailViewProps {
   id?: string;
 }
 
 export function ProtocolSearchDetailView({ id }: ProtocolSearchDetailViewProps) {
-  const result = useMemo(() => protocolResults.find((p) => p.id === id) ?? protocolResults[0], [id]);
+  const { data, isLoading, error, isUsingFallback } = useProtocolDetail(id);
 
   return (
     <ProtocolSearchPageShell compact>
@@ -37,23 +30,49 @@ export function ProtocolSearchDetailView({ id }: ProtocolSearchDetailViewProps) 
         Back to results
       </ProtocolSearchModeLink>
 
-      <ProtocolHeaderSection result={result} />
+      {isLoading ? (
+        <div className="mt-4 rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-card">
+          Loading protocol details...
+        </div>
+      ) : !id || !data ? (
+        <div className="mt-4 rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-card">
+          Protocol details are unavailable.
+        </div>
+      ) : (
+        <>
+          {(error || isUsingFallback) && (
+            <div className="mt-4 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
+              Showing fallback protocol details because the API data is unavailable.
+            </div>
+          )}
 
-      <AIInsightsSection />
+          <ProtocolHeaderSection
+            result={data.result}
+            therapeuticArea={data.therapeuticArea}
+            summary={data.summary}
+            plannedStart={data.plannedStart}
+            actualEnd={data.actualEnd}
+            plannedDuration={data.plannedDuration}
+            actualDuration={data.actualDuration}
+          />
 
-      <CriteriaSections
-        inclusionItems={[...DETAIL_INCLUSION_ITEMS]}
-        exclusionItems={[...DETAIL_EXCLUSION_ITEMS]}
-      />
+          <AIInsightsSection insights={data.insights} />
 
-      <EnrollmentOutcomesSection
-        enrolled={DETAIL_ENROLLMENT.enrolled}
-        target={DETAIL_ENROLLMENT.target}
-      />
+          <CriteriaSections
+            inclusionItems={data.inclusionItems}
+            exclusionItems={data.exclusionItems}
+          />
 
-      <SitesUsedSection sites={[...DETAIL_SITES]} />
+          <EnrollmentOutcomesSection
+            enrolled={data.enrollment.enrolled}
+            target={data.enrollment.target}
+          />
 
-      <LessonsLearnedSection />
+          <SitesUsedSection sites={data.sites} />
+
+          <LessonsLearnedSection lesson={data.lessonLearned} />
+        </>
+      )}
     </ProtocolSearchPageShell>
   );
 }

@@ -60,14 +60,29 @@ export function MatchLegend() {
 
 interface ProtocolResultCardProps {
   result: ProtocolResult;
+  onOpenDetail?: (id: string) => void;
 }
 
 interface ResultCardTitleLinkProps {
   id: string;
   title: string;
+  onOpenDetail?: (id: string) => void;
 }
 
-function ResultCardTitleLink({ id, title }: ResultCardTitleLinkProps) {
+function ResultCardTitleLink({ id, title, onOpenDetail }: ResultCardTitleLinkProps) {
+  if (onOpenDetail) {
+    return (
+      <button
+        type="button"
+        onClick={() => onOpenDetail(id)}
+        className="mt-3 flex w-full items-start gap-2 text-left text-base font-semibold leading-snug text-foreground hover:text-primary"
+      >
+        <span className="flex-1">{title}</span>
+        <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+      </button>
+    );
+  }
+
   return (
     <Link
       to="/protocol-search"
@@ -80,7 +95,26 @@ function ResultCardTitleLink({ id, title }: ResultCardTitleLinkProps) {
   );
 }
 
-function ResultCardFooterLink({ id }: { id: string }) {
+function ResultCardFooterLink({
+  id,
+  onOpenDetail,
+}: {
+  id: string;
+  onOpenDetail?: (id: string) => void;
+}) {
+  if (onOpenDetail) {
+    return (
+      <button
+        type="button"
+        onClick={() => onOpenDetail(id)}
+        className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary"
+      >
+        View details
+        <ChevronRight className="h-3.5 w-3.5" />
+      </button>
+    );
+  }
+
   return (
     <Link
       to="/protocol-search"
@@ -93,7 +127,7 @@ function ResultCardFooterLink({ id }: { id: string }) {
   );
 }
 
-export function ProtocolResultCard({ result }: ProtocolResultCardProps) {
+export function ProtocolResultCard({ result, onOpenDetail }: ProtocolResultCardProps) {
   const tier = matchTier(result.match);
   const styles = tierStyles(tier);
 
@@ -109,9 +143,19 @@ export function ProtocolResultCard({ result }: ProtocolResultCardProps) {
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
             {result.rank}
           </span>
-          <span className="rounded-md bg-accent px-2 py-0.5 font-mono text-xs font-semibold text-accent-foreground">
-            {result.id}
-          </span>
+          {onOpenDetail ? (
+            <button
+              type="button"
+              onClick={() => onOpenDetail(result.id)}
+              className="rounded-md bg-accent px-2 py-0.5 font-mono text-xs font-semibold text-accent-foreground hover:opacity-80"
+            >
+              {result.id}
+            </button>
+          ) : (
+            <span className="rounded-md bg-accent px-2 py-0.5 font-mono text-xs font-semibold text-accent-foreground">
+              {result.id}
+            </span>
+          )}
           {result.phase && <PhaseBadge value={result.phase} />}
           <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
             {result.category}
@@ -125,7 +169,7 @@ export function ProtocolResultCard({ result }: ProtocolResultCardProps) {
           </div>
         </div>
 
-        <ResultCardTitleLink id={result.id} title={result.title} />
+        <ResultCardTitleLink id={result.id} title={result.title} onOpenDetail={onOpenDetail} />
         <p className="mt-0.5 text-sm text-muted-foreground">{result.indication}</p>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -137,7 +181,7 @@ export function ProtocolResultCard({ result }: ProtocolResultCardProps) {
         </div>
 
         <div className="mt-4 flex items-center justify-end">
-          <ResultCardFooterLink id={result.id} />
+          <ResultCardFooterLink id={result.id} onOpenDetail={onOpenDetail} />
         </div>
       </div>
     </article>

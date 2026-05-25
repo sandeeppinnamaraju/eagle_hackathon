@@ -9,6 +9,16 @@ import {
 import { cn } from "@/lib/utils";
 import type { ProtocolResult } from "@/lib/data";
 import type { SearchMode } from "@/components/protocol-search/types";
+import "@/components/protocol-search/protocol-search-detail.css";
+
+function clampPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+export function percentWidthClass(value: number): string {
+  return `ps-pct-${clampPercent(value)}`;
+}
 
 export function ProtocolSearchPageShell({
   children,
@@ -116,15 +126,17 @@ export function LegendDot({ color, label }: { color: string; label: string }) {
 }
 
 export function RatioIndicator({ ratioPct }: { ratioPct: number }) {
+  const widthClass = percentWidthClass(ratioPct);
+
   return (
     <div className="flex items-center gap-2">
       <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted">
         <div
           className={cn(
             "h-full rounded-full",
+            widthClass,
             ratioPct >= 70 ? "bg-success" : ratioPct >= 40 ? "bg-warning" : "bg-danger",
           )}
-          style={{ width: `${ratioPct}%` }}
         />
       </div>
       <span
@@ -278,13 +290,16 @@ export function MetaCell({
 export function CriteriaBlock({
   variant,
   items,
-  more,
 }: {
   variant: "inclusion" | "exclusion";
   items: string[];
-  more: number;
 }) {
   const isInc = variant === "inclusion";
+  const [expanded, setExpanded] = useState(false);
+  const initialVisibleCount = Math.min(2, items.length);
+  const visibleItems = expanded ? items : items.slice(0, initialVisibleCount);
+  const hiddenCount = Math.max(0, items.length - initialVisibleCount);
+
   return (
     <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
       <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider">
@@ -298,16 +313,23 @@ export function CriteriaBlock({
         </span>
       </div>
       <ul className="mt-3 space-y-2.5">
-        {items.map((it, i) => (
+        {visibleItems.map((it, i) => (
           <li key={i} className="flex gap-2 text-sm leading-relaxed text-foreground/90">
             <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-muted-foreground/60" />
             <span>— {it}</span>
           </li>
         ))}
       </ul>
-      <button className="mt-3 text-xs font-semibold text-primary hover:underline">
-        ↓ Read more ({more} more)
-      </button>
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          className="mt-3 text-xs font-semibold text-primary hover:underline"
+          onClick={() => setExpanded((current) => !current)}
+          aria-expanded={expanded}
+        >
+          {expanded ? "↑ Show less" : `↓ Read more (${hiddenCount} more)`}
+        </button>
+      )}
     </div>
   );
 }
