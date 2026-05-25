@@ -97,21 +97,57 @@
   },
   "suites": [
     {
-      "title": "dashboard.spec.js",
-      "file": "dashboard.spec.js",
+      "title": "studies-happy.spec.ts",
+      "file": "studies-happy.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Study Portfolio Dashboard",
-          "file": "dashboard.spec.js",
-          "line": 4,
+          "title": "Studies API happy paths",
+          "file": "studies-happy.spec.ts",
+          "line": 92,
           "column": 6,
           "specs": [
             {
-              "title": "table toggle shows table with all required columns",
-              "ok": false,
+              "title": "@smoke scenario 1: studies happy path (required params)",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 831,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T06:07:35.004Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f96f0ec0ec1813047e8b-b6b805f304ef733ba124",
+              "file": "studies-happy.spec.ts",
+              "line": 93,
+              "column": 7
+            },
+            {
+              "title": "scenario 2: studies pagination page 2",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -124,120 +160,61 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 1,
-                      "error": {
-                        "message": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://stainless-steven-exclusion-material.trycloudflare.com/\nCall log:\n\u001b[2m  - navigating to \"https://stainless-steven-exclusion-material.trycloudflare.com/\", waiting until \"load\"\u001b[22m\n",
-                        "stack": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://stainless-steven-exclusion-material.trycloudflare.com/\nCall log:\n\u001b[2m  - navigating to \"https://stainless-steven-exclusion-material.trycloudflare.com/\", waiting until \"load\"\u001b[22m\n\n    at openDashboard (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:11:16)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:19:11",
-                        "location": {
-                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
-                          "column": 16,
-                          "line": 11
-                        },
-                        "snippet": "\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m   \u001b[36mconst\u001b[39m openDashboard \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'https://stainless-steven-exclusion-material.trycloudflare.com/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'heading'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Portfolio Dashboard'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m   }\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
-                            "column": 16,
-                            "line": 11
-                          },
-                          "message": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://stainless-steven-exclusion-material.trycloudflare.com/\nCall log:\n\u001b[2m  - navigating to \"https://stainless-steven-exclusion-material.trycloudflare.com/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m   \u001b[36mconst\u001b[39m openDashboard \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'https://stainless-steven-exclusion-material.trycloudflare.com/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'heading'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Portfolio Dashboard'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m   }\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at openDashboard (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:11:16)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:19:11\u001b[22m"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 435,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T05:56:17.545Z",
+                      "startTime": "2026-05-25T06:07:36.036Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
-                        "column": 16,
-                        "line": 11
-                      }
-                    },
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f96f0ec0ec1813047e8b-85cb6665215235388a35",
+              "file": "studies-happy.spec.ts",
+              "line": 98,
+              "column": 7
+            },
+            {
+              "title": "scenario 3: studies search filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "workerIndex": 1,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 1,
-                      "error": {
-                        "message": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://stainless-steven-exclusion-material.trycloudflare.com/\nCall log:\n\u001b[2m  - navigating to \"https://stainless-steven-exclusion-material.trycloudflare.com/\", waiting until \"load\"\u001b[22m\n",
-                        "stack": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://stainless-steven-exclusion-material.trycloudflare.com/\nCall log:\n\u001b[2m  - navigating to \"https://stainless-steven-exclusion-material.trycloudflare.com/\", waiting until \"load\"\u001b[22m\n\n    at openDashboard (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:11:16)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:19:11",
-                        "location": {
-                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
-                          "column": 16,
-                          "line": 11
-                        },
-                        "snippet": "\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m   \u001b[36mconst\u001b[39m openDashboard \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'https://stainless-steven-exclusion-material.trycloudflare.com/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'heading'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Portfolio Dashboard'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m   }\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
-                            "column": 16,
-                            "line": 11
-                          },
-                          "message": "Error: page.goto: net::ERR_NAME_NOT_RESOLVED at https://stainless-steven-exclusion-material.trycloudflare.com/\nCall log:\n\u001b[2m  - navigating to \"https://stainless-steven-exclusion-material.trycloudflare.com/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m  9 |\u001b[39m\n \u001b[90m 10 |\u001b[39m   \u001b[36mconst\u001b[39m openDashboard \u001b[33m=\u001b[39m \u001b[36masync\u001b[39m () \u001b[33m=>\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 11 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'https://stainless-steven-exclusion-material.trycloudflare.com/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 12 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'heading'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Portfolio Dashboard'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 14 |\u001b[39m   }\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at openDashboard (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:11:16)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:19:11\u001b[22m"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 433,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-05-25T05:56:29.908Z",
+                      "retry": 0,
+                      "startTime": "2026-05-25T06:07:36.719Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
-                        "column": 16,
-                        "line": 11
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-dc91d2e9ab0a22a2dc76",
-              "file": "dashboard.spec.js",
-              "line": 26,
-              "column": 3
+              "id": "f96f0ec0ec1813047e8b-0304dd372882271ac9d7",
+              "file": "studies-happy.spec.ts",
+              "line": 103,
+              "column": 7
             },
             {
-              "title": "study overview navigation works and required columns are visible",
+              "title": "scenario 4: studies therapeutic area single",
               "ok": true,
               "tags": [],
               "tests": [
@@ -249,42 +226,29 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 330,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T05:56:27.344Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-05-25T05:56:37.807Z",
+                      "startTime": "2026-05-25T06:07:37.205Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-049ddab7440d365cbfde",
-              "file": "dashboard.spec.js",
-              "line": 42,
-              "column": 3
+              "id": "f96f0ec0ec1813047e8b-6b5d98a5add77351385d",
+              "file": "studies-happy.spec.ts",
+              "line": 108,
+              "column": 7
             },
             {
-              "title": "search works without breaking",
+              "title": "scenario 5: studies therapeutic area multi-select",
               "ok": true,
               "tags": [],
               "tests": [
@@ -296,42 +260,29 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 487,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T05:56:27.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-05-25T05:56:37.834Z",
+                      "startTime": "2026-05-25T06:07:37.602Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-680c83ff074fe48d1d98",
-              "file": "dashboard.spec.js",
-              "line": 62,
-              "column": 3
+              "id": "f96f0ec0ec1813047e8b-5f9ca5e7c78290c3d93e",
+              "file": "studies-happy.spec.ts",
+              "line": 119,
+              "column": 7
             },
             {
-              "title": "filters basic interaction does not break",
+              "title": "scenario 6: studies valid phase filter",
               "ok": true,
               "tags": [],
               "tests": [
@@ -343,42 +294,29 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 311,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T05:56:27.397Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-05-25T05:56:37.873Z",
+                      "startTime": "2026-05-25T06:07:38.267Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-c3ac03c6886406f2590f",
-              "file": "dashboard.spec.js",
-              "line": 81,
-              "column": 3
+              "id": "f96f0ec0ec1813047e8b-005287b522fe4e7dfe44",
+              "file": "studies-happy.spec.ts",
+              "line": 137,
+              "column": 7
             },
             {
-              "title": "sorting click works when header exists",
+              "title": "scenario 7: studies valid status filter",
               "ok": true,
               "tags": [],
               "tests": [
@@ -390,42 +328,29 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 462,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T05:56:27.513Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-05-25T05:56:37.962Z",
+                      "startTime": "2026-05-25T06:07:38.668Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-b463a3c2a99be1bbac87",
-              "file": "dashboard.spec.js",
-              "line": 97,
-              "column": 3
+              "id": "f96f0ec0ec1813047e8b-c04677c7a12c21fa6ab3",
+              "file": "studies-happy.spec.ts",
+              "line": 148,
+              "column": 7
             },
             {
-              "title": "empty state handled safely",
+              "title": "scenario 8: studies combined filters",
               "ok": true,
               "tags": [],
               "tests": [
@@ -437,39 +362,60 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 226,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T05:56:27.553Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-05-25T05:56:38.000Z",
+                      "startTime": "2026-05-25T06:07:39.249Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-0cc115082f3192929dde",
-              "file": "dashboard.spec.js",
-              "line": 123,
-              "column": 3
+              "id": "f96f0ec0ec1813047e8b-c38f49899586c99751ae",
+              "file": "studies-happy.spec.ts",
+              "line": 159,
+              "column": 7
+            },
+            {
+              "title": "scenario 9: studies valid sorting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 340,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T06:07:39.516Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f96f0ec0ec1813047e8b-26e992e70c88e5981df0",
+              "file": "studies-happy.spec.ts",
+              "line": 178,
+              "column": 7
             }
           ]
         }
@@ -478,11 +424,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-05-25T05:56:15.748Z",
-    "duration": 27358.23,
-    "expected": 0,
-    "skipped": 5,
-    "unexpected": 1,
+    "startTime": "2026-05-25T06:07:32.612Z",
+    "duration": 16104.561999999998,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 0,
     "flaky": 0
   }
 }
