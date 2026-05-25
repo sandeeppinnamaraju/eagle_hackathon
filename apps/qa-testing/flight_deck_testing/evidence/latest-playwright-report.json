@@ -97,20 +97,20 @@
   },
   "suites": [
     {
-      "title": "protocal-search.spec.js",
-      "file": "protocal-search.spec.js",
+      "title": "dashboard.spec.js",
+      "file": "dashboard.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Story 3 - Protocol Similarity Search",
-          "file": "protocal-search.spec.js",
+          "title": "Study Portfolio Dashboard",
+          "file": "dashboard.spec.js",
           "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "protocol search flow stays stable and handles data variations",
+              "title": "table toggle shows table with all required columns",
               "ok": true,
               "tags": [],
               "tests": [
@@ -125,58 +125,18 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20198,
+                      "duration": 8304,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T10:32:35.244Z",
+                      "startTime": "2026-05-25T11:34:50.712Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-001-page-goto-24b769d6ac562b96a3b741ff9d1b0ae99769fe67.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-002-locator-fill-f6103031cad63aad4772297af13899d9c094b694.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-003-locator-click-171522f15ec230eaaec5a008f55926c0771403b7.png"
-                        },
-                        {
-                          "name": "step-004: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-004-locator-click-24b54ae004b3d62b8c47c640e340ca656d9ffa7e.png"
-                        },
-                        {
-                          "name": "step-005: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-005-page-goto-0037bd9372ad20254078996c508502860d9e16e4.png"
-                        },
-                        {
-                          "name": "step-006: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-006-locator-fill-42675a4ee6c1baa6eb1bd3a182067b3192dd4544.png"
-                        },
-                        {
-                          "name": "step-007: locator-press",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-007-locator-press-a9ed94347fc3adb8a37ffda5f1529d85f0f0134a.png"
-                        },
-                        {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\video.webm"
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\test-finished-1.png"
                         }
                       ]
                     }
@@ -184,13 +144,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b39b039ca212a31c7649-f3a461934de31e6965a4",
-              "file": "protocal-search.spec.js",
-              "line": 5,
-              "column": 5
+              "id": "a1bb41a2bd6df77ed2f7-dc91d2e9ab0a22a2dc76",
+              "file": "dashboard.spec.js",
+              "line": 26,
+              "column": 3
             },
             {
-              "title": "empty input search remains stable",
+              "title": "study overview navigation works and required columns are visible",
               "ok": true,
               "tags": [],
               "tests": [
@@ -205,43 +165,18 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12038,
+                      "duration": 8641,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T10:32:56.626Z",
+                      "startTime": "2026-05-25T11:35:12.026Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----6559e-input-search-remains-stable-chromium\\attachments\\step-001-page-goto-5667eb510d59d3180619404263cfe8cfe4a3affe.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----6559e-input-search-remains-stable-chromium\\attachments\\step-002-locator-fill-1dd7c758c4c7f0ed7915c089d3d2bc877a59e713.png"
-                        },
-                        {
-                          "name": "step-003: locator-press",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----6559e-input-search-remains-stable-chromium\\attachments\\step-003-locator-press-f10c4473374144394e0dd8725a6ff637be1b1f52.png"
-                        },
-                        {
-                          "name": "step-004: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----6559e-input-search-remains-stable-chromium\\attachments\\step-004-locator-click-c050bda7bc9e1c22670ec45a2438c83980f585de.png"
-                        },
-                        {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----6559e-input-search-remains-stable-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----6559e-input-search-remains-stable-chromium\\video.webm"
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--80f54-equired-columns-are-visible-chromium\\test-finished-1.png"
                         }
                       ]
                     }
@@ -249,13 +184,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b39b039ca212a31c7649-87499962eb42d73e9371",
-              "file": "protocal-search.spec.js",
-              "line": 92,
-              "column": 5
+              "id": "a1bb41a2bd6df77ed2f7-049ddab7440d365cbfde",
+              "file": "dashboard.spec.js",
+              "line": 42,
+              "column": 3
             },
             {
-              "title": "max length style input search stays responsive",
+              "title": "search works without breaking",
               "ok": true,
               "tags": [],
               "tests": [
@@ -270,38 +205,18 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12063,
+                      "duration": 9920,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T10:33:08.901Z",
+                      "startTime": "2026-05-25T11:35:20.846Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----70fc8-put-search-stays-responsive-chromium\\attachments\\step-001-page-goto-2dd3ecfc62b73ed7211cc04cd96820cad6ec0121.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----70fc8-put-search-stays-responsive-chromium\\attachments\\step-002-locator-fill-0f8addf5071047c0a8b9d3d8a46bdf621994f0f8.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----70fc8-put-search-stays-responsive-chromium\\attachments\\step-003-locator-click-552e092f515568092893643ecf1bfb90d0593ec4.png"
-                        },
-                        {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----70fc8-put-search-stays-responsive-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----70fc8-put-search-stays-responsive-chromium\\video.webm"
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--39c80-arch-works-without-breaking-chromium\\test-finished-1.png"
                         }
                       ]
                     }
@@ -309,13 +224,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b39b039ca212a31c7649-3e3e9038b7ffc2168061",
-              "file": "protocal-search.spec.js",
-              "line": 113,
-              "column": 5
+              "id": "a1bb41a2bd6df77ed2f7-680c83ff074fe48d1d98",
+              "file": "dashboard.spec.js",
+              "line": 62,
+              "column": 3
             },
             {
-              "title": "special characters input does not break search flow",
+              "title": "filters basic interaction does not break",
               "ok": true,
               "tags": [],
               "tests": [
@@ -330,38 +245,18 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 13610,
+                      "duration": 5902,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T10:33:21.504Z",
+                      "startTime": "2026-05-25T11:35:31.017Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----8e708--does-not-break-search-flow-chromium\\attachments\\step-001-page-goto-9512fb29b8875419a2015e9527cb18880cab2ea6.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----8e708--does-not-break-search-flow-chromium\\attachments\\step-002-locator-fill-3b61f6aca2abb89adf695ba27b14e3bf7d1c7a94.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----8e708--does-not-break-search-flow-chromium\\attachments\\step-003-locator-click-43879dbc1270df24d7c058b1e719ce57edb3741e.png"
-                        },
-                        {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----8e708--does-not-break-search-flow-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----8e708--does-not-break-search-flow-chromium\\video.webm"
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--02824--interaction-does-not-break-chromium\\test-finished-1.png"
                         }
                       ]
                     }
@@ -369,13 +264,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b39b039ca212a31c7649-a60a31c3efa886eb4d10",
-              "file": "protocal-search.spec.js",
-              "line": 136,
-              "column": 5
+              "id": "a1bb41a2bd6df77ed2f7-c3ac03c6886406f2590f",
+              "file": "dashboard.spec.js",
+              "line": 81,
+              "column": 3
             },
             {
-              "title": "invalid random input shows stable results or empty state",
+              "title": "sorting click works when header exists",
               "ok": true,
               "tags": [],
               "tests": [
@@ -390,38 +285,18 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12941,
+                      "duration": 8913,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T10:33:35.334Z",
+                      "startTime": "2026-05-25T11:35:37.362Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f5284-able-results-or-empty-state-chromium\\attachments\\step-001-page-goto-07e2cb6682d4a16aaebd9ef517ddf87f8d1f7ea3.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f5284-able-results-or-empty-state-chromium\\attachments\\step-002-locator-fill-2521c811656ba93ca91205848c5a918308309cf7.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f5284-able-results-or-empty-state-chromium\\attachments\\step-003-locator-click-749b30fa071182264b268383fef93b2a1740085e.png"
-                        },
-                        {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f5284-able-results-or-empty-state-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f5284-able-results-or-empty-state-chromium\\video.webm"
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--0da2e-ck-works-when-header-exists-chromium\\test-finished-1.png"
                         }
                       ]
                     }
@@ -429,13 +304,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "b39b039ca212a31c7649-9d4b2b780438fe776dbd",
-              "file": "protocal-search.spec.js",
-              "line": 158,
-              "column": 5
+              "id": "a1bb41a2bd6df77ed2f7-b463a3c2a99be1bbac87",
+              "file": "dashboard.spec.js",
+              "line": 97,
+              "column": 3
             },
             {
-              "title": "no results scenario is handled safely",
+              "title": "empty state handled safely",
               "ok": true,
               "tags": [],
               "tests": [
@@ -450,38 +325,18 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12263,
+                      "duration": 8191,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T10:33:48.377Z",
+                      "startTime": "2026-05-25T11:35:46.504Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f83e8--scenario-is-handled-safely-chromium\\attachments\\step-001-page-goto-a3ff130cde3990a4966b49d746a4e4c413f922fc.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f83e8--scenario-is-handled-safely-chromium\\attachments\\step-002-locator-fill-36dc7c9f4d5b8271f40998b9ff530032229d9b86.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f83e8--scenario-is-handled-safely-chromium\\attachments\\step-003-locator-click-32fcc5d6568ed642df4f2b51638ff3c901d36792.png"
-                        },
-                        {
                           "name": "screenshot",
                           "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f83e8--scenario-is-handled-safely-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f83e8--scenario-is-handled-safely-chromium\\video.webm"
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--cad03--empty-state-handled-safely-chromium\\test-finished-1.png"
                         }
                       ]
                     }
@@ -489,375 +344,10 @@
                   "status": "expected"
                 }
               ],
-              "id": "b39b039ca212a31c7649-b8e18fe7226d0ecf433b",
-              "file": "protocal-search.spec.js",
-              "line": 188,
-              "column": 5
-            },
-            {
-              "title": "results count remains within a safe visible bound",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 12086,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-25T10:34:00.853Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f65a0-within-a-safe-visible-bound-chromium\\attachments\\step-001-page-goto-8c6ed832f3912caae18bec44c8bfa428a5577c4e.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f65a0-within-a-safe-visible-bound-chromium\\attachments\\step-002-locator-fill-58b85e8a67dc0d93f15315800fa5324135ab24de.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f65a0-within-a-safe-visible-bound-chromium\\attachments\\step-003-locator-click-282130a9ee367970a197cb074ec2971f3c4235e6.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f65a0-within-a-safe-visible-bound-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----f65a0-within-a-safe-visible-bound-chromium\\video.webm"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b39b039ca212a31c7649-32c67afd2591620b19d9",
-              "file": "protocal-search.spec.js",
-              "line": 217,
-              "column": 5
-            },
-            {
-              "title": "clicking first result can navigate to details safely",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10651,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-25T10:34:13.199Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-001-page-goto-54f5936709d64f6cf772fcc620f66a22ad71c552.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-002-locator-fill-bff82ee53964f160abdb482669fdde07b65b8a97.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-003-locator-click-d0180026fcc3ce594d5be1f94bbd5d2d4c060376.png"
-                        },
-                        {
-                          "name": "step-004: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-004-locator-click-77d2c16c41e08814eed612d5ade034ddcb97d2cf.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\video.webm"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b39b039ca212a31c7649-6ed05b8e46108247ec01",
-              "file": "protocal-search.spec.js",
-              "line": 250,
-              "column": 5
-            },
-            {
-              "title": "details page basic content validation remains safe",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10918,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-25T10:34:24.052Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-001-page-goto-1ff4dfa149aabe7b17139c4ba7e3856914b3552b.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-002-locator-fill-adaa8aef28f250e161cc4c5f352bbb3a6d990aae.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-003-locator-click-bb805dc19c91f99220406662ce087ca2248df69e.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\video.webm"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b39b039ca212a31c7649-b2644f668a651281bdb0",
-              "file": "protocal-search.spec.js",
-              "line": 281,
-              "column": 5
-            },
-            {
-              "title": "re-triggering search multiple times stays stable",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10546,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-25T10:34:35.057Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----318d1-multiple-times-stays-stable-chromium\\attachments\\step-001-page-goto-36a1c35190606992c33cc18f84d1773b7d8d7c9b.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----318d1-multiple-times-stays-stable-chromium\\attachments\\step-002-locator-fill-1aa90638fffde20e9cfb77ef5d135f44e811c1a5.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----318d1-multiple-times-stays-stable-chromium\\attachments\\step-003-locator-click-204ea856201b547a2272c8e76b9d0e41901dd58e.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----318d1-multiple-times-stays-stable-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----318d1-multiple-times-stays-stable-chromium\\video.webm"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b39b039ca212a31c7649-8afdf6f9e48ec1c36a55",
-              "file": "protocal-search.spec.js",
-              "line": 311,
-              "column": 5
-            },
-            {
-              "title": "search works when dropdown is not selected",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10510,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-25T10:34:45.678Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-001-page-goto-33f2f1d718f9d6840552b0037981b4f818cf802f.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-002-locator-fill-fb05586e6f569c68d463aeee28fe744287593c56.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-003-locator-click-bb0b817325b3229002587c285c2f294818e3d3a3.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\video.webm"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b39b039ca212a31c7649-006f44719e1873318cd7",
-              "file": "protocal-search.spec.js",
-              "line": 334,
-              "column": 5
-            },
-            {
-              "title": "page reload and search again remains stable",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 14078,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-25T10:34:56.401Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "step-001: page-goto",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----82e67-search-again-remains-stable-chromium\\attachments\\step-001-page-goto-bb97675a92bff1864b505bfded4910606c0d2c75.png"
-                        },
-                        {
-                          "name": "step-002: locator-fill",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----82e67-search-again-remains-stable-chromium\\attachments\\step-002-locator-fill-6217a094941fb3f5153a8c8aab28b68ca3906f99.png"
-                        },
-                        {
-                          "name": "step-003: locator-click",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----82e67-search-again-remains-stable-chromium\\attachments\\step-003-locator-click-961e709e7b6555740d98ea26e4d0fa258428e819.png"
-                        },
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----82e67-search-again-remains-stable-chromium\\test-finished-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----82e67-search-again-remains-stable-chromium\\video.webm"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "b39b039ca212a31c7649-34580e5e6ab4fa12bb57",
-              "file": "protocal-search.spec.js",
-              "line": 353,
-              "column": 5
+              "id": "a1bb41a2bd6df77ed2f7-0cc115082f3192929dde",
+              "file": "dashboard.spec.js",
+              "line": 123,
+              "column": 3
             }
           ]
         }
@@ -866,9 +356,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-05-25T10:32:32.755Z",
-    "duration": 175172.5,
-    "expected": 12,
+    "startTime": "2026-05-25T11:34:48.727Z",
+    "duration": 74095.19799999999,
+    "expected": 6,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

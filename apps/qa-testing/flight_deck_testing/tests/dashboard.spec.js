@@ -8,7 +8,7 @@ test.describe('Study Portfolio Dashboard', () => {
   let page;
 
   const openDashboard = async () => {
-    await page.goto('https://stainless-steven-exclusion-material.trycloudflare.com/');
+    await page.goto('https://legislature-valued-short-facilitate.trycloudflare.com/');
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: 'Portfolio Dashboard' })).toBeVisible();
   };
