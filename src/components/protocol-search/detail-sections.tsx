@@ -14,6 +14,7 @@ import {
   InsightCard,
   MetaCell,
   OptionalCellText,
+  percentWidthClass,
   RatioIndicator,
   Stat,
 } from "@/components/protocol-search/shared";
@@ -25,9 +26,23 @@ function OptionalArchetypeValue({ value }: { value: string | null }) {
 
 interface ProtocolHeaderSectionProps {
   result: ProtocolResult;
+  therapeuticArea?: string;
+  summary?: string;
+  plannedStart?: string;
+  actualEnd?: string;
+  plannedDuration?: string;
+  actualDuration?: string;
 }
 
-export function ProtocolHeaderSection({ result }: ProtocolHeaderSectionProps) {
+export function ProtocolHeaderSection({
+  result,
+  therapeuticArea,
+  summary,
+  plannedStart,
+  actualEnd,
+  plannedDuration,
+  actualDuration,
+}: ProtocolHeaderSectionProps) {
   return (
     <section className="mt-4 rounded-2xl border border-border bg-card p-6 shadow-card">
       <div className="flex items-start justify-between gap-4">
@@ -39,28 +54,52 @@ export function ProtocolHeaderSection({ result }: ProtocolHeaderSectionProps) {
       </div>
 
       <div className="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-2 md:grid-cols-4">
-        <MetaCell label="Therapeutic area" value="Oncology" />
+        <MetaCell label="Therapeutic area" value={(therapeuticArea ?? result.category) || "-"} />
         <MetaCell label="Indication" value={result.indication} />
-        <MetaCell label="Planned start" value="2024-09-17" icon={<Calendar className="h-3 w-3" />} />
-        <MetaCell label="Actual end" value="2028-05-17" icon={<Calendar className="h-3 w-3" />} />
-        <MetaCell label="Planned duration" value="45 mo" />
-        <MetaCell label="Actual duration" value="45 mo" />
+        <MetaCell
+          label="Planned start"
+          value={plannedStart ?? "2024-09-17"}
+          icon={<Calendar className="h-3 w-3" />}
+        />
+        <MetaCell
+          label="Actual end"
+          value={actualEnd ?? "2028-05-17"}
+          icon={<Calendar className="h-3 w-3" />}
+        />
+        <MetaCell label="Planned duration" value={plannedDuration ?? "45 mo"} />
+        <MetaCell label="Actual duration" value={actualDuration ?? "45 mo"} />
       </div>
 
       <p className="mt-5 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
-        The goal of this First-In-Human (FIH) Phase I/II trial is to establish the safety profile,
-        determine the Recommended Phase II Dose (RP2D), explore the pharmacokinetic (PK) exposure
-        and pharmacodynamic (PD) properties as well as assess the efficacy of STX-241/PFL-241, a
-        mutant selective Central Nervous System (CNS)-penetrant fourth generation EGFR TKI, in
-        participants with locally advanced or metastatic NSCLC that progressed during or following
-        third generation EGFR TKI such as osimertinib due to C797X double acquired (secondary)
-        mutations.
+        {summary ?? (
+          <>
+            The goal of this First-In-Human (FIH) Phase I/II trial is to establish the safety profile,
+            determine the Recommended Phase II Dose (RP2D), explore the pharmacokinetic (PK) exposure
+            and pharmacodynamic (PD) properties as well as assess the efficacy of STX-241/PFL-241, a
+            mutant selective Central Nervous System (CNS)-penetrant fourth generation EGFR TKI, in
+            participants with locally advanced or metastatic NSCLC that progressed during or following
+            third generation EGFR TKI such as osimertinib due to C797X double acquired (secondary)
+            mutations.
+          </>
+        )}
       </p>
     </section>
   );
 }
 
-export function AIInsightsSection() {
+interface AIInsightsSectionProps {
+  insights?: {
+    enrollmentRisk: string;
+    recommendation: string;
+    comparableTrials: string;
+    operationalSignal: string;
+  };
+}
+
+export function AIInsightsSection({ insights }: AIInsightsSectionProps) {
+  const displayInsight = (value?: string) =>
+    typeof value === "string" && value.trim().length > 0 ? value : "-";
+
   return (
     <section className="mt-5 rounded-2xl border border-primary/20 bg-gradient-to-br from-accent via-card to-card p-5 shadow-card">
       <div className="flex items-center gap-2">
@@ -76,25 +115,25 @@ export function AIInsightsSection() {
           tone="risk"
           icon={<AlertTriangle className="h-4 w-4" />}
           title="Enrollment risk"
-          body="Site-level enrollment is tracking 32% of plan after 12 months. Three French sites account for 47% of remaining target."
+          body={displayInsight(insights?.enrollmentRisk)}
         />
         <InsightCard
           tone="reco"
           icon={<Lightbulb className="h-4 w-4" />}
           title="Recommendation"
-          body="Consider broadening inclusion to T790M co-mutation and adding 2 sites in Japan/Korea where TKI-resistant NSCLC prevalence is high."
+          body={displayInsight(insights?.recommendation)}
         />
         <InsightCard
           tone="trend"
           icon={<TrendingUp className="h-4 w-4" />}
           title="Comparable trials"
-          body="Similar fourth-gen EGFR TKI studies achieved RP2D in ~7 cohorts. Median activation-to-first-patient was 84 days."
+          body={displayInsight(insights?.comparableTrials)}
         />
         <InsightCard
           tone="risk"
           icon={<Activity className="h-4 w-4" />}
           title="Operational signal"
-          body="Average site activation time is 18% above benchmark. Top blocker: IRB amendment cycle in US sites."
+          body={displayInsight(insights?.operationalSignal)}
         />
       </div>
     </section>
@@ -109,8 +148,8 @@ interface CriteriaSectionsProps {
 export function CriteriaSections({ inclusionItems, exclusionItems }: CriteriaSectionsProps) {
   return (
     <section className="mt-5 grid gap-4 md:grid-cols-2">
-      <CriteriaBlock variant="inclusion" items={inclusionItems} more={24} />
-      <CriteriaBlock variant="exclusion" items={exclusionItems} more={31} />
+      <CriteriaBlock variant="inclusion" items={inclusionItems} />
+      <CriteriaBlock variant="exclusion" items={exclusionItems} />
     </section>
   );
 }
@@ -125,6 +164,7 @@ export function EnrollmentOutcomesSection({
   target,
 }: EnrollmentOutcomesSectionProps) {
   const pct = Math.round((enrolled / target) * 1000) / 10;
+  const progressWidthClass = percentWidthClass((enrolled / target) * 100);
 
   return (
     <section className="mt-5 rounded-2xl border border-border bg-card p-6 shadow-card">
@@ -138,10 +178,7 @@ export function EnrollmentOutcomesSection({
         </span>
       </div>
       <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-danger to-warning transition-all"
-          style={{ width: `${(enrolled / target) * 100}%` }}
-        />
+        <div className={`h-full rounded-full bg-gradient-to-r from-danger to-warning transition-all ${progressWidthClass}`} />
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground">{pct}% of target</p>
 
@@ -213,16 +250,20 @@ export function SitesUsedSection({ sites }: SitesUsedSectionProps) {
   );
 }
 
-export function LessonsLearnedSection() {
+export function LessonsLearnedSection({ lesson }: { lesson?: string }) {
   return (
     <section className="mt-5 rounded-2xl border border-border bg-card p-6 shadow-card">
       <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">Lessons learned</h2>
       <div className="mt-3 rounded-lg border-l-4 border-primary bg-accent/40 p-4">
         <p className="text-[11px] font-bold uppercase tracking-wider text-primary">Operations</p>
         <p className="mt-1 text-sm leading-relaxed text-foreground/90">
-          Protocol eligibility criteria restricted enrollment to 32%; recommend broadening at design
-          stage. Site coordinator training and regular performance reviews were key drivers of
-          patient retention.
+          {lesson ?? (
+            <>
+              Protocol eligibility criteria restricted enrollment to 32%; recommend broadening at design
+              stage. Site coordinator training and regular performance reviews were key drivers of
+              patient retention.
+            </>
+          )}
         </p>
       </div>
     </section>
