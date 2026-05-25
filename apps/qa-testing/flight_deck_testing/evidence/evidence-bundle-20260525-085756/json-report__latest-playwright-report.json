@@ -1,0 +1,581 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "story2-study-overview.spec.js",
+      "file": "story2-study-overview.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Story 2 - Study Overview",
+          "file": "story2-study-overview.spec.js",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "navigation: dashboard row click opens Study Overview detail page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12487,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:50:50.535Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-38e0e--Study-Overview-detail-page-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10670,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:52:44.730Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-38e0e--Study-Overview-detail-page-chromium-retry1\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-99601000c6927a950918",
+              "file": "story2-study-overview.spec.js",
+              "line": 59,
+              "column": 3
+            },
+            {
+              "title": "page load: Study Overview list renders with required columns",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14623,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:51:23.009Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-1039d-nders-with-required-columns-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14185,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:53:11.574Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-1039d-nders-with-required-columns-chromium-retry1\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-b2f722b533aabbd50886",
+              "file": "story2-study-overview.spec.js",
+              "line": 67,
+              "column": 3
+            },
+            {
+              "title": "header and KPI tiles: study attributes and KPI values are visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14767,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:51:38.343Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-409df--and-KPI-values-are-visible-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14548,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:53:26.639Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-409df--and-KPI-values-are-visible-chromium-retry1\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-0bbda40edd71a6b412e6",
+              "file": "story2-study-overview.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "charts and time filters: chart sections render and filters are clickable",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 23122,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('img').filter({ has: locator('..') }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('img').filter({ has: locator('..') }).first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('img').filter({ has: locator('..') }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('img').filter({ has: locator('..') }).first()\u001b[22m\n\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:144:39",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                          "column": 39,
+                          "line": 144
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 142 |\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m chartImages \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'img'\u001b[39m)\u001b[33m.\u001b[39mfilter({ has\u001b[33m:\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'..'\u001b[39m) })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m expect(chartImages\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m timeFilters \u001b[33m=\u001b[39m [\u001b[32m'Full Study'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Since FPI'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Last 3 Months'\u001b[39m]\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m filterName \u001b[36mof\u001b[39m timeFilters) {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                            "column": 39,
+                            "line": 144
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('img').filter({ has: locator('..') }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('img').filter({ has: locator('..') }).first()\u001b[22m\n\n\n\u001b[0m \u001b[90m 142 |\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m chartImages \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'img'\u001b[39m)\u001b[33m.\u001b[39mfilter({ has\u001b[33m:\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'..'\u001b[39m) })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m expect(chartImages\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m timeFilters \u001b[33m=\u001b[39m [\u001b[32m'Full Study'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Since FPI'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Last 3 Months'\u001b[39m]\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m filterName \u001b[36mof\u001b[39m timeFilters) {\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:144:39\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:51:53.294Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                        "column": 39,
+                        "line": 144
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 24348,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('img').filter({ has: locator('..') }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('img').filter({ has: locator('..') }).first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('img').filter({ has: locator('..') }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('img').filter({ has: locator('..') }).first()\u001b[22m\n\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:144:39",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                          "column": 39,
+                          "line": 144
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 142 |\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m chartImages \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'img'\u001b[39m)\u001b[33m.\u001b[39mfilter({ has\u001b[33m:\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'..'\u001b[39m) })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m expect(chartImages\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m timeFilters \u001b[33m=\u001b[39m [\u001b[32m'Full Study'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Since FPI'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Last 3 Months'\u001b[39m]\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m filterName \u001b[36mof\u001b[39m timeFilters) {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                            "column": 39,
+                            "line": 144
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('img').filter({ has: locator('..') }).first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('img').filter({ has: locator('..') }).first()\u001b[22m\n\n\n\u001b[0m \u001b[90m 142 |\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m chartImages \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'img'\u001b[39m)\u001b[33m.\u001b[39mfilter({ has\u001b[33m:\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'..'\u001b[39m) })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m expect(chartImages\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m timeFilters \u001b[33m=\u001b[39m [\u001b[32m'Full Study'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Since FPI'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Last 3 Months'\u001b[39m]\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m filterName \u001b[36mof\u001b[39m timeFilters) {\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:144:39\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:53:41.310Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium-retry1\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-4a91f-r-and-filters-are-clickable-chromium-retry1\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                        "column": 39,
+                        "line": 144
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-f461b13d642aa44a7949",
+              "file": "story2-study-overview.spec.js",
+              "line": 137,
+              "column": 3
+            },
+            {
+              "title": "tables and toggles: by country/by site views switch and render",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:52:35.007Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:54:23.251Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-00acf34ccc271906d9f1",
+              "file": "story2-study-overview.spec.js",
+              "line": 158,
+              "column": 3
+            },
+            {
+              "title": "row interactions and details: clicking country/site row expands details",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:52:35.133Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:54:23.298Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-4e7b1419da8decd79e4f",
+              "file": "story2-study-overview.spec.js",
+              "line": 178,
+              "column": 3
+            },
+            {
+              "title": "popovers/details and error handling: optional overlays and error states are handled safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T12:52:35.495Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-25T12:54:23.336Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-5a071f8b16886841f171",
+              "file": "story2-study-overview.spec.js",
+              "line": 194,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-25T12:50:42.115Z",
+    "duration": 235181.735,
+    "expected": 3,
+    "skipped": 3,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -97,62 +97,153 @@
   },
   "suites": [
     {
-      "title": "dashboard.spec.js",
-      "file": "dashboard.spec.js",
+      "title": "env-dependent.spec.js",
+      "file": "env-dependent.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Study Portfolio Dashboard",
-          "file": "dashboard.spec.js",
-          "line": 4,
+          "title": "Environment dependent API checks",
+          "file": "env-dependent.spec.js",
+          "line": 6,
           "column": 6,
           "specs": [
             {
-              "title": "table toggle shows table with all required columns",
+              "title": "@manual scenario 19: KPI empty data edge case",
               "ok": true,
-              "tags": [],
+              "tags": [
+                "manual"
+              ],
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Set RUN_ENV_DEPENDENT=true to run env-dependent scenarios.",
+                      "location": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\env-dependent.spec.js",
+                        "line": 7,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium",
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 8304,
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T11:34:50.712Z",
-                      "annotations": [],
-                      "attachments": [
+                      "startTime": "2026-05-25T13:33:35.196Z",
+                      "annotations": [
                         {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\test-finished-1.png"
+                          "type": "skip",
+                          "description": "Set RUN_ENV_DEPENDENT=true to run env-dependent scenarios.",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\env-dependent.spec.js",
+                            "line": 7,
+                            "column": 8
+                          }
                         }
-                      ]
+                      ],
+                      "attachments": []
                     }
                   ],
-                  "status": "expected"
+                  "status": "skipped"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-dc91d2e9ab0a22a2dc76",
-              "file": "dashboard.spec.js",
-              "line": 26,
+              "id": "f073b3d299fa78a88d6e-c8f524aed2052474c45c",
+              "file": "env-dependent.spec.js",
+              "line": 9,
               "column": 3
             },
             {
-              "title": "study overview navigation works and required columns are visible",
+              "title": "@manual scenario 20: KPI DB outage behavior",
               "ok": true,
-              "tags": [],
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Set RUN_ENV_DEPENDENT=true to run env-dependent scenarios.",
+                      "location": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\env-dependent.spec.js",
+                        "line": 7,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:35.246Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Set RUN_ENV_DEPENDENT=true to run env-dependent scenarios.",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\env-dependent.spec.js",
+                            "line": 7,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f073b3d299fa78a88d6e-3742c844766bf3db1124",
+              "file": "env-dependent.spec.js",
+              "line": 24,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "kpi-details.spec.js",
+      "file": "kpi-details.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "KPI details API",
+          "file": "kpi-details.spec.js",
+          "line": 47,
+          "column": 6,
+          "specs": [
+            {
+              "title": "@smoke scenario 17: KPI details happy path",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
               "tests": [
                 {
                   "timeout": 30000,
@@ -165,32 +256,26 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8641,
+                      "duration": 408,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T11:35:12.026Z",
+                      "startTime": "2026-05-25T13:33:37.711Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--80f54-equired-columns-are-visible-chromium\\test-finished-1.png"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-049ddab7440d365cbfde",
-              "file": "dashboard.spec.js",
-              "line": 42,
+              "id": "be2dd6833cac20a80875-72fa36c2e23e3cb395f9",
+              "file": "kpi-details.spec.js",
+              "line": 48,
               "column": 3
             },
             {
-              "title": "search works without breaking",
+              "title": "scenario 18: KPI numeric shape checks",
               "ok": true,
               "tags": [],
               "tests": [
@@ -205,34 +290,81 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9920,
+                      "duration": 226,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T11:35:20.846Z",
+                      "startTime": "2026-05-25T13:33:38.262Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--39c80-arch-works-without-breaking-chromium\\test-finished-1.png"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-680c83ff074fe48d1d98",
-              "file": "dashboard.spec.js",
+              "id": "be2dd6833cac20a80875-0791838ca31d95fc70ec",
+              "file": "kpi-details.spec.js",
+              "line": 53,
+              "column": 3
+            },
+            {
+              "title": "scenario 21: KPI method not allowed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 114,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:38.540Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-bb7f89eaba9ee9a95f2a",
+              "file": "kpi-details.spec.js",
               "line": 62,
               "column": 3
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "story2-study-overview-api.spec.js",
+      "file": "story2-study-overview-api.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Story 2 - Study Overview API",
+          "file": "story2-study-overview-api.spec.js",
+          "line": 40,
+          "column": 6,
+          "specs": [
             {
-              "title": "filters basic interaction does not break",
+              "title": "@story2-api studies list returns data shape needed for overview table",
               "ok": true,
-              "tags": [],
+              "tags": [
+                "story2-api"
+              ],
               "tests": [
                 {
                   "timeout": 30000,
@@ -245,32 +377,223 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5902,
+                      "duration": 311,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T11:35:31.017Z",
+                      "startTime": "2026-05-25T13:33:38.834Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--02824--interaction-does-not-break-chromium\\test-finished-1.png"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-c3ac03c6886406f2590f",
-              "file": "dashboard.spec.js",
-              "line": 81,
+              "id": "90902b5ae533b9462c1b-a349d8440cf3648bc703",
+              "file": "story2-study-overview-api.spec.js",
+              "line": 41,
               "column": 3
             },
             {
-              "title": "sorting click works when header exists",
+              "title": "@story2-api studies endpoint supports Story 2 table search and sort behavior",
+              "ok": true,
+              "tags": [
+                "story2-api"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 250,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:39.237Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90902b5ae533b9462c1b-b80ef3da2bd01ebec0ea",
+              "file": "story2-study-overview-api.spec.js",
+              "line": 69,
+              "column": 3
+            },
+            {
+              "title": "@story2-api studies endpoint supports Story 2 filter behavior",
+              "ok": true,
+              "tags": [
+                "story2-api"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 378,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:39.542Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90902b5ae533b9462c1b-8a90decd1bd658d4ee78",
+              "file": "story2-study-overview-api.spec.js",
+              "line": 84,
+              "column": 3
+            },
+            {
+              "title": "@story2-api KPI details endpoint provides metric cards for overview",
+              "ok": true,
+              "tags": [
+                "story2-api"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 814,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:39.982Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90902b5ae533b9462c1b-54910a20349f147fcd16",
+              "file": "story2-study-overview-api.spec.js",
+              "line": 103,
+              "column": 3
+            },
+            {
+              "title": "@story2-api validation: invalid query input returns safe API response",
+              "ok": true,
+              "tags": [
+                "story2-api"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 94,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:40.912Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "90902b5ae533b9462c1b-0cec14bd7883677ba678",
+              "file": "story2-study-overview-api.spec.js",
+              "line": 125,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "studies-happy.spec.js",
+      "file": "studies-happy.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Studies API happy paths",
+          "file": "studies-happy.spec.js",
+          "line": 91,
+          "column": 6,
+          "specs": [
+            {
+              "title": "@smoke scenario 1: studies happy path (required params)",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 264,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:41.248Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-86b3038d98ba7537b8fb",
+              "file": "studies-happy.spec.js",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "scenario 2: studies pagination page 2",
               "ok": true,
               "tags": [],
               "tests": [
@@ -285,32 +608,26 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8913,
+                      "duration": 461,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T11:35:37.362Z",
+                      "startTime": "2026-05-25T13:33:41.567Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--0da2e-ck-works-when-header-exists-chromium\\test-finished-1.png"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-b463a3c2a99be1bbac87",
-              "file": "dashboard.spec.js",
+              "id": "5aa4e762eda6d555335a-06ac15b9502533e221d8",
+              "file": "studies-happy.spec.js",
               "line": 97,
               "column": 3
             },
             {
-              "title": "empty state handled safely",
+              "title": "scenario 3: studies search filter",
               "ok": true,
               "tags": [],
               "tests": [
@@ -325,28 +642,495 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8191,
+                      "duration": 321,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-25T11:35:46.504Z",
+                      "startTime": "2026-05-25T13:33:42.079Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--cad03--empty-state-handled-safely-chromium\\test-finished-1.png"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "a1bb41a2bd6df77ed2f7-0cc115082f3192929dde",
-              "file": "dashboard.spec.js",
-              "line": 123,
+              "id": "5aa4e762eda6d555335a-aa1a4b4077d35585afd9",
+              "file": "studies-happy.spec.js",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "scenario 4: studies therapeutic area single",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 407,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:42.462Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-8338b2263e30d97af857",
+              "file": "studies-happy.spec.js",
+              "line": 107,
+              "column": 3
+            },
+            {
+              "title": "scenario 5: studies therapeutic area multi-select",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 264,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:42.905Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-0ce41da33b69557c77c5",
+              "file": "studies-happy.spec.js",
+              "line": 118,
+              "column": 3
+            },
+            {
+              "title": "scenario 6: studies valid phase filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 474,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:43.202Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-edc9071fa0c2706a82c3",
+              "file": "studies-happy.spec.js",
+              "line": 136,
+              "column": 3
+            },
+            {
+              "title": "scenario 7: studies valid status filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 275,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:43.710Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-24436479bfb34e6410b3",
+              "file": "studies-happy.spec.js",
+              "line": 147,
+              "column": 3
+            },
+            {
+              "title": "scenario 8: studies combined filters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 204,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:44.033Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-bcec58940dd45ccc9b27",
+              "file": "studies-happy.spec.js",
+              "line": 158,
+              "column": 3
+            },
+            {
+              "title": "scenario 9: studies valid sorting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 243,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:44.357Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-1064b6703e5941508b2e",
+              "file": "studies-happy.spec.js",
+              "line": 177,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "studies-validation.spec.js",
+      "file": "studies-validation.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Studies API validations and hardening",
+          "file": "studies-validation.spec.js",
+          "line": 36,
+          "column": 6,
+          "specs": [
+            {
+              "title": "@validation scenario 10: studies invalid page",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 76,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:44.652Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-98c446aae61f8ce14e83",
+              "file": "studies-validation.spec.js",
+              "line": 37,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 11: studies invalid limit format",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 70,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:44.773Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-d2c5d10e725c194fa95e",
+              "file": "studies-validation.spec.js",
+              "line": 42,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 12: studies invalid phase",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 83,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:44.875Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-3f17cedf21950a25b863",
+              "file": "studies-validation.spec.js",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 13: studies invalid status",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 81,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:45.004Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-b00be2579b665429d6e6",
+              "file": "studies-validation.spec.js",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 14: studies invalid sortBy (injection attempt)",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 74,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:45.115Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-e0be5eedfd43a201d92b",
+              "file": "studies-validation.spec.js",
+              "line": 57,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 15: studies search injection-like payload",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 238,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:45.226Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-7b9b08a9dd3b2800f5b3",
+              "file": "studies-validation.spec.js",
+              "line": 69,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 16: studies method not allowed",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 88,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-25T13:33:45.488Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-24f4266ea2f39ef606c3",
+              "file": "studies-validation.spec.js",
+              "line": 83,
               "column": 3
             }
           ]
@@ -356,10 +1140,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-05-25T11:34:48.727Z",
-    "duration": 74095.19799999999,
-    "expected": 6,
-    "skipped": 0,
+    "startTime": "2026-05-25T13:33:34.654Z",
+    "duration": 14748.535000000002,
+    "expected": 24,
+    "skipped": 2,
     "unexpected": 0,
     "flaky": 0
   }

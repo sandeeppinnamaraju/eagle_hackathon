@@ -1,9 +1,8 @@
-import { APIResponse } from '@playwright/test';
-import { test, expect } from '../utils/stepTest';
+const { test, expect } = require('../utils/stepTest');
 
 const KPI_PATH = '/api/study-protocol/kpi-details';
 
-async function parseJsonBody(response: APIResponse) {
+async function parseJsonBody(response) {
   const contentType = response.headers()['content-type'] || '';
   const text = await response.text();
 
@@ -16,7 +15,7 @@ async function parseJsonBody(response: APIResponse) {
   }
 }
 
-async function assertKpiSuccess(response: APIResponse) {
+async function assertKpiSuccess(response) {
   expect(response.status()).toBe(200);
 
   const body = await parseJsonBody(response);

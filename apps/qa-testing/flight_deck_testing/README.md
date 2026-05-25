@@ -9,7 +9,7 @@ Test coverage and scripts are actively evolving; more test cases may be added an
 ## Tech Stack
 
 - Playwright
-- JavaScript / TypeScript
+- JavaScript
 - Node.js
 
 ## Project Structure
@@ -45,6 +45,11 @@ Run protocol search tests:
 npx playwright test tests/protocal-search.spec.js --headed --project=chromium --workers=1
 ```
 
+Run Story 2 (Study Overview) tests:
+```sh
+npx playwright test tests/story2-study-overview.spec.js --project=chromium --workers=1
+```
+
 Debug mode:
 ```sh
 npx playwright test --debug
@@ -52,9 +57,17 @@ npx playwright test --debug
 
 ## Current Test Coverage
 
-- Dashboard testing
-- Protocol similarity search
-- KPI and study-related validations
+- Dashboard testing (Story 1)
+	Validates core dashboard behavior such as page load, table/card visibility, required columns, search behavior, basic filter interaction, sorting interaction, and empty-state handling.
+
+- Story 2 Study Overview flow
+	Covers a smooth end-to-end journey from dashboard to study detail and validates: navigation, studies list/table load, required columns, study header attributes, KPI tiles, chart section presence, time-filter interactions, country/site toggle behavior, row expansion details, optional popovers, and safe error-state handling.
+
+- Protocol similarity search (Story 3)
+	Validates protocol-search stability for input and search execution, result/empty-state rendering, and safe navigation to details where available.
+
+- KPI and study-related validations (API)
+	Covers backend contract checks for study and KPI endpoints, including happy-path responses, schema/shape validation, pagination/filter/sort behavior, and negative/validation scenarios (invalid parameters and method-not-allowed checks).
 
 ## Notes
 

@@ -1,9 +1,8 @@
-import { APIResponse } from '@playwright/test';
-import { test, expect } from '../utils/stepTest';
+const { test, expect } = require('../utils/stepTest');
 
 const STUDIES_PATH = '/api/study-protocol/studies';
 
-async function parseJsonBody(response: APIResponse) {
+async function parseJsonBody(response) {
   const contentType = response.headers()['content-type'] || '';
   const text = await response.text();
 
@@ -16,7 +15,7 @@ async function parseJsonBody(response: APIResponse) {
   }
 }
 
-async function assertStudiesValidationError(response: APIResponse) {
+async function assertStudiesValidationError(response) {
   expect(response.status()).toBe(400);
   const body = await parseJsonBody(response);
   expect(body).toEqual(
@@ -26,7 +25,7 @@ async function assertStudiesValidationError(response: APIResponse) {
   );
 }
 
-function buildQuery(params: Record<string, string | number>) {
+function buildQuery(params) {
   const searchParams = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     searchParams.set(key, String(value));

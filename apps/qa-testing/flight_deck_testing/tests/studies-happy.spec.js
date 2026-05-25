@@ -1,5 +1,4 @@
-import { APIResponse } from '@playwright/test';
-import { test, expect } from '../utils/stepTest';
+const { test, expect } = require('../utils/stepTest');
 
 const STUDIES_PATH = '/api/study-protocol/studies';
 
@@ -20,9 +19,9 @@ const REQUIRED_STUDY_KEYS = [
   'sites',
   'performance',
   'trend',
-] as const;
+];
 
-async function parseJsonBody(response: APIResponse) {
+async function parseJsonBody(response) {
   const contentType = response.headers()['content-type'] || '';
   const text = await response.text();
 
@@ -35,7 +34,7 @@ async function parseJsonBody(response: APIResponse) {
   }
 }
 
-async function assertStudiesSuccess(response: APIResponse, expectedPage: number, expectedLimit: number) {
+async function assertStudiesSuccess(response, expectedPage, expectedLimit) {
   expect(response.status()).toBe(200);
 
   const body = await parseJsonBody(response);
@@ -72,7 +71,7 @@ async function assertStudiesSuccess(response: APIResponse, expectedPage: number,
   return body;
 }
 
-function buildQuery(params: Record<string, string | number | Array<string>>) {
+function buildQuery(params) {
   const searchParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {
@@ -127,9 +126,9 @@ test.describe('Studies API happy paths', () => {
       if (typeof row.therapeuticArea === 'string') {
         const tokens = row.therapeuticArea
           .split(',')
-          .map((v: string) => v.trim())
+          .map((v) => v.trim())
           .filter(Boolean);
-        expect(tokens.some((token: string) => accepted.has(token))).toBeTruthy();
+        expect(tokens.some((token) => accepted.has(token))).toBeTruthy();
       }
     }
   });
@@ -182,8 +181,8 @@ test.describe('Studies API happy paths', () => {
     const body = await assertStudiesSuccess(response, 1, 10);
 
     const siteValues = body.items
-      .map((row: Record<string, unknown>) => row.sites)
-      .filter((v: unknown) => typeof v === 'number') as number[];
+      .map((row) => row.sites)
+      .filter((v) => typeof v === 'number');
 
     for (let i = 1; i < siteValues.length; i += 1) {
       expect(siteValues[i - 1]).toBeGreaterThanOrEqual(siteValues[i]);
