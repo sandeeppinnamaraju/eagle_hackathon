@@ -1,0 +1,11 @@
+flowchart LR
+    A["/api/db/version"]
+    B[get_conn_params]
+    C[(PostgreSQL)]
+    D["SELECT version()"]
+    E["version"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E

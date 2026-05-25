@@ -1,0 +1,10 @@
+flowchart LR
+    A["/on-track"]
+    B[get_on_track_percentage]
+    C[(public.studies)]
+    D["percentage, total_active_studies, on_track_studies_count"]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D

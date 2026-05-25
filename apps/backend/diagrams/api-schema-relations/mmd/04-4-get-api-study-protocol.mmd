@@ -1,0 +1,10 @@
+flowchart LR
+    A[Alias route]
+    B[get_studies]
+    C[(public.studies)]
+    D[StudiesPage]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D

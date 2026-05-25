@@ -1,0 +1,10 @@
+flowchart LR
+    A[Query params\nsearch, therapeuticArea, phase, status, portfolio, program, region]
+    B[get_kpi_details]
+    C[(public.studies)]
+    D["active_studies, on_track, off_track_or_at_risk, enrollment_vs_target, schedule_adherence, velocity_vs_plan"]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D

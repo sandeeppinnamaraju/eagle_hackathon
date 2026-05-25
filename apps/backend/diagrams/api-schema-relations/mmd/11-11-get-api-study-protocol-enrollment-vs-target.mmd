@@ -1,0 +1,10 @@
+flowchart LR
+    A["/enrollment-vs-target"]
+    B[get_enrollment_vs_target]
+    C[(public.studies)]
+    D["percentage, sum_actual, sum_target"]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D

@@ -1,0 +1,10 @@
+flowchart LR
+    A["/off-track-or-at-risk"]
+    B[get_off_track_or_at_risk_percentage]
+    C[(public.studies)]
+    D["percentage, total_active_studies, off_track_or_at_risk_studies_count"]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D

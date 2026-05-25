@@ -1,0 +1,9 @@
+flowchart LR
+    A["/api/health"]
+    B[get_conn_params]
+    C[(PostgreSQL connection)]
+    D["status: ok"]
+
+    A --> B
+    B --> C
+    C --> D

@@ -1,0 +1,10 @@
+flowchart LR
+    A["/velocity-vs-plan"]
+    B[get_average_velocity_vs_plan]
+    C[(public.studies)]
+    D[average_velocity_vs_plan]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D

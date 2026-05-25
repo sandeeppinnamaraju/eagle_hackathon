@@ -1,4 +1,5 @@
 import os
+import logging
 from enum import Enum
 from typing import List, Optional
 
@@ -9,6 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = FastAPI(title="PostgreSQL API", version="1.0.0")
 router = APIRouter()
@@ -21,17 +24,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-import urllib.parse
-encoded_password = urllib.parse.quote("FD_hack@357")
-print(encoded_password)
+
+# All DB connection parameters are loaded from environment variables (.env file in project root)
+
+def _normalize_pg_user(host: str | None, user: str | None) -> str | None:
+    """No normalization; use PGUSER as-is."""
+    return user
 
 def get_conn_params() -> dict:
+    logging.info("Fetching database connection parameters")
+    host = os.getenv("PGHOST")
+    user = _normalize_pg_user(host, os.getenv("PGUSER"))
     return {
-        "host": os.getenv("PGHOST", "eagle-postgre-poc.postgres.database.azure.com"),
-        "user": os.getenv("PGUSER", "eagle_admin"),  # or eagle_admin@eagle-postgre-poc
-        "port": int(os.getenv("PGPORT", "5432")),
-        "database": os.getenv("PGDATABASE", "postgres"),
-        "password": os.getenv("PGPASSWORD"),  # keep in env var only
+        "host": host,
+        "user": user,
+        "port": int(os.getenv("PGPORT")),
+        "database": os.getenv("PGDATABASE"),
+        "password": os.getenv("PGPASSWORD"),
         "sslmode": "require",
     }
 
@@ -148,13 +157,51 @@ def _normalize_status(status: Optional[str]) -> StudyStatus:
     return StudyStatus.FOLLOW_UP
 
 
+# Maps normalized phase labels to DB values
+_PHASE_TO_DB = {
+    "Ph I": "PHASE_I",
+    "Ph II": "PHASE_II",
+    "Ph III": "PHASE_III",
+    "Ph IV": "PHASE_IV",
+}
+
+
+def _normalize_phase_label(phase: Optional[str]) -> Optional[str]:
+    normalized = " ".join(
+        (phase or "")
+        .strip()
+        .upper()
+        .replace("_", " ")
+        .replace("-", " ")
+        .replace("PHASE", "PH")
+        .split()
+    )
+
+    if normalized in {"PH I", "PH 1"}:
+        return StudyPhase.PH_I.value
+    if normalized in {"PH II", "PH 2"}:
+        return StudyPhase.PH_II.value
+    if normalized in {"PH III", "PH 3"}:
+        return StudyPhase.PH_III.value
+    if normalized in {"PH IV", "PH 4"}:
+        return StudyPhase.PH_IV.value
+    return None
+
+
+def _phase_to_db_value(phase: Optional[str]) -> Optional[str]:
+    normalized_label = _normalize_phase_label(phase)
+    if not normalized_label:
+        return None
+    return _PHASE_TO_DB[normalized_label]
+
+
 def _normalize_phase(phase: Optional[str]) -> StudyPhase:
-    normalized = (phase or "").strip().upper().replace("PHASE", "PH").replace("  ", " ")
-    if normalized == "PH I":
+    normalized_label = _normalize_phase_label(phase)
+    if normalized_label == StudyPhase.PH_I.value:
         return StudyPhase.PH_I
-    if normalized == "PH II":
+    if normalized_label == StudyPhase.PH_II.value:
         return StudyPhase.PH_II
-    if normalized == "PH III":
+    if normalized_label == StudyPhase.PH_III.value:
         return StudyPhase.PH_III
     return StudyPhase.PH_IV
 
@@ -189,7 +236,7 @@ def _build_trend(actual: Optional[float], target: Optional[float]) -> List[float
 
 
 @router.get(
-    "/studies",
+    "/study-protocol/studies",
     response_model=StudiesPage,
     operation_id="getStudies",
     summary="Get paginated studies",
@@ -199,7 +246,7 @@ def _build_trend(actual: Optional[float], target: Optional[float]) -> List[float
     },
 )
 @router.get(
-    "/studies/",
+    "/study-protocol/",
     response_model=StudiesPage,
     operation_id="getStudiesTrailingSlash",
     summary="Get paginated studies",
@@ -226,13 +273,10 @@ def get_studies(
     if not parsed_page or not parsed_limit:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
-    allowed_phases = {item.value for item in StudyPhase}
     allowed_statuses = {item.value for item in StudyStatus}
     allowed_sort_by = set(SORT_COLUMN_MAP.keys())
     allowed_sort_order = {item.value for item in SortOrder}
 
-    if phase and phase not in allowed_phases:
-        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
     if status and status not in allowed_statuses:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
     if sortBy not in allowed_sort_by or sortOrder not in allowed_sort_order:
@@ -266,8 +310,11 @@ def get_studies(
             params.append(normalized_therapeutic_areas)
 
     if phase:
+        db_phase = _phase_to_db_value(phase)
+        if not db_phase:
+            return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
         where_clauses.append("phase = %s")
-        params.append(phase)
+        params.append(db_phase)
 
     if status:
         db_status = "FOLLOW UP" if status == StudyStatus.FOLLOW_UP.value else status
@@ -291,15 +338,18 @@ def get_studies(
     order_sql = sortOrder.upper()
     offset = (parsed_page - 1) * parsed_limit
 
-    count_query = f"SELECT COUNT(*) FROM public.study_data {where_sql}"
+    # Always add study_id as a secondary sort key for deterministic ordering
+    order_by_clause = f"{sort_sql} {order_sql}, study_id ASC"
+
+    count_query = f"SELECT COUNT(*) FROM public.studies {where_sql}"
     data_query = f"""
         SELECT
             study_id, phase, therapeutic_area, indication, title, portfolio, program,
             study_status, project_priority, target_enrollment, actual_enrollment,
             enrollment_plan_percent, countries_count, sites_count, performance_status
-        FROM public.study_data
+        FROM public.studies
         {where_sql}
-        ORDER BY {sort_sql} {order_sql}
+        ORDER BY {order_by_clause}
         LIMIT %s OFFSET %s
     """
 
@@ -404,52 +454,7 @@ def get_database_schema() -> dict:
                 )
 
     return schema_map
-
-@router.get("/study-summary")
-def get_study_summary(study_id: str = Query(..., description="Study ID")):
-    conn_params = get_conn_params()
-    try:
-        with psycopg2.connect(**conn_params) as conn:
-            with conn.cursor() as cursor:
-                # Fetch main study info
-                cursor.execute("""
-                    SELECT
-                        study_id, phase, therapeutic_area, indication, title, portfolio, program,
-                        study_status, project_priority, target_enrollment, actual_enrollment,
-                        enrollment_plan_percent, countries_count, sites_count, performance_status
-                    FROM public.study_data
-                    WHERE study_id = %s
-                """, (study_id,))
-                row = cursor.fetchone()
-                if not row:
-                    raise HTTPException(status_code=404, detail="Study not found")
-                (sid, phase, ta, indication, title, portfolio, program, status, priority,
-                 target, actual, percent_vs_plan, countries, sites, performance) = row
-
-                # Calculate trend (example: t(sites, actual_enrollment))
-                trend = f"t({sites}, {actual})"
-
-                return {
-                    "id": sid,
-                    "phase": phase,
-                    "therapeuticArea": ta,
-                    "indication": indication,
-                    "title": title,
-                    "portfolio": portfolio,
-                    "program": program,
-                    "status": status,
-                    "priority": priority,
-                    "target": target,
-                    "actual": actual,
-                    "percentVsPlan": percent_vs_plan,
-                    "countries": countries,
-                    "sites": sites,
-                    "performance": performance,
-                    "trend": trend
-                }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch study summary: {e}")
-    
+ 
 @router.get("/health")
 def health():
     try:
@@ -485,14 +490,14 @@ def db_schema():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch schema: {e}")
     
-@router.get("/studies/active/count")
+@router.get("/study-protocol/active-count")
 def get_active_studies_count():
     conn_params = get_conn_params()
     try:
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute("""
-                    SELECT COUNT(*) FROM public.study_data
+                    SELECT COUNT(*) FROM public.studies
                     WHERE study_status IN ('Active','RECRUITING','follow up')
                 """)
                 count = cursor.fetchone()[0]
@@ -501,7 +506,7 @@ def get_active_studies_count():
         raise HTTPException(status_code=500, detail=f"Failed to fetch active studies count: {e}")
 
 
-@router.get("/studies/on-track")
+@router.get("/study-protocol/on-track")
 def get_on_track_percentage():
     conn_params = get_conn_params()
     try:
@@ -517,7 +522,7 @@ def get_on_track_percentage():
                             WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
                               AND UPPER(COALESCE(performance_status, '')) = 'ON_TRACK'
                         ) AS on_track_studies_count
-                    FROM public.study_data
+                    FROM public.studies
                     """
                 )
                 total_active_studies, on_track_studies_count = cursor.fetchone()
@@ -536,7 +541,7 @@ def get_on_track_percentage():
         raise HTTPException(status_code=500, detail=f"Failed to fetch on-track percentage: {e}")
 
 
-@router.get("/studies/off-track-or-at-risk")
+@router.get("/study-protocol/off-track-or-at-risk")
 def get_off_track_or_at_risk_percentage():
     conn_params = get_conn_params()
     try:
@@ -552,7 +557,7 @@ def get_off_track_or_at_risk_percentage():
                             WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
                               AND UPPER(COALESCE(performance_status, '')) IN ('OFF_TRACK', 'AT_RISK')
                         ) AS off_track_or_at_risk_studies_count
-                    FROM public.study_data
+                    FROM public.studies
                     """
                 )
                 total_active_studies, off_track_or_at_risk_studies_count = cursor.fetchone()
@@ -571,7 +576,7 @@ def get_off_track_or_at_risk_percentage():
         raise HTTPException(status_code=500, detail=f"Failed to fetch off-track or at-risk percentage: {e}")
 
 
-@router.get("/studies/enrollment-vs-target")
+@router.get("/study-protocol/enrollment-vs-target")
 def get_enrollment_vs_target():
     conn_params = get_conn_params()
     try:
@@ -592,7 +597,7 @@ def get_enrollment_vs_target():
                             ),
                             0
                         ) AS total_target
-                    FROM public.study_data
+                    FROM public.studies
                     """
                 )
 
@@ -612,7 +617,7 @@ def get_enrollment_vs_target():
         raise HTTPException(status_code=500, detail=f"Failed to fetch enrollment vs target: {e}")
 
 
-@router.get("/studies/velocity-vs-plan")
+@router.get("/study-protocol/velocity-vs-plan")
 def get_average_velocity_vs_plan():
     conn_params = get_conn_params()
     try:
@@ -627,7 +632,7 @@ def get_average_velocity_vs_plan():
                             ),
                             0
                         ) AS average_velocity_vs_plan
-                    FROM public.study_data
+                    FROM public.studies
                     """
                 )
 
@@ -635,14 +640,68 @@ def get_average_velocity_vs_plan():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch average velocity vs plan: {e}")
 
-@router.get("/study/kpi-details")
-def get_kpi_details():
+@router.get("/study-protocol/kpi-details")
+def get_kpi_details(
+    search: Optional[str] = Query(None),
+    therapeuticArea: Optional[List[str]] = Query(None),
+    phase: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    portfolio: Optional[str] = Query(None),
+    program: Optional[str] = Query(None),
+    region: Optional[str] = Query(None),
+):
+    # Build the same WHERE clauses as get_studies so KPIs reflect filtered data
+    where_clauses = []
+    params = []
+
+    if search:
+        search_param = f"%{search.strip()}%"
+        where_clauses.append(
+            "(study_id ILIKE %s OR phase ILIKE %s OR therapeutic_area ILIKE %s OR "
+            "indication ILIKE %s OR title ILIKE %s OR portfolio ILIKE %s OR "
+            "program ILIKE %s OR study_status ILIKE %s OR project_priority ILIKE %s OR "
+            "performance_status ILIKE %s)"
+        )
+        params.extend([search_param] * 10)
+
+    if therapeuticArea:
+        normalized = [v.strip().lower() for v in therapeuticArea if v.strip()]
+        if normalized:
+            where_clauses.append("LOWER(therapeutic_area) = ANY(%s)")
+            params.append(normalized)
+
+    if phase:
+        db_phase = _phase_to_db_value(phase)
+        if not db_phase:
+            return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+        where_clauses.append("phase = %s")
+        params.append(db_phase)
+
+    if status:
+        db_status = "FOLLOW UP" if status == StudyStatus.FOLLOW_UP.value else status
+        where_clauses.append("UPPER(COALESCE(study_status, '')) = UPPER(%s)")
+        params.append(db_status)
+
+    if portfolio:
+        where_clauses.append("portfolio ILIKE %s")
+        params.append(f"%{portfolio.strip()}%")
+
+    if program:
+        where_clauses.append("program ILIKE %s")
+        params.append(f"%{program.strip()}%")
+
+    if region:
+        where_clauses.append("COALESCE(region, '') ILIKE %s")
+        params.append(f"%{region.strip()}%")
+
+    where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+
     conn_params = get_conn_params()
     try:
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    """
+                    f"""
                     SELECT
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
@@ -675,8 +734,10 @@ def get_kpi_details():
                             ), 0
                         ) AS average_velocity_vs_plan
 
-                    FROM public.study_data
-                    """
+                    FROM public.studies
+                    {where_sql}
+                    """,
+                    params,
                 )
 
                 (
@@ -718,11 +779,20 @@ def get_kpi_details():
                         "sum_actual": total_actual_enrollment,
                         "sum_target": total_target_enrollment,
                     },
+                    "schedule_adherence": {
+                        "percentage": enrollment_percentage,
+                        "actual_enrollment": total_actual_enrollment,
+                        "planned_enrollment": total_target_enrollment,
+                    },
                     "velocity_vs_plan": {
                         "average": round(float(average_velocity_vs_plan), 2),
                     },
                 }
     except Exception as e:
+        # Print password if authentication fails
+        if 'password authentication failed' in str(e).lower():
+            import logging
+            logging.error(f"Password authentication failed. PGUSER={conn_params.get('user')}, PGPASSWORD={conn_params.get('password')}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch KPI details: {e}")
 
 
