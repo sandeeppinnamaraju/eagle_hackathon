@@ -48,4 +48,7 @@ module.exports = defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
+  // Added generic browser configuration to ensure compatibility across all browsers
+  testIgnore: ['**/node_modules/**', '**/evidence/**'], // Ignore unnecessary folders
+  testMatch: '**/*.spec.js', // Match only .spec.js files for testing
 });
