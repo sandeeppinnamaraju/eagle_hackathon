@@ -5,6 +5,7 @@ This folder contains the FastAPI backend for FlightDeck. All routes are mounted 
 
 ## API Schema Relation Document
 - Full endpoint schema/data details: [API-SCHEMA-RELATION.md](API-SCHEMA-RELATION.md)
+- Versioning and migration approach: [API-VERSIONING.md](API-VERSIONING.md)
 
 ### Generate Diagrams In One Command
 - Script: [tools/export_api_schema_diagrams.py](tools/export_api_schema_diagrams.py)
@@ -132,26 +133,6 @@ flowchart LR
   D --> E
 ```
 
-### 7) GET `/api/db/schema`
-Purpose: Return database schema metadata.
-
-Schema relation diagram:
-```mermaid
-flowchart LR
-  A[/api/db/schema]
-  B[get_database_schema]
-  C[(information_schema.tables)]
-  D[(information_schema.columns)]
-  E[{schema_map}]
-
-  A --> B
-  B --> C
-  B --> D
-  C --> B
-  D --> B
-  B --> E
-```
-
 ### 8) GET `/api/study-protocol/active-count`
 Purpose: Count active studies.
 
@@ -259,10 +240,33 @@ flowchart LR
 ```bash
 pip install -r requirements.txt
 ```
-2. Run the backend.
+2. Run DB init checks (no schema/table creation).
 ```bash
-python src/main.py
+python -m eagle_hackathon.apps.backend.src.scripts.init_db
 ```
+3. Run the backend using the main entrypoint.
+```bash
+python -m uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000
+```
+
+## Testing
+Run pytest for backend checks:
+```bash
+pytest eagle_hackathon/apps/backend/tests -q
+```
+
+## API Versioning
+- Backward compatible routes: `/api/...`
+- Versioned routes: `/api/v1/...`
+
+Use `/api/v1` for new clients while keeping `/api` alive during migrations.
+
+## Migration And DB Init Strategy
+- No schema/table creation is executed by backend APIs.
+- Environment-ready DB init check scripts:
+  - `scripts/env/dev/init_db.ps1`
+  - `scripts/env/prod/init_db.ps1`
+- Shared configuration template: `config/.env.example`
 
 ## Notes
 - Set DB env vars before running: `PGHOST`, `PGUSER`, `PGPORT`, `PGDATABASE`, `PGPASSWORD`.

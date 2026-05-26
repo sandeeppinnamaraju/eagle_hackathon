@@ -1,48 +1,23 @@
-import os
 import logging
+import calendar
+import re
+from datetime import date
 from enum import Enum
+from functools import lru_cache
 from typing import List, Optional
 
 import psycopg2
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi import Query
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from eagle_hackathon.apps.backend.src.db.connection import get_conn_params
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = FastAPI(title="PostgreSQL API", version="1.0.0")
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# All DB connection parameters are loaded from environment variables (.env file in project root)
-
-def _normalize_pg_user(host: str | None, user: str | None) -> str | None:
-    """No normalization; use PGUSER as-is."""
-    return user
-
-def get_conn_params() -> dict:
-    logging.info("Fetching database connection parameters")
-    host = os.getenv("PGHOST")
-    user = _normalize_pg_user(host, os.getenv("PGUSER"))
-    return {
-        "host": host,
-        "user": user,
-        "port": int(os.getenv("PGPORT")),
-        "database": os.getenv("PGDATABASE"),
-        "password": os.getenv("PGPASSWORD"),
-        "sslmode": "require",
-    }
 
 
 class StudyPhase(str, Enum):
@@ -235,6 +210,193 @@ def _build_trend(actual: Optional[float], target: Optional[float]) -> List[float
     return [round(anchor * ratio, 2) for ratio in [0.15, 0.3, 0.5, 0.7, 0.85, 1.0]]
 
 
+def _apply_fpi_lpo_date_filters(
+    where_clauses: List[str],
+    params: List,
+    fpi_start_date: Optional[date],
+    fpi_end_date: Optional[date],
+    lpo_start_date: Optional[date],
+    lpo_end_date: Optional[date],
+    fpi_actual_column: Optional[str],
+    fpi_planned_column: Optional[str],
+    lpo_actual_column: Optional[str],
+    lpo_planned_column: Optional[str],
+) -> None:
+    if fpi_start_date and fpi_actual_column:
+        where_clauses.append(f"{fpi_actual_column} >= %s")
+        params.append(fpi_start_date)
+
+    if fpi_end_date:
+        if fpi_actual_column:
+            where_clauses.append(f"{fpi_actual_column} <= %s")
+            params.append(fpi_end_date)
+        if fpi_planned_column and fpi_planned_column != fpi_actual_column:
+            where_clauses.append(f"{fpi_planned_column} <= %s")
+            params.append(fpi_end_date)
+
+    if lpo_start_date and lpo_actual_column:
+        where_clauses.append(f"{lpo_actual_column} >= %s")
+        params.append(lpo_start_date)
+
+    if lpo_end_date and lpo_planned_column:
+        where_clauses.append(f"{lpo_planned_column} <= %s")
+        params.append(lpo_end_date)
+
+
+def _parse_flexible_date(raw_value: Optional[str], *, is_end: bool) -> Optional[date]:
+    if raw_value is None:
+        return None
+
+    raw = raw_value.strip()
+    if not raw:
+        return None
+
+    # Keep ISO format support for existing clients.
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw):
+        return date.fromisoformat(raw)
+
+    # YYYY -> first or last day of year
+    if re.fullmatch(r"\d{4}", raw):
+        year = int(raw)
+        return date(year, 12, 31) if is_end else date(year, 1, 1)
+
+    compact = raw.replace("-", "").replace("/", "")
+
+    # MMYYYY -> first or last day of month
+    if re.fullmatch(r"\d{2}\d{4}", compact):
+        month = int(compact[:2])
+        year = int(compact[2:])
+        if 1 <= month <= 12 and 1900 <= year <= 2100:
+            if is_end:
+                return date(year, month, calendar.monthrange(year, month)[1])
+            return date(year, month, 1)
+
+    # DDMMYY -> exact day, year interpreted as 20YY
+    if re.fullmatch(r"\d{6}", compact):
+        day = int(compact[:2])
+        month = int(compact[2:4])
+        yy = int(compact[4:])
+        year = 2000 + yy
+        return date(year, month, day)
+
+    raise ValueError("Invalid date format")
+
+
+@lru_cache(maxsize=1)
+def _get_studies_column_names() -> set[str]:
+    conn_params = get_conn_params()
+    with psycopg2.connect(**conn_params) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_schema = 'public' AND table_name = 'studies'
+                """
+            )
+            return {row[0] for row in cursor.fetchall()}
+
+
+def _resolve_date_filter_columns() -> tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
+    columns = _get_studies_column_names()
+
+    fpi_planned = "planned_fpi_date" if "planned_fpi_date" in columns else None
+    lpo_planned = "planned_lpo_date" if "planned_lpo_date" in columns else None
+
+    fpi_actual = "actual_fpi_date" if "actual_fpi_date" in columns else fpi_planned
+    lpo_actual = "actual_lpo_date" if "actual_lpo_date" in columns else lpo_planned
+
+    return fpi_actual, fpi_planned, lpo_actual, lpo_planned
+
+
+def _build_common_study_filters(
+    search: Optional[str],
+    therapeutic_area: Optional[List[str]],
+    phase: Optional[str],
+    status: Optional[str],
+    portfolio: Optional[str],
+    program: Optional[str],
+    region: Optional[str],
+    fpi_start_date: Optional[date],
+    fpi_end_date: Optional[date],
+    lpo_start_date: Optional[date],
+    lpo_end_date: Optional[date],
+) -> tuple[List[str], List]:
+    where_clauses: List[str] = []
+    params: List = []
+
+    if search:
+        search_param = f"%{search.strip()}%"
+        where_clauses.append(
+            "("
+            "study_id ILIKE %s OR "
+            "phase ILIKE %s OR "
+            "therapeutic_area ILIKE %s OR "
+            "indication ILIKE %s OR "
+            "title ILIKE %s OR "
+            "portfolio ILIKE %s OR "
+            "program ILIKE %s OR "
+            "study_status ILIKE %s OR "
+            "project_priority ILIKE %s OR "
+            "performance_status ILIKE %s"
+            ")"
+        )
+        params.extend([search_param] * 10)
+
+    if therapeutic_area:
+        normalized_values = [value.strip().lower() for value in therapeutic_area if value.strip()]
+        if normalized_values:
+            where_clauses.append("LOWER(therapeutic_area) = ANY(%s)")
+            params.append(normalized_values)
+
+    if phase:
+        db_phase = _phase_to_db_value(phase)
+        if not db_phase:
+            raise ValueError("Invalid query parameter")
+        where_clauses.append("phase = %s")
+        params.append(db_phase)
+
+    if status:
+        db_status = "FOLLOW UP" if status == StudyStatus.FOLLOW_UP.value else status
+        where_clauses.append("UPPER(COALESCE(study_status, '')) = UPPER(%s)")
+        params.append(db_status)
+
+    if portfolio:
+        where_clauses.append("portfolio ILIKE %s")
+        params.append(f"%{portfolio.strip()}%")
+
+    if program:
+        where_clauses.append("program ILIKE %s")
+        params.append(f"%{program.strip()}%")
+
+    if region:
+        where_clauses.append("COALESCE(region, '') ILIKE %s")
+        params.append(f"%{region.strip()}%")
+
+    if any([fpi_start_date, fpi_end_date, lpo_start_date, lpo_end_date]):
+        fpi_actual_column, fpi_planned_column, lpo_actual_column, lpo_planned_column = _resolve_date_filter_columns()
+    else:
+        fpi_actual_column = None
+        fpi_planned_column = None
+        lpo_actual_column = None
+        lpo_planned_column = None
+
+    _apply_fpi_lpo_date_filters(
+        where_clauses,
+        params,
+        fpi_start_date,
+        fpi_end_date,
+        lpo_start_date,
+        lpo_end_date,
+        fpi_actual_column,
+        fpi_planned_column,
+        lpo_actual_column,
+        lpo_planned_column,
+    )
+
+    return where_clauses, params
+
+
 @router.get(
     "/study-protocol/studies",
     response_model=StudiesPage,
@@ -256,8 +418,9 @@ def get_studies(
     page: str = Query(..., description="1-based page index"),
     limit: str = Query(..., description="Number of records per page"),
     search: Optional[str] = Query(None, description="Free-text search across study fields"),
-    therapeuticArea: Optional[List[str]] = Query(
+    therapeutic_area: Optional[List[str]] = Query(
         None,
+        alias="therapeuticArea",
         description="Repeat this query param for multi-select values.",
     ),
     phase: Optional[str] = Query(None),
@@ -265,8 +428,12 @@ def get_studies(
     portfolio: Optional[str] = Query(None),
     program: Optional[str] = Query(None),
     region: Optional[str] = Query(None),
-    sortBy: Optional[str] = Query(SortBy.ID.value),
-    sortOrder: Optional[str] = Query(SortOrder.ASC.value),
+    fpi_start_date_raw: Optional[str] = Query(None, alias="fpiStartDate", description="Apply on actual_fpi_date >= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    fpi_end_date_raw: Optional[str] = Query(None, alias="fpiEndDate", description="Apply on actual_fpi_date <= value and planned_fpi_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    lpo_start_date_raw: Optional[str] = Query(None, alias="lpoStartDate", description="Apply on actual_lpo_date >= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    lpo_end_date_raw: Optional[str] = Query(None, alias="lpoEndDate", description="Apply on planned_lpo_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    sort_by: Optional[str] = Query(SortBy.ID.value, alias="sortBy"),
+    sort_order: Optional[str] = Query(SortOrder.ASC.value, alias="sortOrder"),
 ):
     parsed_page = _parse_positive_int(page)
     parsed_limit = _parse_positive_int(limit)
@@ -279,63 +446,40 @@ def get_studies(
 
     if status and status not in allowed_statuses:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
-    if sortBy not in allowed_sort_by or sortOrder not in allowed_sort_order:
+    if sort_by not in allowed_sort_by or sort_order not in allowed_sort_order:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
-    where_clauses = []
-    params = []
+    try:
+        parsed_fpi_start_date = _parse_flexible_date(fpi_start_date_raw, is_end=False)
+        parsed_fpi_end_date = _parse_flexible_date(fpi_end_date_raw, is_end=True)
+        parsed_lpo_start_date = _parse_flexible_date(lpo_start_date_raw, is_end=False)
+        parsed_lpo_end_date = _parse_flexible_date(lpo_end_date_raw, is_end=True)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
-    if search:
-        search_param = f"%{search.strip()}%"
-        where_clauses.append(
-            "(" 
-            "study_id ILIKE %s OR "
-            "phase ILIKE %s OR "
-            "therapeutic_area ILIKE %s OR "
-            "indication ILIKE %s OR "
-            "title ILIKE %s OR "
-            "portfolio ILIKE %s OR "
-            "program ILIKE %s OR "
-            "study_status ILIKE %s OR "
-            "project_priority ILIKE %s OR "
-            "performance_status ILIKE %s"
-            ")"
+    try:
+        where_clauses, params = _build_common_study_filters(
+            search=search,
+            therapeutic_area=therapeutic_area,
+            phase=phase,
+            status=status,
+            portfolio=portfolio,
+            program=program,
+            region=region,
+            fpi_start_date=parsed_fpi_start_date,
+            fpi_end_date=parsed_fpi_end_date,
+            lpo_start_date=parsed_lpo_start_date,
+            lpo_end_date=parsed_lpo_end_date,
         )
-        params.extend([search_param] * 10)
-
-    if therapeuticArea:
-        normalized_therapeutic_areas = [value.strip().lower() for value in therapeuticArea if value.strip()]
-        if normalized_therapeutic_areas:
-            where_clauses.append("LOWER(therapeutic_area) = ANY(%s)")
-            params.append(normalized_therapeutic_areas)
-
-    if phase:
-        db_phase = _phase_to_db_value(phase)
-        if not db_phase:
-            return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
-        where_clauses.append("phase = %s")
-        params.append(db_phase)
-
-    if status:
-        db_status = "FOLLOW UP" if status == StudyStatus.FOLLOW_UP.value else status
-        where_clauses.append("UPPER(COALESCE(study_status, '')) = UPPER(%s)")
-        params.append(db_status)
-
-    if portfolio:
-        where_clauses.append("portfolio ILIKE %s")
-        params.append(f"%{portfolio.strip()}%")
-
-    if program:
-        where_clauses.append("program ILIKE %s")
-        params.append(f"%{program.strip()}%")
-
-    if region:
-        where_clauses.append("COALESCE(region, '') ILIKE %s")
-        params.append(f"%{region.strip()}%")
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+    except Exception:
+        logger.exception("Failed to build study filters")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
     where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
-    sort_sql = SORT_COLUMN_MAP[sortBy]
-    order_sql = sortOrder.upper()
+    sort_sql = SORT_COLUMN_MAP[sort_by]
+    order_sql = sort_order.upper()
     offset = (parsed_page - 1) * parsed_limit
 
     # Always add study_id as a secondary sort key for deterministic ordering
@@ -414,47 +558,10 @@ def get_studies(
     except ValueError:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
     except Exception:
+        logger.exception("Failed to fetch studies")
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 
-def get_database_schema() -> dict:
-    conn_params = get_conn_params()
-    if not conn_params["password"]:
-        raise ValueError("PGPASSWORD is not set.")
-
-    schema_map = {}
-
-    with psycopg2.connect(**conn_params) as conn:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT
-                    c.table_schema,
-                    c.table_name,
-                    c.column_name,
-                    c.data_type,
-                    c.is_nullable
-                FROM information_schema.columns c
-                JOIN information_schema.tables t
-                  ON c.table_schema = t.table_schema
-                 AND c.table_name = t.table_name
-                WHERE t.table_type = 'BASE TABLE'
-                  AND c.table_schema NOT IN ('pg_catalog', 'information_schema')
-                ORDER BY c.table_schema, c.table_name, c.ordinal_position;
-                """
-            )
-
-            for table_schema, table_name, column_name, data_type, is_nullable in cursor.fetchall():
-                schema_map.setdefault(table_schema, {}).setdefault(table_name, []).append(
-                    {
-                        "column": column_name,
-                        "data_type": data_type,
-                        "nullable": (is_nullable == "YES"),
-                    }
-                )
-
-    return schema_map
- 
 @router.get("/health")
 def health():
     try:
@@ -464,8 +571,9 @@ def health():
         with psycopg2.connect(**conn_params):
             pass
         return {"status": "ok"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database health check failed: {e}")
+    except Exception:
+        logger.exception("Database health check failed")
+        raise HTTPException(status_code=500, detail="Database health check failed")
 
 
 @router.get("/db/version")
@@ -480,16 +588,10 @@ def db_version():
                 cursor.execute("SELECT version();")
                 version = cursor.fetchone()[0]
         return {"version": version}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch DB version: {e}")
+    except Exception:
+        logger.exception("Failed to fetch DB version")
+        raise HTTPException(status_code=500, detail="Failed to fetch DB version")
 
-@router.get("/db/schema")
-def db_schema():
-    try:
-        return get_database_schema()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch schema: {e}")
-    
 @router.get("/study-protocol/active-count")
 def get_active_studies_count():
     conn_params = get_conn_params()
@@ -502,8 +604,9 @@ def get_active_studies_count():
                 """)
                 count = cursor.fetchone()[0]
                 return {"active_studies_count": count}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch active studies count: {e}")
+    except Exception:
+        logger.exception("Failed to fetch active studies count")
+        raise HTTPException(status_code=500, detail="Failed to fetch active studies count")
 
 
 @router.get("/study-protocol/on-track")
@@ -537,8 +640,9 @@ def get_on_track_percentage():
                     "total_active_studies": total_active_studies,
                     "on_track_studies_count": on_track_studies_count,
                 }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch on-track percentage: {e}")
+    except Exception:
+        logger.exception("Failed to fetch on-track percentage")
+        raise HTTPException(status_code=500, detail="Failed to fetch on-track percentage")
 
 
 @router.get("/study-protocol/off-track-or-at-risk")
@@ -572,8 +676,9 @@ def get_off_track_or_at_risk_percentage():
                     "total_active_studies": total_active_studies,
                     "off_track_or_at_risk_studies_count": off_track_or_at_risk_studies_count,
                 }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch off-track or at-risk percentage: {e}")
+    except Exception:
+        logger.exception("Failed to fetch off-track or at-risk percentage")
+        raise HTTPException(status_code=500, detail="Failed to fetch off-track or at-risk percentage")
 
 
 @router.get("/study-protocol/enrollment-vs-target")
@@ -613,8 +718,9 @@ def get_enrollment_vs_target():
                     "sum_actual": total_actual,
                     "sum_target": total_target,
                 }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch enrollment vs target: {e}")
+    except Exception:
+        logger.exception("Failed to fetch enrollment vs target")
+        raise HTTPException(status_code=500, detail="Failed to fetch enrollment vs target")
 
 
 @router.get("/study-protocol/velocity-vs-plan")
@@ -637,62 +743,52 @@ def get_average_velocity_vs_plan():
                 )
 
                 average_velocity_vs_plan = round(float(cursor.fetchone()[0]), 2)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch average velocity vs plan: {e}")
+                return {"average_velocity_vs_plan": average_velocity_vs_plan}
+    except Exception:
+        logger.exception("Failed to fetch average velocity vs plan")
+        raise HTTPException(status_code=500, detail="Failed to fetch average velocity vs plan")
 
 @router.get("/study-protocol/kpi-details")
 def get_kpi_details(
     search: Optional[str] = Query(None),
-    therapeuticArea: Optional[List[str]] = Query(None),
+    therapeutic_area: Optional[List[str]] = Query(None, alias="therapeuticArea"),
     phase: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
     portfolio: Optional[str] = Query(None),
     program: Optional[str] = Query(None),
     region: Optional[str] = Query(None),
+    fpi_start_date_raw: Optional[str] = Query(None, alias="fpiStartDate", description="Apply on actual_fpi_date >= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    fpi_end_date_raw: Optional[str] = Query(None, alias="fpiEndDate", description="Apply on actual_fpi_date <= value and planned_fpi_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    lpo_start_date_raw: Optional[str] = Query(None, alias="lpoStartDate", description="Apply on actual_lpo_date >= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
+    lpo_end_date_raw: Optional[str] = Query(None, alias="lpoEndDate", description="Apply on planned_lpo_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
 ):
-    # Build the same WHERE clauses as get_studies so KPIs reflect filtered data
-    where_clauses = []
-    params = []
+    try:
+        parsed_fpi_start_date = _parse_flexible_date(fpi_start_date_raw, is_end=False)
+        parsed_fpi_end_date = _parse_flexible_date(fpi_end_date_raw, is_end=True)
+        parsed_lpo_start_date = _parse_flexible_date(lpo_start_date_raw, is_end=False)
+        parsed_lpo_end_date = _parse_flexible_date(lpo_end_date_raw, is_end=True)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
-    if search:
-        search_param = f"%{search.strip()}%"
-        where_clauses.append(
-            "(study_id ILIKE %s OR phase ILIKE %s OR therapeutic_area ILIKE %s OR "
-            "indication ILIKE %s OR title ILIKE %s OR portfolio ILIKE %s OR "
-            "program ILIKE %s OR study_status ILIKE %s OR project_priority ILIKE %s OR "
-            "performance_status ILIKE %s)"
+    try:
+        where_clauses, params = _build_common_study_filters(
+            search=search,
+            therapeutic_area=therapeutic_area,
+            phase=phase,
+            status=status,
+            portfolio=portfolio,
+            program=program,
+            region=region,
+            fpi_start_date=parsed_fpi_start_date,
+            fpi_end_date=parsed_fpi_end_date,
+            lpo_start_date=parsed_lpo_start_date,
+            lpo_end_date=parsed_lpo_end_date,
         )
-        params.extend([search_param] * 10)
-
-    if therapeuticArea:
-        normalized = [v.strip().lower() for v in therapeuticArea if v.strip()]
-        if normalized:
-            where_clauses.append("LOWER(therapeutic_area) = ANY(%s)")
-            params.append(normalized)
-
-    if phase:
-        db_phase = _phase_to_db_value(phase)
-        if not db_phase:
-            return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
-        where_clauses.append("phase = %s")
-        params.append(db_phase)
-
-    if status:
-        db_status = "FOLLOW UP" if status == StudyStatus.FOLLOW_UP.value else status
-        where_clauses.append("UPPER(COALESCE(study_status, '')) = UPPER(%s)")
-        params.append(db_status)
-
-    if portfolio:
-        where_clauses.append("portfolio ILIKE %s")
-        params.append(f"%{portfolio.strip()}%")
-
-    if program:
-        where_clauses.append("program ILIKE %s")
-        params.append(f"%{program.strip()}%")
-
-    if region:
-        where_clauses.append("COALESCE(region, '') ILIKE %s")
-        params.append(f"%{region.strip()}%")
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+    except Exception:
+        logger.exception("Failed to build KPI filters")
+        raise HTTPException(status_code=500, detail="Failed to build KPI filters")
 
     where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
 
@@ -788,12 +884,6 @@ def get_kpi_details(
                         "average": round(float(average_velocity_vs_plan), 2),
                     },
                 }
-    except Exception as e:
-        # Print password if authentication fails
-        if 'password authentication failed' in str(e).lower():
-            import logging
-            logging.error(f"Password authentication failed. PGUSER={conn_params.get('user')}, PGPASSWORD={conn_params.get('password')}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch KPI details: {e}")
-
-
-app.include_router(router, prefix="/api")
+    except Exception:
+        logger.exception("Failed to fetch KPI details")
+        raise HTTPException(status_code=500, detail="Failed to fetch KPI details")

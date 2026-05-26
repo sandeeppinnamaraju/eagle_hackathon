@@ -101,25 +101,6 @@ flowchart LR
     D --> E
 ```
 
-## 7) GET `/api/db/schema`
-Purpose: Return database schema metadata.
-
-```mermaid
-flowchart LR
-    A["/api/db/schema"]
-    B[get_database_schema]
-    C[(information_schema.tables)]
-    D[(information_schema.columns)]
-    E["schema_map"]
-
-    A --> B
-    B --> C
-    B --> D
-    C --> B
-    D --> B
-    B --> E
-```
-
 ## 8) GET `/api/study-protocol/active-count`
 Purpose: Count active studies.
 

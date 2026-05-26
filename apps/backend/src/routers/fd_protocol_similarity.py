@@ -18,8 +18,7 @@ from eagle_hackathon.apps.backend.services.protocol_service import get_protocol_
 # =========================================
 
 router = APIRouter()
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # =========================================
 # SEARCH PROTOCOLS API
@@ -31,7 +30,7 @@ def search_protocols(
     request: ProtocolSearchRequest
 ):
 
-    logging.info("Received search-protocols request")
+    logger.info("Received search-protocols request")
 
     # =====================================
     # BUILD FULL SEARCH QUERY
@@ -64,13 +63,13 @@ def search_protocols(
 
         )
     except SQLAlchemyError:
-        logging.exception("Database error while searching protocols")
+        logger.exception("Database error while searching protocols")
         raise HTTPException(
             status_code=503,
             detail="Protocol search is temporarily unavailable due to a database connectivity issue."
         )
     except Exception:
-        logging.exception("Unexpected error while searching protocols")
+        logger.exception("Unexpected error while searching protocols")
         raise HTTPException(
             status_code=500,
             detail="Unexpected server error while searching protocols."
@@ -120,13 +119,13 @@ def get_protocol_detail(
             protocol_id
         )
     except SQLAlchemyError:
-        logging.exception("Database error while fetching protocol detail")
+        logger.exception("Database error while fetching protocol detail")
         raise HTTPException(
             status_code=503,
             detail="Protocol detail is temporarily unavailable due to a database connectivity issue."
         )
     except Exception:
-        logging.exception("Unexpected error while fetching protocol detail")
+        logger.exception("Unexpected error while fetching protocol detail")
         raise HTTPException(
             status_code=500,
             detail="Unexpected server error while fetching protocol detail."
