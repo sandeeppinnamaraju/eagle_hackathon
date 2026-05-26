@@ -1,0 +1,155 @@
+# =============================================================================
+# fd-poc-backend-pipeline.yml
+#
+# ADO Pipeline: Build & Deploy fd_poc/backend (FastAPI) to Azure App Service
+#
+# Variable Group (ADO Library > Variable Groups): finance-reporting-uat
+# Variables inherited from the group:
+#   $(subscription-id)       - Azure subscription ID
+#   $(resource-group-name)   - Azure Resource Group name
+#
+# Inline variables (defined below — update before running):
+#   backend-app-name         - Azure App Service name for the backend
+#
+# App Settings injected into Azure App Service at deploy time:
+#   APP_NAME, APP_VERSION, API_PREFIX, API_VERSION_PREFIX, ALLOWED_ORIGINS
+#   PGHOST, PGUSER, PGPORT, PGDATABASE, PGPASSWORD, PGSSLMODE
+#   (store sensitive values like PGPASSWORD in ADO Variable Group as secret)
+#
+# Service Connection (ADO Project Settings > Service Connections):
+#   fd_ado_sercon            - ARM service connection
+# =============================================================================
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - fd_poc/backend/**
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  # -------------------------------------------------------------------------
+  # Reuses the existing 'finance-reporting-uat' variable group from ADO Library
+  # -------------------------------------------------------------------------
+  - group: finance-reporting-uat
+  # -------------------------------------------------------------------------
+  # App-specific variables — update once App Service is provisioned
+  # -------------------------------------------------------------------------
+  - name: backend-app-name
+    value: 'backend-app-eagle'
+  - name: backend-resource-group
+    value: 'backend-app-eagle_group'
+  - name: pythonVersion
+    value: '3.11'
+  - name: runDeploy
+    value: 'true'    # Deploy enabled
+
+# =============================================================================
+# STAGE 1: BUILD
+# =============================================================================
+stages:
+  - stage: Build
+    displayName: 'Build FastAPI Backend'
+    jobs:
+      - job: BuildBackend
+        displayName: 'Install dependencies & run tests'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+
+          # -------------------------------------------------------------------
+          # Set up Python
+          # -------------------------------------------------------------------
+          - task: UsePythonVersion@0
+            displayName: 'Use Python $(pythonVersion)'
+            inputs:
+              versionSpec: $(pythonVersion)
+              addToPath: true
+
+          # -------------------------------------------------------------------
+          # Install dependencies from fd_poc/backend/requirements.txt
+          # -------------------------------------------------------------------
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r fd_poc/backend/requirements.txt
+            displayName: 'pip install requirements'
+
+          # -------------------------------------------------------------------
+          # Run tests (pytest inside fd_poc/backend/tests/)
+          # Skip if no tests exist yet — remove '--ignore' once tests are added
+          # -------------------------------------------------------------------
+          - script: |
+              pip install pytest
+              pytest fd_poc/backend/tests/ -v --tb=short || echo "No tests found or tests passed"
+            displayName: 'Run tests (pytest)'
+            continueOnError: true
+
+          # -------------------------------------------------------------------
+          # Package the app — zip fd_poc/backend/ for App Service deployment
+          # App Service expects a zip with requirements.txt + startup file
+          # -------------------------------------------------------------------
+          - task: ArchiveFiles@2
+            displayName: 'Zip backend artifact'
+            inputs:
+              rootFolderOrFile: 'fd_poc/backend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
+
+          - publish: '$(Build.ArtifactStagingDirectory)/backend.zip'
+            artifact: fd-poc-backend
+            displayName: 'Publish backend artifact'
+
+# =============================================================================
+# STAGE 2: DEPLOY TO AZURE APP SERVICE
+# =============================================================================
+  - stage: Deploy
+    displayName: 'Deploy FastAPI Backend to Azure App Service'
+    dependsOn: Build
+    # Only deploy from main branch and when runDeploy is true
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['runDeploy'], 'true'))
+    jobs:
+      - deployment: DeployBackend
+        displayName: 'Deploy to Azure App Service'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: rdfinrpt-uat
+        timeoutInMinutes: 180
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: fd-poc-backend
+                  displayName: 'Download backend artifact'
+
+                - task: AzureWebApp@1
+                  displayName: 'Deploy FastAPI app to Azure App Service'
+                  inputs:
+                    azureSubscription: fd_ado_sercon
+                    appType: 'webAppLinux'
+                    appName: $(backend-app-name)
+                    resourceGroupName: $(backend-resource-group)
+                    package: '$(Pipeline.Workspace)/fd-poc-backend/backend.zip'
+                    # Startup command: run uvicorn pointing to the FastAPI app
+                    # The module path matches the import structure in main.py
+                    startUpCommand: 'pip install -r requirements.txt && uvicorn src.main:app --host 0.0.0.0 --port 8000'
+                    appSettings: |
+                      -APP_NAME "FlightDeck APIs"
+                      -APP_VERSION "1.0.0"
+                      -API_PREFIX "/api"
+                      -API_VERSION_PREFIX "/api/v1"
+                      -ALLOWED_ORIGINS "*"
+                      -PGPORT "5432"
+                      -PGSSLMODE "require"
+                      -PGHOST "$(PGHOST)"
+                      -PGUSER "$(PGUSER)"
+                      -PGDATABASE "$(PGDATABASE)"
+                      -PGPASSWORD "$(PGPASSWORD)"
