@@ -49,24 +49,8 @@ function PortfolioPage() {
       portfolio: filters.portfolio,
       program: filters.program,
       region: filters.region,
-      fpiStartDate: filters.fpiFrom,
-      fpiEndDate: filters.fpiTo,
-      lpoStartDate: filters.lpoFrom,
-      lpoEndDate: filters.lpoTo,
     }),
-    [
-      filters.areas,
-      filters.fpiFrom,
-      filters.fpiTo,
-      filters.lpoFrom,
-      filters.lpoTo,
-      filters.phase,
-      filters.portfolio,
-      filters.program,
-      filters.region,
-      filters.search,
-      filters.status,
-    ],
+    [filters.areas, filters.phase, filters.portfolio, filters.program, filters.region, filters.search, filters.status],
   );
 
   useEffect(() => {
@@ -81,24 +65,8 @@ function PortfolioPage() {
       portfolio: filters.portfolio,
       program: filters.program,
       region: filters.region,
-      fpiStartDate: filters.fpiFrom,
-      fpiEndDate: filters.fpiTo,
-      lpoStartDate: filters.lpoFrom,
-      lpoEndDate: filters.lpoTo,
     });
-  }, [
-    filters.areas,
-    filters.fpiFrom,
-    filters.fpiTo,
-    filters.lpoFrom,
-    filters.lpoTo,
-    filters.phase,
-    filters.portfolio,
-    filters.program,
-    filters.region,
-    filters.status,
-    setApiFilters,
-  ]);
+  }, [filters.areas, filters.phase, filters.portfolio, filters.program, filters.region, filters.status, setApiFilters]);
 
   const { data: kpiData } = useKpiDetails(kpiQuery);
 
@@ -128,22 +96,7 @@ function PortfolioPage() {
 
   const usingFallbackStudies = loadedStudies.length === 0 && studiesError != null;
   const baseStudies = usingFallbackStudies ? fallbackSortedStudies : loadedStudies;
-  const clientFilters = useMemo(() => {
-    // API results are already filtered by date query params.
-    // Re-applying fallback-derived date logic can incorrectly hide valid API rows.
-    if (!usingFallbackStudies) {
-      return {
-        ...filters,
-        fpiFrom: null,
-        fpiTo: null,
-        lpoFrom: null,
-        lpoTo: null,
-      };
-    }
-
-    return filters;
-  }, [filters, usingFallbackStudies]);
-  const filtered = useMemo(() => filterStudies(baseStudies, clientFilters), [baseStudies, clientFilters]);
+  const filtered = useMemo(() => filterStudies(baseStudies, filters), [baseStudies, filters]);
   const totalStudies = usingFallbackStudies ? fallbackSortedStudies.length : studiesTotal;
   const hasDateFilters = Boolean(filters.fpiFrom || filters.fpiTo || filters.lpoFrom || filters.lpoTo);
   const cardsResetKey = JSON.stringify({
