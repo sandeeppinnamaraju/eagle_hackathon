@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import { Sparkline } from "./sparkline";
-import { HelpCircle, FileText } from "lucide-react";
 
 export type KpiCardAccent = "primary" | "success" | "warning" | "danger" | "info" | "violet" | "teal";
 
@@ -46,20 +45,14 @@ export function KpiCard({ label, value, sub, accent, spark }: Props) {
   return (
     <div
       className={cn(
-        "relative rounded-lg border border-l-4 bg-card p-4 shadow-card",
+        "relative flex flex-col rounded-lg border border-l-4 bg-card p-4 shadow-card",
         borderMap[accent],
         tintMap[accent],
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {label}
-        </p>
-        <div className="flex items-center gap-1 text-muted-foreground/60">
-          <HelpCircle className="h-3.5 w-3.5" />
-          <FileText className="h-3.5 w-3.5" />
-        </div>
-      </div>
+      <p className="min-h-[2.25rem] text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">{value}</p>
       {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
       {spark && (

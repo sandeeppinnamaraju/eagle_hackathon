@@ -282,7 +282,7 @@ function StudyOverviewPage() {
     return (
       <main className="mx-auto max-w-[1600px] px-6 py-12 text-center">
         <p className="text-muted-foreground">Study not found.</p>
-        <Link to="/studies" className="mt-4 inline-block text-primary hover:underline">← Back to Studies</Link>
+        <Link to="/portfolio" className="mt-4 inline-block text-primary hover:underline">← Back to Study Portfolio</Link>
       </main>
     );
   }
@@ -298,8 +298,8 @@ function StudyOverviewPage() {
 
   return (
     <main className="mx-auto max-w-[1600px] px-6 py-6">
-      <Link to="/studies" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
-        <ArrowLeft className="h-4 w-4" /> Back to Studies
+      <Link to="/portfolio" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
+        <ArrowLeft className="h-4 w-4" /> Back to Study Portfolio
       </Link>
 
       <section className="mt-4 rounded-xl border border-border bg-card p-6 shadow-card border-l-4 border-l-success">
@@ -339,8 +339,8 @@ function StudyOverviewPage() {
           <MetaField label="Target Enrollment" value={String(detail.targetEnrollment)} />
           <MetaField label="Planned FPI" value={detail.plannedFPI} />
           <MetaField label="Actual FPI" value={detail.actualFPI} />
-          <MetaField label="Planned LPI" value={detail.plannedLPI} />
-          <MetaField label="Forecast LPI" value={detail.forecastLPI} />
+          <MetaField label="Planned LPO" value={detail.plannedLPI} />
+          <MetaField label="Forecast LPO" value={detail.forecastLPI} />
         </div>
       </section>
 

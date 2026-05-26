@@ -1,10 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
+import { Home, LayoutGrid, Search, type LucideIcon } from "lucide-react";
 
-const tabs = [
-  { to: "/", label: "Study Portfolio" },
-  { to: "/studies", label: "Study Overview" },
-  { to: "/protocol-search", label: "Protocol Search" },
-] as const;
+const tabs: { to: "/" | "/portfolio" | "/protocol-search"; label: string; icon: LucideIcon }[] = [
+  { to: "/", label: "Home", icon: Home },
+  { to: "/portfolio", label: "Study Portfolio", icon: LayoutGrid },
+  { to: "/protocol-search", label: "Protocol Search", icon: Search },
+];
 
 export function TopNav() {
   const { pathname } = useLocation();
@@ -16,21 +17,20 @@ export function TopNav() {
         </Link>
         <nav className="flex items-center gap-1">
           {tabs.map((t) => {
-            const active =
-              t.to === "/" ? pathname === "/"
-              : t.label === "Study Overview" ? pathname.startsWith("/studies")
-              : pathname.startsWith(t.to);
+            const active = t.to === "/" ? pathname === "/" : pathname.startsWith(t.to);
+            const Icon = t.icon;
             return (
               <Link
                 key={t.to}
                 to={t.to}
                 className={
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors " +
+                  "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors " +
                   (active
                     ? "bg-white/15 text-white"
                     : "text-white/80 hover:bg-white/10 hover:text-white")
                 }
               >
+                <Icon className="h-4 w-4" />
                 {t.label}
               </Link>
             );
