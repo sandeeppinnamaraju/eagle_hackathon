@@ -21,6 +21,10 @@ export interface StudiesQuery {
   portfolio?: string | null;
   program?: string | null;
   region?: string | null;
+  fpiStartDate?: string | null;
+  fpiEndDate?: string | null;
+  lpoStartDate?: string | null;
+  lpoEndDate?: string | null;
   sortBy?: StudySortKey | null;
   sortOrder?: StudySortDirection;
 }

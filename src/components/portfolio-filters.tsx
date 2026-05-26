@@ -1,71 +1,170 @@
-import { Search, Calendar, ChevronDown, Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Search, Calendar, ChevronDown, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { Study } from "@/lib/data";
+import { getStudyRegions, REGIONS } from "@/lib/study-derived";
+import { cn } from "@/lib/utils";
 
-const toTestIdSegment = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const phaseOrder = ["Ph I", "Ph II", "Ph III", "Ph IV"];
 
-type MultiSelectFilterProps = {
-  label: string;
-  options: string[];
-  selected: string[];
-  onToggle?: (value: string) => void;
-  onClear?: () => void;
-  widthClassName?: string;
+function uniqSorted<T>(arr: T[], order?: T[]): T[] {
+  const s = Array.from(new Set(arr));
+  if (order) {
+    return s.sort((a, b) => {
+      const ai = order.indexOf(a);
+      const bi = order.indexOf(b);
+      if (ai === -1 && bi === -1) return String(a).localeCompare(String(b));
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+  }
+  return s.sort((a, b) => String(a).localeCompare(String(b)));
+}
+
+
+export interface FilterState {
+  search: string;
+  areas: string[];
+  phase: string | null;
+  status: string | null;
+  portfolio: string | null;
+  program: string | null;
+  region: string | null;
+  fpiFrom: string | null;
+  fpiTo: string | null;
+  lpoFrom: string | null;
+  lpoTo: string | null;
+}
+
+export const emptyFilters: FilterState = {
+  search: "",
+  areas: [],
+  phase: null,
+  status: null,
+  portfolio: null,
+  program: null,
+  region: null,
+  fpiFrom: null,
+  fpiTo: null,
+  lpoFrom: null,
+  lpoTo: null,
 };
 
-function MultiSelectFilter({
+function SingleSelect({
   label,
   options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string | null;
+  onChange: (v: string | null) => void;
+}) {
+  return (
+    <Select
+      value={value ?? undefined}
+      onValueChange={(v) => {
+        if (v === "__all__") {
+          onChange(null);
+          return;
+        }
+
+        onChange(v === value ? null : v);
+      }}
+    >
+      <SelectTrigger className="h-9 w-auto gap-1.5 rounded-lg border border-input bg-card px-3 text-sm">
+        <SelectValue placeholder={label}>
+          {value ? (
+            <span>
+              <span className="text-muted-foreground">{label}:</span>{" "}
+              <span className="font-medium">{value}</span>
+            </span>
+          ) : (
+            label
+          )}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="__all__">All</SelectItem>
+        {options.map((o) => (
+          <SelectItem
+            key={o}
+            value={o}
+            onSelect={() => {
+              if (value === o) {
+                onChange(null);
+              }
+            }}
+          >
+            {o}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function MultiSelectTA({
+  options,
   selected,
-  onToggle,
-  onClear,
-  widthClassName = "w-64",
-}: MultiSelectFilterProps) {
-  const displayLabel = selected.length === 0 ? label : `${label} (${selected.length})`;
-  const filterId = toTestIdSegment(label);
+  onChange,
+}: {
+  options: string[];
+  selected: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const toggle = (a: string) =>
+    onChange(selected.includes(a) ? selected.filter((s) => s !== a) : [...selected, a]);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          data-testid={`studies-filter-${filterId}-trigger`}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-input bg-card px-3 text-sm text-foreground hover:bg-muted"
-        >
-          {displayLabel}
+        <button className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-input bg-card px-3 text-sm text-foreground hover:bg-muted">
+          <span className="text-muted-foreground">Therapeutic Area</span>
+          {selected.length > 0 && (
+            <span className="rounded-full bg-primary px-1.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
+              {selected.length}
+            </span>
+          )}
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
         </button>
       </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        sideOffset={6}
-        data-testid={`studies-filter-${filterId}-menu`}
-        className={`z-20 rounded-lg border border-input bg-card p-2 shadow-card ${widthClassName}`}
-      >
-        {selected.length > 0 && (
-          <div className="mb-2 flex items-center justify-end border-b border-border pb-2">
+      <PopoverContent align="start" className="w-64 p-2">
+        <div className="mb-1 flex items-center justify-between px-1 pb-1">
+          <span className="text-xs font-medium text-muted-foreground">
+            {selected.length} selected
+          </span>
+          {selected.length > 0 && (
             <button
-              type="button"
-              onClick={() => onClear?.()}
-              data-testid={`studies-filter-${filterId}-clear`}
+              onClick={() => onChange([])}
               className="text-xs font-medium text-primary hover:underline"
             >
               Clear
             </button>
-          </div>
-        )}
-        <div className="max-h-60 overflow-auto">
-          {options.map((option) => {
-            const checked = selected.includes(option);
+          )}
+        </div>
+        <div className="max-h-64 overflow-y-auto">
+          {options.map((a: string) => {
+            const isSel = selected.includes(a);
             return (
               <button
-                type="button"
-                key={option}
-                data-testid={`studies-filter-${filterId}-option-${toTestIdSegment(option)}`}
-                className="flex w-full cursor-pointer items-center justify-between rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-muted"
-                onClick={() => onToggle?.(option)}
+                key={a}
+                onClick={() => toggle(a)}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted"
               >
-                <span>{option}</span>
-                <Check className={`h-4 w-4 ${checked ? "text-primary" : "invisible"}`} />
+                <span
+                  className={cn(
+                    "flex h-4 w-4 items-center justify-center rounded border",
+                    isSel ? "border-primary bg-primary text-primary-foreground" : "border-input",
+                  )}
+                >
+                  {isSel && <Check className="h-3 w-3" />}
+                </span>
+                {a}
               </button>
             );
           })}
@@ -75,148 +174,424 @@ function MultiSelectFilter({
   );
 }
 
-interface PortfolioFiltersProps {
-  total: number;
-  /** Number of records currently loaded into the UI (for infinite scroll display). */
-  loadedCount?: number;
-  searchQuery?: string;
-  onSearchQueryChange?: (value: string) => void;
-  therapeuticAreas?: string[];
-  selectedTherapeuticAreas?: string[];
-  onToggleTherapeuticArea?: (area: string) => void;
-  onClearTherapeuticAreas?: () => void;
-  phases?: string[];
-  selectedPhases?: string[];
-  onTogglePhase?: (phase: string) => void;
-  onClearPhases?: () => void;
-  statuses?: string[];
-  selectedStatuses?: string[];
-  onToggleStatus?: (status: string) => void;
-  onClearStatuses?: () => void;
-  portfolios?: string[];
-  selectedPortfolios?: string[];
-  onTogglePortfolio?: (portfolio: string) => void;
-  onClearPortfolios?: () => void;
-  programs?: string[];
-  selectedPrograms?: string[];
-  onToggleProgram?: (program: string) => void;
-  onClearPrograms?: () => void;
-  regions?: string[];
-  selectedRegions?: string[];
-  onToggleRegion?: (region: string) => void;
-  onClearRegions?: () => void;
+const TODAY = new Date(2026, 4, 20);
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function fmt(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
-export function PortfolioFilters({
-  total,
-  loadedCount,
-  searchQuery = "",
-  onSearchQueryChange,
-  therapeuticAreas = [],
-  selectedTherapeuticAreas = [],
-  onToggleTherapeuticArea,
-  onClearTherapeuticAreas,
-  phases = [],
-  selectedPhases = [],
-  onTogglePhase,
-  onClearPhases,
-  statuses = [],
-  selectedStatuses = [],
-  onToggleStatus,
-  onClearStatuses,
-  portfolios = [],
-  selectedPortfolios = [],
-  onTogglePortfolio,
-  onClearPortfolios,
-  programs = [],
-  selectedPrograms = [],
-  onToggleProgram,
-  onClearPrograms,
-  regions = [],
-  selectedRegions = [],
-  onToggleRegion,
-  onClearRegions,
-}: PortfolioFiltersProps) {
+function addMonths(d: Date, n: number): Date {
+  const r = new Date(d);
+  r.setMonth(r.getMonth() + n);
+  return r;
+}
+
+function monthInputValue(date: string | null): string {
+  return date ? date.slice(0, 7) : "";
+}
+
+function monthBoundary(month: string, edge: "start" | "end"): string | null {
+  if (!/^\d{4}-\d{2}$/.test(month)) return null;
+
+  const [yearRaw, monthRaw] = month.split("-");
+  const year = Number(yearRaw);
+  const monthIndex = Number(monthRaw) - 1;
+
+  if (!Number.isInteger(year) || !Number.isInteger(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+    return null;
+  }
+
+  const date = edge === "start"
+    ? new Date(year, monthIndex, 1)
+    : new Date(year, monthIndex + 1, 0);
+
+  return fmt(date);
+}
+
+function monthYearLabel(date: string | null): string | null {
+  if (!date) return null;
+
+  const [yearRaw, monthRaw] = date.split("-");
+  const year = Number(yearRaw);
+  const monthIndex = Number(monthRaw) - 1;
+
+  if (!Number.isInteger(year) || !Number.isInteger(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(year, monthIndex, 1));
+}
+
+function yearFromDate(date: string | null): number {
+  if (!date) return TODAY.getFullYear();
+
+  const [yearRaw] = date.split("-");
+  const year = Number(yearRaw);
+  return Number.isInteger(year) ? year : TODAY.getFullYear();
+}
+
+export { monthBoundary, monthInputValue, monthYearLabel };
+
+const FPI_PRESETS: { label: string; range: () => [string, string] }[] = [
+  { label: "Last 6 Months", range: () => [fmt(addMonths(TODAY, -6)), fmt(TODAY)] },
+  { label: "Last 12 Months", range: () => [fmt(addMonths(TODAY, -12)), fmt(TODAY)] },
+  { label: "Year to Date", range: () => [fmt(new Date(TODAY.getFullYear(), 0, 1)), fmt(TODAY)] },
+];
+
+const LPO_PRESETS: { label: string; range: () => [string, string] }[] = [
+  { label: "Next 6 Months", range: () => [fmt(TODAY), fmt(addMonths(TODAY, 6))] },
+  { label: "Next 12 Months", range: () => [fmt(TODAY), fmt(addMonths(TODAY, 12))] },
+  { label: "Year to Date", range: () => [fmt(TODAY), fmt(new Date(TODAY.getFullYear(), 11, 31))] },
+];
+
+function presetActive(from: string | null, to: string | null, preset: [string, string]): boolean {
+  return from === preset[0] && to === preset[1];
+}
+
+function MonthPickerField({
+  label,
+  title,
+  value,
+  edge,
+  onChange,
+}: {
+  label: string;
+  title: string;
+  value: string | null;
+  edge: "start" | "end";
+  onChange: (value: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pickerYear, setPickerYear] = useState(yearFromDate(value));
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setPickerYear(yearFromDate(value));
+    }
+    setOpen(nextOpen);
+  };
+
+  const handleMonthSelect = (monthIndex: number) => {
+    const month = `${pickerYear}-${String(monthIndex + 1).padStart(2, "0")}`;
+    onChange(monthBoundary(month, edge));
+    setOpen(false);
+  };
+
   return (
-    <div className="space-y-3" data-testid="studies-filters">
+    <label className="space-y-1">
+      <span className="block text-[11px] text-muted-foreground">{label}</span>
+      <Popover open={open} onOpenChange={handleOpenChange}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="relative flex h-8 w-full items-center rounded-md border border-input bg-card px-2 pr-8 text-left text-xs focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+            aria-label={`Open ${title} ${label.toLowerCase()} month picker`}
+          >
+            <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
+              {value ?? "yyyy-mm-dd"}
+            </span>
+            <Calendar className="pointer-events-none absolute right-2 h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-64 space-y-3 p-3">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setPickerYear((year) => year - 1)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Previous year"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <span className="text-sm font-semibold text-foreground">{pickerYear}</span>
+            <button
+              type="button"
+              onClick={() => setPickerYear((year) => year + 1)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Next year"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {MONTH_NAMES.map((monthName, monthIndex) => {
+              const monthValue = `${pickerYear}-${String(monthIndex + 1).padStart(2, "0")}`;
+              const active = monthInputValue(value) === monthValue;
+
+              return (
+                <button
+                  key={monthName}
+                  type="button"
+                  onClick={() => handleMonthSelect(monthIndex)}
+                  className={cn(
+                    "rounded-md border px-2 py-1.5 text-xs transition",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-input bg-card text-foreground hover:bg-muted",
+                  )}
+                >
+                  {monthName}
+                </button>
+              );
+            })}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <span className="block text-[11px] text-muted-foreground">
+        {monthYearLabel(value) ?? "Any month"}
+      </span>
+    </label>
+  );
+}
+
+function DateSection({
+  title,
+  presets,
+  from,
+  to,
+  onChange,
+}: {
+  title: string;
+  presets: { label: string; range: () => [string, string] }[];
+  from: string | null;
+  to: string | null;
+  onChange: (from: string | null, to: string | null) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {presets.map((p) => {
+          const range = p.range();
+          const active = presetActive(from, to, range);
+          return (
+            <button
+              key={p.label}
+              onClick={() => onChange(active ? null : range[0], active ? null : range[1])}
+              className={cn(
+                "rounded-full border px-2.5 py-0.5 text-xs transition",
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-input bg-card text-foreground hover:bg-muted",
+              )}
+            >
+              {p.label}
+            </button>
+          );
+        })}
+      </div>
+      <div className="grid grid-cols-2 gap-2 pt-1">
+        <MonthPickerField
+          label="From"
+          title={title}
+          value={from}
+          edge="start"
+          onChange={(nextFrom) => onChange(nextFrom, to)}
+        />
+        <MonthPickerField
+          label="To"
+          title={title}
+          value={to}
+          edge="end"
+          onChange={(nextTo) => onChange(from, nextTo)}
+        />
+      </div>
+    </div>
+  );
+}
+
+function FpiLpoFilter({
+  filters,
+  onChange,
+}: {
+  filters: FilterState;
+  onChange: (f: FilterState) => void;
+}) {
+  const active =
+    !!(filters.fpiFrom || filters.fpiTo || filters.lpoFrom || filters.lpoTo);
+  const count =
+    (filters.fpiFrom || filters.fpiTo ? 1 : 0) +
+    (filters.lpoFrom || filters.lpoTo ? 1 : 0);
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className={cn(
+            "inline-flex h-9 items-center gap-1.5 rounded-lg border border-input bg-card px-3 text-sm",
+            active && "border-primary/40",
+          )}
+        >
+          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className={active ? "font-medium" : "text-foreground"}>FPI / LPO</span>
+          {count > 0 && (
+            <span className="rounded-full bg-primary px-1.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
+              {count}
+            </span>
+          )}
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 space-y-4 p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-foreground">Date Filters</p>
+          {active && (
+            <button
+              onClick={() =>
+                onChange({ ...filters, fpiFrom: null, fpiTo: null, lpoFrom: null, lpoTo: null })
+              }
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <DateSection
+          title="First Patient In (FPI)"
+          presets={FPI_PRESETS}
+          from={filters.fpiFrom}
+          to={filters.fpiTo}
+          onChange={(from, to) => onChange({ ...filters, fpiFrom: from, fpiTo: to })}
+        />
+        <DateSection
+          title="Last Patient Out (LPO)"
+          presets={LPO_PRESETS}
+          from={filters.lpoFrom}
+          to={filters.lpoTo}
+          onChange={(from, to) => onChange({ ...filters, lpoFrom: from, lpoTo: to })}
+        />
+        <p className="text-[11px] text-muted-foreground">
+          Leave either end blank to apply an open-ended filter. Month selections map to the first or last day of that month automatically.
+        </p>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+
+export function PortfolioFilters({
+  studies,
+  total,
+  shown,
+  filters,
+  onChange,
+}: {
+  studies: Study[];
+  total: number;
+  shown: number;
+  filters: FilterState;
+  onChange: (f: FilterState) => void;
+}) {
+  const set = <K extends keyof FilterState>(key: K, value: FilterState[K]) =>
+    onChange({ ...filters, [key]: value });
+
+  const available = useMemo(() => {
+    const opts = (pick: (s: Study) => string, order?: string[]) => uniqSorted(studies.map(pick), order);
+    const regionPool = new Set<string>();
+    for (const s of studies) {
+      for (const r of getStudyRegions(s)) regionPool.add(r);
+    }
+    return {
+      areas: opts((s) => s.therapeuticArea),
+      phases: opts((s) => s.phase, phaseOrder),
+      statuses: opts((s) => s.status),
+      portfolios: opts((s) => s.portfolio),
+      programs: opts((s) => s.program),
+      regions: REGIONS.filter((r) => regionPool.has(r)),
+    };
+  }, [studies]);
+
+
+
+  const hasAny =
+    filters.areas.length > 0 ||
+    filters.phase ||
+    filters.status ||
+    filters.portfolio ||
+    filters.program ||
+    filters.region ||
+    filters.fpiFrom || filters.fpiTo || filters.lpoFrom || filters.lpoTo ||
+    filters.search.length > 0;
+
+  return (
+    <div className="space-y-3">
       <div className="flex items-center gap-4">
         <div className="relative max-w-md flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search by ID, title..."
-            value={searchQuery}
-            onChange={(event) => onSearchQueryChange?.(event.target.value)}
-            data-testid="studies-search-input"
+            value={filters.search}
+            onChange={(e) => set("search", e.target.value)}
+            placeholder="Search by ID, title, indication..."
             className="h-10 w-full rounded-lg border border-input bg-card pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
           />
         </div>
-        <p className="text-sm text-muted-foreground" data-testid="studies-results-count">
-          {loadedCount != null ? (
-            <>
-              <span className="font-semibold text-foreground">{loadedCount.toLocaleString()}</span> loaded &bull;{" "}
-              <span className="font-semibold text-foreground">{total.toLocaleString()}</span> total
-            </>
-          ) : (
-            <>
-              <span className="font-semibold text-foreground">{total.toLocaleString()}</span> studies
-            </>
-          )}
+        <p className="text-sm text-muted-foreground">
+          Showing <span className="font-semibold text-foreground">{shown}</span> of{" "}
+          <span className="font-semibold text-foreground">{total}</span> studies
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <MultiSelectFilter
-          label="Therapeutic Area"
-          options={therapeuticAreas}
-          selected={selectedTherapeuticAreas}
-          onToggle={onToggleTherapeuticArea}
-          onClear={onClearTherapeuticAreas}
-        />
-        <MultiSelectFilter
-          label="Phase"
-          options={phases}
-          selected={selectedPhases}
-          onToggle={onTogglePhase}
-          onClear={onClearPhases}
-          widthClassName="w-52"
-        />
-        <MultiSelectFilter
-          label="Study Status"
-          options={statuses}
-          selected={selectedStatuses}
-          onToggle={onToggleStatus}
-          onClear={onClearStatuses}
-          widthClassName="w-56"
-        />
-        <MultiSelectFilter
+        <MultiSelectTA options={available.areas} selected={filters.areas} onChange={(v) => set("areas", v)} />
+        <SingleSelect label="Phase" options={available.phases} value={filters.phase} onChange={(v) => set("phase", v)} />
+        <SingleSelect label="Study Status" options={available.statuses} value={filters.status} onChange={(v) => set("status", v)} />
+        <SingleSelect
           label="Portfolio"
-          options={portfolios}
-          selected={selectedPortfolios}
-          onToggle={onTogglePortfolio}
-          onClear={onClearPortfolios}
+          options={available.portfolios}
+          value={filters.portfolio}
+          onChange={(v) => set("portfolio", v)}
         />
-        <MultiSelectFilter
-          label="Program"
-          options={programs}
-          selected={selectedPrograms}
-          onToggle={onToggleProgram}
-          onClear={onClearPrograms}
-          widthClassName="w-56"
-        />
-        <MultiSelectFilter
-          label="Region"
-          options={regions}
-          selected={selectedRegions}
-          onToggle={onToggleRegion}
-          onClear={onClearRegions}
-          widthClassName="w-56"
-        />
-        <button data-testid="studies-filter-fpi-lpo-trigger" className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-input bg-card px-3 text-sm text-foreground hover:bg-muted">
-          <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-          FPI / LPO
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
+        <SingleSelect label="Program" options={available.programs} value={filters.program} onChange={(v) => set("program", v)} />
+        <SingleSelect label="Region" options={available.regions} value={filters.region} onChange={(v) => set("region", v)} />
+        <FpiLpoFilter filters={filters} onChange={onChange} />
+        {hasAny && (
+          <button
+            onClick={() => onChange(emptyFilters)}
+            className="inline-flex h-9 items-center gap-1 rounded-lg px-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-3.5 w-3.5" />
+            Clear all
+          </button>
+        )}
       </div>
+      {filters.areas.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {filters.areas.map((a) => (
+            <span
+              key={a}
+              className="inline-flex items-center gap-1 rounded-full border border-input bg-card px-2 py-0.5 text-xs text-foreground"
+            >
+              {a}
+              <button
+                onClick={() => set("areas", filters.areas.filter((x) => x !== a))}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
