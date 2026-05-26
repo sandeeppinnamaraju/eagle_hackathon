@@ -1,0 +1,7 @@
+vault_url = os.getenv("AZURE_KEYVAULT_URL", "https://fd-eagle.vault.azure.net/")
+
+eagle-pg-port
+eagle-pg-host
+eagle-pg-db
+eagle-pg-user
+eagle-pg-pwd
