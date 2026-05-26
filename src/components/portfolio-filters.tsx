@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, Calendar, ChevronDown, Check, X } from "lucide-react";
+import { Search, Calendar, ChevronDown, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Study } from "@/lib/data";
@@ -175,6 +175,20 @@ function MultiSelectTA({
 }
 
 const TODAY = new Date(2026, 4, 20);
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 function fmt(d: Date): string {
   const y = d.getFullYear();
@@ -188,6 +202,55 @@ function addMonths(d: Date, n: number): Date {
   r.setMonth(r.getMonth() + n);
   return r;
 }
+
+function monthInputValue(date: string | null): string {
+  return date ? date.slice(0, 7) : "";
+}
+
+function monthBoundary(month: string, edge: "start" | "end"): string | null {
+  if (!/^\d{4}-\d{2}$/.test(month)) return null;
+
+  const [yearRaw, monthRaw] = month.split("-");
+  const year = Number(yearRaw);
+  const monthIndex = Number(monthRaw) - 1;
+
+  if (!Number.isInteger(year) || !Number.isInteger(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+    return null;
+  }
+
+  const date = edge === "start"
+    ? new Date(year, monthIndex, 1)
+    : new Date(year, monthIndex + 1, 0);
+
+  return fmt(date);
+}
+
+function monthYearLabel(date: string | null): string | null {
+  if (!date) return null;
+
+  const [yearRaw, monthRaw] = date.split("-");
+  const year = Number(yearRaw);
+  const monthIndex = Number(monthRaw) - 1;
+
+  if (!Number.isInteger(year) || !Number.isInteger(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(year, monthIndex, 1));
+}
+
+function yearFromDate(date: string | null): number {
+  if (!date) return TODAY.getFullYear();
+
+  const [yearRaw] = date.split("-");
+  const year = Number(yearRaw);
+  return Number.isInteger(year) ? year : TODAY.getFullYear();
+}
+
+export { monthBoundary, monthInputValue, monthYearLabel };
 
 const FPI_PRESETS: { label: string; range: () => [string, string] }[] = [
   { label: "Last 6 Months", range: () => [fmt(addMonths(TODAY, -6)), fmt(TODAY)] },
@@ -203,6 +266,102 @@ const LPO_PRESETS: { label: string; range: () => [string, string] }[] = [
 
 function presetActive(from: string | null, to: string | null, preset: [string, string]): boolean {
   return from === preset[0] && to === preset[1];
+}
+
+function MonthPickerField({
+  label,
+  title,
+  value,
+  edge,
+  onChange,
+}: {
+  label: string;
+  title: string;
+  value: string | null;
+  edge: "start" | "end";
+  onChange: (value: string | null) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pickerYear, setPickerYear] = useState(yearFromDate(value));
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setPickerYear(yearFromDate(value));
+    }
+    setOpen(nextOpen);
+  };
+
+  const handleMonthSelect = (monthIndex: number) => {
+    const month = `${pickerYear}-${String(monthIndex + 1).padStart(2, "0")}`;
+    onChange(monthBoundary(month, edge));
+    setOpen(false);
+  };
+
+  return (
+    <label className="space-y-1">
+      <span className="block text-[11px] text-muted-foreground">{label}</span>
+      <Popover open={open} onOpenChange={handleOpenChange}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="relative flex h-8 w-full items-center rounded-md border border-input bg-card px-2 pr-8 text-left text-xs focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+            aria-label={`Open ${title} ${label.toLowerCase()} month picker`}
+          >
+            <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
+              {value ?? "yyyy-mm-dd"}
+            </span>
+            <Calendar className="pointer-events-none absolute right-2 h-3.5 w-3.5 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-64 space-y-3 p-3">
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setPickerYear((year) => year - 1)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Previous year"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <span className="text-sm font-semibold text-foreground">{pickerYear}</span>
+            <button
+              type="button"
+              onClick={() => setPickerYear((year) => year + 1)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Next year"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {MONTH_NAMES.map((monthName, monthIndex) => {
+              const monthValue = `${pickerYear}-${String(monthIndex + 1).padStart(2, "0")}`;
+              const active = monthInputValue(value) === monthValue;
+
+              return (
+                <button
+                  key={monthName}
+                  type="button"
+                  onClick={() => handleMonthSelect(monthIndex)}
+                  className={cn(
+                    "rounded-md border px-2 py-1.5 text-xs transition",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-input bg-card text-foreground hover:bg-muted",
+                  )}
+                >
+                  {monthName}
+                </button>
+              );
+            })}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <span className="block text-[11px] text-muted-foreground">
+        {monthYearLabel(value) ?? "Any month"}
+      </span>
+    </label>
+  );
 }
 
 function DateSection({
@@ -242,24 +401,20 @@ function DateSection({
         })}
       </div>
       <div className="grid grid-cols-2 gap-2 pt-1">
-        <label className="space-y-1">
-          <span className="block text-[11px] text-muted-foreground">From</span>
-          <input
-            type="date"
-            value={from ?? ""}
-            onChange={(e) => onChange(e.target.value || null, to)}
-            className="h-8 w-full rounded-md border border-input bg-card px-2 text-xs focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
-          />
-        </label>
-        <label className="space-y-1">
-          <span className="block text-[11px] text-muted-foreground">To</span>
-          <input
-            type="date"
-            value={to ?? ""}
-            onChange={(e) => onChange(from, e.target.value || null)}
-            className="h-8 w-full rounded-md border border-input bg-card px-2 text-xs focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
-          />
-        </label>
+        <MonthPickerField
+          label="From"
+          title={title}
+          value={from}
+          edge="start"
+          onChange={(nextFrom) => onChange(nextFrom, to)}
+        />
+        <MonthPickerField
+          label="To"
+          title={title}
+          value={to}
+          edge="end"
+          onChange={(nextTo) => onChange(from, nextTo)}
+        />
       </div>
     </div>
   );
@@ -326,7 +481,7 @@ function FpiLpoFilter({
           onChange={(from, to) => onChange({ ...filters, lpoFrom: from, lpoTo: to })}
         />
         <p className="text-[11px] text-muted-foreground">
-          Leave either end blank to apply an open-ended filter.
+          Leave either end blank to apply an open-ended filter. Month selections map to the first or last day of that month automatically.
         </p>
       </PopoverContent>
     </Popover>

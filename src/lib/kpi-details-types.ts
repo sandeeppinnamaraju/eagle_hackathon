@@ -46,7 +46,17 @@ export interface KpiDetailsData {
 
 export type KpiDetailsQuery = Pick<
   StudiesQuery,
-  "search" | "therapeuticAreas" | "phase" | "status" | "portfolio" | "program" | "region"
+  | "search"
+  | "therapeuticAreas"
+  | "phase"
+  | "status"
+  | "portfolio"
+  | "program"
+  | "region"
+  | "fpiStartDate"
+  | "fpiEndDate"
+  | "lpoStartDate"
+  | "lpoEndDate"
 >;
 
 export interface KpiDetailsResult {

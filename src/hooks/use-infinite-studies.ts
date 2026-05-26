@@ -40,6 +40,10 @@ export interface StudiesFilters {
   portfolio: string | null;
   program: string | null;
   region: string | null;
+  fpiStartDate: string | null;
+  fpiEndDate: string | null;
+  lpoStartDate: string | null;
+  lpoEndDate: string | null;
 }
 
 const EMPTY_FILTERS: StudiesFilters = {
@@ -49,6 +53,10 @@ const EMPTY_FILTERS: StudiesFilters = {
   portfolio: null,
   program: null,
   region: null,
+  fpiStartDate: null,
+  fpiEndDate: null,
+  lpoStartDate: null,
+  lpoEndDate: null,
 };
 
 export interface UseInfiniteStudiesResult {
@@ -202,6 +210,10 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
         portfolio: filters.portfolio,
         program: filters.program,
         region: filters.region,
+        fpiStartDate: filters.fpiStartDate,
+        fpiEndDate: filters.fpiEndDate,
+        lpoStartDate: filters.lpoStartDate,
+        lpoEndDate: filters.lpoEndDate,
         sortBy,
         sortOrder,
       };
@@ -317,6 +329,10 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
       portfolio: filters.portfolio,
       program: filters.program,
       region: filters.region,
+      fpiStartDate: filters.fpiStartDate,
+      fpiEndDate: filters.fpiEndDate,
+      lpoStartDate: filters.lpoStartDate,
+      lpoEndDate: filters.lpoEndDate,
       sortBy,
       sortOrder,
     }),
