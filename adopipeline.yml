@@ -130,6 +130,19 @@ stages:
                   artifact: fd-poc-backend
                   displayName: 'Download backend artifact'
 
+                # -------------------------------------------------------------------
+                # Fetch secrets from Azure Key Vault
+                # Secrets are made available as pipeline variables using their
+                # secret names (e.g. eagle-pg-host → $(eagle-pg-host))
+                # -------------------------------------------------------------------
+                - task: AzureKeyVault@2
+                  displayName: 'Fetch secrets from Azure Key Vault (fd-eagle)'
+                  inputs:
+                    azureSubscription: fd_ado_sercon
+                    KeyVaultName: 'fd-eagle'
+                    SecretsFilter: 'eagle-pg-port,eagle-pg-host,eagle-pg-db,eagle-pg-user,eagle-pg-pwd'
+                    RunAsPreJob: false
+
                 - task: AzureWebApp@1
                   displayName: 'Deploy FastAPI app to Azure App Service'
                   inputs:
@@ -147,9 +160,9 @@ stages:
                       -API_PREFIX "/api"
                       -API_VERSION_PREFIX "/api/v1"
                       -ALLOWED_ORIGINS "*"
-                      -PGPORT "5432"
+                      -PGPORT "$(eagle-pg-port)"
                       -PGSSLMODE "require"
-                      -PGHOST "$(PGHOST)"
-                      -PGUSER "$(PGUSER)"
-                      -PGDATABASE "$(PGDATABASE)"
-                      -PGPASSWORD "$(PGPASSWORD)"
+                      -PGHOST "$(eagle-pg-host)"
+                      -PGUSER "$(eagle-pg-user)"
+                      -PGDATABASE "$(eagle-pg-db)"
+                      -PGPASSWORD "$(eagle-pg-pwd)"
