@@ -5,11 +5,32 @@ import type { Study } from "@/lib/data";
 import type { StudySortDirection, StudySortKey } from "@/lib/study-sorting";
 
 const DEFAULT_LIMIT = 200;
-const SCROLL_ROOT_MARGIN = "300px";
+const DEFAULT_APPEND_DELAY_MS = 0;
+const SCROLL_ROOT_MARGIN = "1000px";
+
+const getScrollableParent = (element: HTMLElement | null): HTMLElement | null => {
+  let current = element?.parentElement ?? null;
+
+  while (current) {
+    const styles = window.getComputedStyle(current);
+    const overflowY = styles.overflowY;
+    const canScroll = (overflowY === "auto" || overflowY === "scroll") && current.scrollHeight > current.clientHeight;
+
+    if (canScroll) {
+      return current;
+    }
+
+    current = current.parentElement;
+  }
+
+  return null;
+};
 
 export interface UseInfiniteStudiesOptions {
   /** Override the page size (default: 200). */
   limit?: number;
+  /** Delay before append fetch executes (default: 0ms). */
+  appendDelayMs?: number;
 }
 
 export interface StudiesFilters {
@@ -41,8 +62,8 @@ export interface UseInfiniteStudiesResult {
   isLoading: boolean;
   /** Last error from the service, null when healthy. */
   error: Error | null;
-  /** Ref to attach to a sentinel element at the bottom of the list. */
-  loadMoreRef: React.RefObject<HTMLDivElement | null>;
+  /** Ref callback to attach to a sentinel element at the bottom of the list. */
+  loadMoreRef: React.RefCallback<HTMLDivElement>;
   /** Current debounced search value. */
   search: string;
   /** Update the search input. Triggers debounce then resets + fetches. */
@@ -86,6 +107,7 @@ export interface UseInfiniteStudiesResult {
  */
 export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): UseInfiniteStudiesResult {
   const limit = options.limit ?? DEFAULT_LIMIT;
+  const appendDelayMs = options.appendDelayMs ?? DEFAULT_APPEND_DELAY_MS;
 
   // ─── Core state ─────────────────────────────────────────────────────────
   const [studies, setStudies] = useState<Study[]>([]);
@@ -113,19 +135,59 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
   // ─── Stale-request guard ─────────────────────────────────────────────────
   const abortRef = useRef<AbortController | null>(null);
   const currentPageRef = useRef(0);
+  const appendInFlightRef = useRef(false);
+  const hasMoreRef = useRef(false);
+  const isLoadingRef = useRef(false);
+
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
 
   // ─── Fetch function ──────────────────────────────────────────────────────
   const fetchPage = useCallback(
     async (appendMode: boolean) => {
+      if (appendMode && !hasMoreRef.current) {
+        return;
+      }
+
+      if (appendMode && appendInFlightRef.current) {
+        return;
+      }
+
       // Cancel any in-flight request
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
 
+      isLoadingRef.current = true;
       setIsLoading(true);
       if (!appendMode) {
         setError(null);
         currentPageRef.current = 0;
+      }
+
+      if (appendMode) {
+        appendInFlightRef.current = true;
+
+        if (appendDelayMs > 0) {
+          await new Promise<void>((resolve) => {
+            const timeoutId = window.setTimeout(() => {
+              controller.signal.removeEventListener("abort", onAbort);
+              resolve();
+            }, appendDelayMs);
+
+            const onAbort = () => {
+              window.clearTimeout(timeoutId);
+              resolve();
+            };
+
+            controller.signal.addEventListener("abort", onAbort, { once: true });
+          });
+
+          if (controller.signal.aborted) {
+            return;
+          }
+        }
       }
 
       const page = appendMode ? currentPageRef.current + 1 : 1;
@@ -150,7 +212,16 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
         if (controller.signal.aborted) return;
 
         currentPageRef.current = result.page;
-        setStudies((prev) => (appendMode ? [...prev, ...result.items] : result.items));
+        hasMoreRef.current = result.hasMore;
+        setStudies((prev) => {
+          if (!appendMode) {
+            return result.items;
+          }
+
+          const existingIds = new Set(prev.map((study) => study.id));
+          const nextItems = result.items.filter((study) => !existingIds.has(study.id));
+          return [...prev, ...nextItems];
+        });
         setTotal(result.total);
         setHasMore(result.hasMore);
         setError(null);
@@ -160,13 +231,18 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
         console.error(normalized);
         setError(normalized);
       } finally {
-        if (!controller.signal.aborted) {
+        if (appendMode) {
+          appendInFlightRef.current = false;
+        }
+
+        if (abortRef.current === controller) {
+          isLoadingRef.current = false;
           setIsLoading(false);
         }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [limit, debouncedSearch, filters, sortBy, sortOrder],
+    [limit, appendDelayMs, debouncedSearch, filters, sortBy, sortOrder],
   );
 
   // ─── Reset + fetch fresh when query params change ───────────────────────
@@ -177,24 +253,33 @@ export function useInfiniteStudies(options: UseInfiniteStudiesOptions = {}): Use
   }, [fetchPage]);
 
   // ─── Sentinel / intersection observer for infinite scroll ───────────────
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [sentinelElement, setSentinelElement] = useState<HTMLDivElement | null>(null);
+  const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
+    setSentinelElement(node);
+  }, []);
 
   useEffect(() => {
-    const sentinel = loadMoreRef.current;
+    const sentinel = sentinelElement;
     if (!sentinel) return;
+    const root = getScrollableParent(sentinel);
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && hasMore && !isLoading) {
+        if (
+          entries[0]?.isIntersecting &&
+          hasMoreRef.current &&
+          !isLoadingRef.current &&
+          !appendInFlightRef.current
+        ) {
           fetchPage(true);
         }
       },
-      { rootMargin: SCROLL_ROOT_MARGIN, threshold: 0 },
+      { root, rootMargin: SCROLL_ROOT_MARGIN, threshold: 0 },
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [fetchPage, hasMore, isLoading]);
+  }, [fetchPage, sentinelElement]);
 
   // ─── Filter helpers ──────────────────────────────────────────────────────
   const setFilters = useCallback((partial: Partial<StudiesFilters>) => {

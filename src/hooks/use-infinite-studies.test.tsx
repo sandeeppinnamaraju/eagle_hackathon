@@ -83,7 +83,7 @@ describe("useInfiniteStudies", () => {
     let latestHook: UseInfiniteStudiesResult | null = null;
 
     function Harness() {
-      latestHook = useInfiniteStudies();
+      latestHook = useInfiniteStudies({ appendDelayMs: 0 });
       return <div ref={latestHook.loadMoreRef} />;
     }
 
@@ -125,5 +125,69 @@ describe("useInfiniteStudies", () => {
       expect.any(AbortSignal),
     );
     expect(finalStudies.at(-1)?.id).toBe("P2-199");
+  });
+
+  it("prevents duplicate append calls while the next page request is in flight", async () => {
+    const firstPage = makeStudies(1, 200);
+    const secondPage = makeStudies(2, 200);
+
+    let resolveSecondPage: ((value: {
+      items: Study[];
+      page: number;
+      limit: number;
+      total: number;
+      hasMore: boolean;
+    }) => void) | null = null;
+
+    mockedGetStudies
+      .mockResolvedValueOnce({ items: firstPage, page: 1, limit: 200, total: 960, hasMore: true })
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveSecondPage = resolve;
+          }),
+      );
+
+    let latestHook: UseInfiniteStudiesResult | null = null;
+
+    function Harness() {
+      latestHook = useInfiniteStudies({ appendDelayMs: 0 });
+      return <div ref={latestHook.loadMoreRef} />;
+    }
+
+    render(<Harness />);
+
+    await waitFor(() => {
+      expect(latestHook?.studies).toHaveLength(200);
+    });
+
+    await waitFor(() => {
+      expect(observerCallback).not.toBeNull();
+    });
+
+    act(() => {
+      observerCallback?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+      observerCallback?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+      observerCallback?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+    });
+
+    expect(mockedGetStudies).toHaveBeenCalledTimes(2);
+    expect(mockedGetStudies).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ page: 2, limit: 200 }),
+      expect.any(AbortSignal),
+    );
+
+    if (!resolveSecondPage) {
+      throw new Error("Expected second page resolver to be set");
+    }
+
+    await act(async () => {
+      resolveSecondPage?.({ items: secondPage, page: 2, limit: 200, total: 960, hasMore: true });
+    });
+
+    await waitFor(() => {
+      expect(latestHook?.studies).toHaveLength(400);
+    });
   });
 });

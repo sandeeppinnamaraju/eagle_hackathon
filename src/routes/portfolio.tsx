@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useKpiDetails } from "@/hooks/use-kpi-details";
+import { useInfiniteStudies } from "@/hooks/use-infinite-studies";
+import { useIncrementalList } from "@/hooks/use-incremental-list";
 import { KpiCard } from "@/components/kpi-card";
 import { PortfolioFilters, emptyFilters, type FilterState } from "@/components/portfolio-filters";
 import { InsightsButton } from "@/components/insights-button";
 import { ViewToggle } from "@/components/view-toggle";
 import { StudyTable } from "@/components/study-table";
 import { StudyCardGrid } from "@/components/study-card-grid";
-import { studies } from "@/lib/data";
+import { studies as fallbackStudies, type Study } from "@/lib/data";
 import { filterStudies } from "@/lib/filter-studies";
+import { sortStudies } from "@/lib/study-sorting";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -22,7 +26,106 @@ export const Route = createFileRoute("/portfolio")({
 function PortfolioPage() {
   const [view, setView] = useState<"table" | "cards">("cards");
   const [filters, setFilters] = useState<FilterState>(emptyFilters);
-  const filtered = useMemo(() => filterStudies(studies, filters), [filters]);
+  const {
+    studies: loadedStudies,
+    total: studiesTotal,
+    hasMore,
+    isLoading: isStudiesLoading,
+    error: studiesError,
+    loadMoreRef,
+    setSearch,
+    setFilters: setApiFilters,
+    sortBy,
+    sortOrder,
+    handleSortChange,
+  } = useInfiniteStudies();
+
+  const kpiQuery = useMemo(
+    () => ({
+      search: filters.search,
+      therapeuticAreas: filters.areas,
+      phase: filters.phase,
+      status: filters.status,
+      portfolio: filters.portfolio,
+      program: filters.program,
+      region: filters.region,
+    }),
+    [filters.areas, filters.phase, filters.portfolio, filters.program, filters.region, filters.search, filters.status],
+  );
+
+  useEffect(() => {
+    setSearch(filters.search);
+  }, [filters.search, setSearch]);
+
+  useEffect(() => {
+    setApiFilters({
+      therapeuticAreas: filters.areas,
+      phase: filters.phase,
+      status: filters.status,
+      portfolio: filters.portfolio,
+      program: filters.program,
+      region: filters.region,
+    });
+  }, [filters.areas, filters.phase, filters.portfolio, filters.program, filters.region, filters.status, setApiFilters]);
+
+  const { data: kpiData } = useKpiDetails(kpiQuery);
+
+  const filterOptionSourceStudies = useMemo(() => {
+    const uniqueById = new Map<string, Study>();
+
+    for (const study of fallbackStudies) {
+      if (!uniqueById.has(study.id)) {
+        uniqueById.set(study.id, study);
+      }
+    }
+
+    return Array.from(uniqueById.values());
+  }, []);
+
+  const fallbackSortedStudies = useMemo(() => {
+    const withoutDateFilters = {
+      ...filters,
+      fpiFrom: null,
+      fpiTo: null,
+      lpoFrom: null,
+      lpoTo: null,
+    };
+
+    return sortStudies(filterStudies(filterOptionSourceStudies, withoutDateFilters), sortBy, sortOrder);
+  }, [filterOptionSourceStudies, filters, sortBy, sortOrder]);
+
+  const usingFallbackStudies = loadedStudies.length === 0 && studiesError != null;
+  const baseStudies = usingFallbackStudies ? fallbackSortedStudies : loadedStudies;
+  const filtered = useMemo(() => filterStudies(baseStudies, filters), [baseStudies, filters]);
+  const totalStudies = usingFallbackStudies ? fallbackSortedStudies.length : studiesTotal;
+  const hasDateFilters = Boolean(filters.fpiFrom || filters.fpiTo || filters.lpoFrom || filters.lpoTo);
+  const cardsResetKey = JSON.stringify({
+    search: filters.search,
+    areas: filters.areas,
+    phase: filters.phase,
+    status: filters.status,
+    portfolio: filters.portfolio,
+    program: filters.program,
+    region: filters.region,
+    fpiFrom: filters.fpiFrom,
+    fpiTo: filters.fpiTo,
+    lpoFrom: filters.lpoFrom,
+    lpoTo: filters.lpoTo,
+    sortBy,
+    sortOrder,
+  });
+  const {
+    visibleItems: visibleCardStudies,
+    visibleCount: visibleCardCount,
+    loadMoreRef: cardsLoadMoreRef,
+  } = useIncrementalList(filtered, {
+    initialCount: 9,
+    incrementCount: 9,
+    resetKey: cardsResetKey,
+  });
+
+  const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
+  const formatCount = (value: number) => value.toLocaleString();
 
   return (
     <main className="mx-auto max-w-[1600px] px-6 py-6">
@@ -35,8 +138,8 @@ function PortfolioPage() {
 
       <div className="mt-5">
         <PortfolioFilters
-          studies={studies}
-          total={studies.length}
+          studies={filterOptionSourceStudies}
+          total={totalStudies}
           shown={filtered.length}
           filters={filters}
           onChange={setFilters}
@@ -44,18 +147,43 @@ function PortfolioPage() {
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Active Studies" value="30" sub="recruiting or follow-up" accent="primary" />
-        <KpiCard label="On Track" value="26.7%" sub="8 of 30 active" accent="success" />
-        <KpiCard label="At Risk / Off Track" value="73.3%" sub="22 of 30 active" accent="warning" />
+        <KpiCard
+          label="Active Studies"
+          value={formatCount(kpiData?.activeStudiesCount ?? 0)}
+          sub="recruiting or follow-up"
+          accent="primary"
+        />
+        <KpiCard
+          label="On Track"
+          value={formatPercentage(kpiData?.onTrack.percentage ?? 0)}
+          sub={`${formatCount(kpiData?.onTrack.count ?? 0)} of ${formatCount(kpiData?.activeStudiesCount ?? 0)} active`}
+          accent="success"
+        />
+        <KpiCard
+          label="At Risk / Off Track"
+          value={formatPercentage(kpiData?.offTrackOrAtRisk.percentage ?? 0)}
+          sub={`${formatCount(kpiData?.offTrackOrAtRisk.count ?? 0)} of ${formatCount(kpiData?.activeStudiesCount ?? 0)} active`}
+          accent="warning"
+        />
         <KpiCard
           label="Enrollment vs Target"
-          value="14.4%"
-          sub="12,932 of 89,802 patients"
+          value={formatPercentage(kpiData?.enrollmentVsTarget.percentage ?? 0)}
+          sub={`${formatCount(kpiData?.enrollmentVsTarget.sumActual ?? 0)} of ${formatCount(kpiData?.enrollmentVsTarget.sumTarget ?? 0)} patients`}
           accent="info"
           spark={[2, 4, 5, 8, 11, 14]}
         />
-        <KpiCard label="Enrollment vs Plan (To Date)" value="90.1%" sub="12,416 of 13,782 planned" accent="violet" />
-        <KpiCard label="Velocity vs Plan" value="62.5%" sub="avg enrollment speed" accent="teal" />
+        <KpiCard
+          label="Enrollment vs Plan (To Date)"
+          value={formatPercentage(kpiData?.scheduleAdherence.percentage ?? 0)}
+          sub={`${formatCount(kpiData?.scheduleAdherence.completed ?? 0)} of ${formatCount(kpiData?.scheduleAdherence.planned ?? 0)} planned`}
+          accent="violet"
+        />
+        <KpiCard
+          label="Velocity vs Plan"
+          value={formatPercentage(kpiData?.velocityVsPlan.average ?? 0)}
+          sub="avg enrollment speed"
+          accent="teal"
+        />
       </div>
 
       <div className="mt-5 flex justify-end">
@@ -63,10 +191,29 @@ function PortfolioPage() {
       </div>
 
       <div className="mt-3">
-        {view === "table" ? (
-          <StudyTable studies={filtered} />
+        {isStudiesLoading && baseStudies.length === 0 ? (
+          <div className="rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
+            Loading studies...
+          </div>
+        ) : view === "table" ? (
+          <div className="space-y-3">
+          <StudyTable
+            studies={filtered}
+            totalCount={totalStudies}
+            visibleCount={filtered.length}
+            useInfiniteScrollDisplay={!usingFallbackStudies && !hasDateFilters}
+            sortBy={sortBy}
+            sortDirection={sortOrder}
+            onSortChange={handleSortChange}
+          />
+          {!usingFallbackStudies && hasMore && <div ref={loadMoreRef} className="h-8" aria-hidden="true" />}
+          </div>
         ) : (
-          <StudyCardGrid studies={filtered.slice(0, 9)} />
+          <div className="space-y-3">
+            <StudyCardGrid studies={visibleCardStudies} />
+            {visibleCardCount < filtered.length && <div ref={cardsLoadMoreRef} className="h-8" aria-hidden="true" />}
+            {!usingFallbackStudies && hasMore && <div ref={loadMoreRef} className="h-8" aria-hidden="true" />}
+          </div>
         )}
       </div>
     </main>
