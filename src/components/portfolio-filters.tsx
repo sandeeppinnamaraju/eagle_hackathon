@@ -3,7 +3,6 @@ import { Search, Calendar, ChevronDown, Check, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Study } from "@/lib/data";
-import { filterStudies } from "@/lib/filter-studies";
 import { getStudyRegions, REGIONS } from "@/lib/study-derived";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +64,17 @@ function SingleSelect({
   onChange: (v: string | null) => void;
 }) {
   return (
-    <Select value={value ?? ""} onValueChange={(v) => onChange(v === "__all__" ? null : v)}>
+    <Select
+      value={value ?? undefined}
+      onValueChange={(v) => {
+        if (v === "__all__") {
+          onChange(null);
+          return;
+        }
+
+        onChange(v === value ? null : v);
+      }}
+    >
       <SelectTrigger className="h-9 w-auto gap-1.5 rounded-lg border border-input bg-card px-3 text-sm">
         <SelectValue placeholder={label}>
           {value ? (
@@ -81,7 +90,15 @@ function SingleSelect({
       <SelectContent>
         <SelectItem value="__all__">All</SelectItem>
         {options.map((o) => (
-          <SelectItem key={o} value={o}>
+          <SelectItem
+            key={o}
+            value={o}
+            onSelect={() => {
+              if (value === o) {
+                onChange(null);
+              }
+            }}
+          >
             {o}
           </SelectItem>
         ))}
@@ -334,21 +351,20 @@ export function PortfolioFilters({
     onChange({ ...filters, [key]: value });
 
   const available = useMemo(() => {
-    const opts = (key: keyof FilterState, pick: (s: Study) => string, order?: string[]) =>
-      uniqSorted(filterStudies(studies, filters, key).map(pick), order);
+    const opts = (pick: (s: Study) => string, order?: string[]) => uniqSorted(studies.map(pick), order);
     const regionPool = new Set<string>();
-    for (const s of filterStudies(studies, filters, "region")) {
+    for (const s of studies) {
       for (const r of getStudyRegions(s)) regionPool.add(r);
     }
     return {
-      areas: opts("areas", (s) => s.therapeuticArea),
-      phases: opts("phase", (s) => s.phase, phaseOrder),
-      statuses: opts("status", (s) => s.status),
-      portfolios: opts("portfolio", (s) => s.portfolio),
-      programs: opts("program", (s) => s.program),
+      areas: opts((s) => s.therapeuticArea),
+      phases: opts((s) => s.phase, phaseOrder),
+      statuses: opts((s) => s.status),
+      portfolios: opts((s) => s.portfolio),
+      programs: opts((s) => s.program),
       regions: REGIONS.filter((r) => regionPool.has(r)),
     };
-  }, [studies, filters]);
+  }, [studies]);
 
 
 

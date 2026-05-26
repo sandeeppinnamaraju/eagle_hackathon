@@ -5,6 +5,37 @@ import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 const STUDIES_API_PATH = "/api/study-protocol/studies";
 const STUDIES_API_FALLBACK_URL = "/api/study-protocol/studies";
 
+function normalizeStudiesPage(payload: unknown, query: StudiesQuery): StudiesPage {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Unexpected API response shape");
+  }
+
+  const pageCandidate = payload as Partial<StudiesPage>;
+  const items = pageCandidate.items;
+
+  if (!Array.isArray(items)) {
+    throw new Error("Unexpected API response shape");
+  }
+
+  const page = typeof pageCandidate.page === "number" ? pageCandidate.page : query.page;
+  const limit = typeof pageCandidate.limit === "number" ? pageCandidate.limit : query.limit;
+  const total = typeof pageCandidate.total === "number" ? pageCandidate.total : page * limit + (items.length === limit ? 1 : 0);
+  const hasMore =
+    typeof pageCandidate.hasMore === "boolean"
+      ? pageCandidate.hasMore
+      : typeof pageCandidate.total === "number"
+        ? page * limit < pageCandidate.total
+        : items.length === limit;
+
+  return {
+    items,
+    page,
+    limit,
+    total,
+    hasMore,
+  };
+}
+
 /**
  * Real API implementation of IStudiesService.
  *
@@ -28,12 +59,7 @@ export const apiStudiesService: IStudiesService = {
       throw new Error(`Failed to fetch studies: ${response.status}`);
     }
 
-    const payload = (await response.json()) as StudiesPage;
-
-    if (!payload || !Array.isArray(payload.items)) {
-      throw new Error("Unexpected API response shape");
-    }
-
-    return payload;
+    const payload = (await response.json()) as unknown;
+    return normalizeStudiesPage(payload, query);
   },
 };
