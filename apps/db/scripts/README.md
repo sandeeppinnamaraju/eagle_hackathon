@@ -49,6 +49,10 @@ PGSSLMODE=require
 - The pipeline is safe for production: it does not drop tables or columns.
 - Primary keys are preserved if already defined in the schema JSON.
 - All scripts can be run individually if needed.
+- For creating login details and performance threshold tables, pgAdmin was used to create tables with initial values.
+- For subsequent updates and modifications, dedicated backend APIs are provided:
+   - PUT /admin/login-details
+   - PUT /admin/performance-threshold
 
 ---
 

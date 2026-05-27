@@ -3,6 +3,7 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
 
 from eagle_hackathon.apps.backend.models.protocol_model import (
     ProtocolSearchRequest
@@ -12,7 +13,7 @@ from eagle_hackathon.apps.backend.src.scripts.similarity_engine import (
     search_similar_protocols
 )
 
-from eagle_hackathon.apps.backend.services.protocol_service import get_protocol_details
+from eagle_hackathon.apps.backend.services.protocol_service import get_protocol_details, engine
 
 # =========================================
 # CREATE ROUTER
@@ -154,6 +155,48 @@ def search_protocols(
         "results": results
 
     }
+
+
+@router.get("/protocols/summary")
+def get_protocols_summary():
+    """Return protocol count and distinct therapeutic area count in one response."""
+
+    logger.info("Received protocols summary request")
+
+    try:
+        with engine.connect() as connection:
+            protocol_count_result = connection.execute(
+                text("SELECT COUNT(*) AS protocol_count FROM protocols")
+            ).scalar()
+
+            therapeutic_area_result = connection.execute(
+                text(
+                    """
+                    SELECT COUNT(DISTINCT therapeutic_area) AS therapeutic_area_count
+                    FROM protocols
+                    WHERE therapeutic_area IS NOT NULL
+                      AND TRIM(therapeutic_area) <> ''
+                    """
+                )
+            ).scalar()
+
+            return {
+                "success": True,
+                "protocolCount": int(protocol_count_result or 0),
+                "distinctTherapeuticAreaCount": int(therapeutic_area_result or 0),
+            }
+    except SQLAlchemyError:
+        logger.exception("Database error while fetching protocols summary")
+        raise HTTPException(
+            status_code=503,
+            detail="Protocols summary is temporarily unavailable due to a database connectivity issue.",
+        )
+    except Exception:
+        logger.exception("Unexpected error while fetching protocols summary")
+        raise HTTPException(
+            status_code=500,
+            detail="Unexpected server error while fetching protocols summary.",
+        )
 
 
 # =========================================
