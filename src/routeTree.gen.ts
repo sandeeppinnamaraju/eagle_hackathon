@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudiesRouteImport } from './routes/studies'
 import { Route as ProtocolSearchRouteImport } from './routes/protocol-search'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LoginRouteImport } from './routes/login'
@@ -17,6 +18,11 @@ import { Route as ConfigureRouteImport } from './routes/configure'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudiesStudyIdRouteImport } from './routes/studies_.$studyId'
 
+const StudiesRoute = StudiesRouteImport.update({
+  id: '/studies',
+  path: '/studies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProtocolSearchRoute = ProtocolSearchRouteImport.update({
   id: '/protocol-search',
   path: '/protocol-search',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/protocol-search': typeof ProtocolSearchRoute
+  '/studies': typeof StudiesRoute
   '/studies/$studyId': typeof StudiesStudyIdRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/protocol-search': typeof ProtocolSearchRoute
+  '/studies': typeof StudiesRoute
   '/studies/$studyId': typeof StudiesStudyIdRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/protocol-search': typeof ProtocolSearchRoute
+  '/studies': typeof StudiesRoute
   '/studies_/$studyId': typeof StudiesStudyIdRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/protocol-search'
+    | '/studies'
     | '/studies/$studyId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/protocol-search'
+    | '/studies'
     | '/studies/$studyId'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/protocol-search'
+    | '/studies'
     | '/studies_/$studyId'
   fileRoutesById: FileRoutesById
 }
@@ -118,11 +130,19 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PortfolioRoute: typeof PortfolioRoute
   ProtocolSearchRoute: typeof ProtocolSearchRoute
+  StudiesRoute: typeof StudiesRoute
   StudiesStudyIdRoute: typeof StudiesStudyIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/studies': {
+      id: '/studies'
+      path: '/studies'
+      fullPath: '/studies'
+      preLoaderRoute: typeof StudiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/protocol-search': {
       id: '/protocol-search'
       path: '/protocol-search'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PortfolioRoute: PortfolioRoute,
   ProtocolSearchRoute: ProtocolSearchRoute,
+  StudiesRoute: StudiesRoute,
   StudiesStudyIdRoute: StudiesStudyIdRoute,
 }
 export const routeTree = rootRouteImport
