@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LoginPage } from "./login";
+import { HomePage } from "@/components/home/home-page";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -8,5 +8,5 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Pilot every protocol with confidence. Real-time visibility across your entire clinical portfolio." },
     ],
   }),
-  component: LoginPage,
+  component: HomePage,
 });
