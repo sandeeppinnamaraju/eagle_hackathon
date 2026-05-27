@@ -258,22 +258,6 @@ function StudyOverviewPage() {
       onViewChange={setView}
       expanded={expanded}
       onToggle={toggle}
-      onSelectPerformanceTarget={(kind, id) => {
-        if (kind === "site") {
-          setView("site");
-          setExpanded((p) => ({ ...p, [`s-${id}`]: true }));
-          setTimeout(() => {
-            document.getElementById(`site-row-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
-          }, 50);
-          return;
-        }
-
-        setView("country");
-        setExpanded((p) => ({ ...p, [`c-${id}`]: true }));
-        setTimeout(() => {
-          document.getElementById(`country-row-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 50);
-      }}
       onSelectSiteFromCountry={(id) => {
         setView("site");
         setExpanded((p) => ({ ...p, [`s-${id}`]: true }));

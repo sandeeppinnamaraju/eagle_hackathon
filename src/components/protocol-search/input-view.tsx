@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { therapeuticAreas } from "@/lib/data";
+import { useProtocolsSummary } from "@/hooks/use-protocols-summary";
 import {
   EligibilityCriteriaSection,
   FindProtocolsButton,
@@ -13,6 +14,7 @@ import { buildSearchRequest, saveProtocolSearchParams } from "@/lib/protocol-sea
 
 export function ProtocolSearchInputView() {
   const navigate = useNavigate({ from: "/protocol-search" });
+  const summaryStats = useProtocolsSummary();
   const [summary, setSummary] = useState("");
   const [inclusion, setInclusion] = useState("");
   const [exclusion, setExclusion] = useState("");
@@ -53,7 +55,10 @@ export function ProtocolSearchInputView() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
-      <ProtocolSearchHero protocolsIndexedLabel="36 protocols indexed" therapyAreasLabel="6 therapy areas" />
+      <ProtocolSearchHero
+        protocolsIndexedLabel={summaryStats.protocolsIndexedLabel}
+        therapyAreasLabel={summaryStats.therapyAreasLabel}
+      />
 
       <section className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-card">
         <TherapeuticAreaFilterSection

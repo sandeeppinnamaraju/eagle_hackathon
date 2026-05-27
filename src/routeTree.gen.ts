@@ -9,11 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudiesRouteImport } from './routes/studies'
 import { Route as ProtocolSearchRouteImport } from './routes/protocol-search'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as ConfigureRouteImport } from './routes/configure'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudiesStudyIdRouteImport } from './routes/studies_.$studyId'
 
+const StudiesRoute = StudiesRouteImport.update({
+  id: '/studies',
+  path: '/studies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProtocolSearchRoute = ProtocolSearchRouteImport.update({
   id: '/protocol-search',
   path: '/protocol-search',
@@ -22,6 +31,21 @@ const ProtocolSearchRoute = ProtocolSearchRouteImport.update({
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigureRoute = ConfigureRouteImport.update({
+  id: '/configure',
+  path: '/configure',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,45 +61,88 @@ const StudiesStudyIdRoute = StudiesStudyIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/configure': typeof ConfigureRoute
+  '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/protocol-search': typeof ProtocolSearchRoute
+  '/studies': typeof StudiesRoute
   '/studies/$studyId': typeof StudiesStudyIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/configure': typeof ConfigureRoute
+  '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/protocol-search': typeof ProtocolSearchRoute
+  '/studies': typeof StudiesRoute
   '/studies/$studyId': typeof StudiesStudyIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/configure': typeof ConfigureRoute
+  '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/protocol-search': typeof ProtocolSearchRoute
+  '/studies': typeof StudiesRoute
   '/studies_/$studyId': typeof StudiesStudyIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/portfolio' | '/protocol-search' | '/studies/$studyId'
+  fullPaths:
+    | '/'
+    | '/configure'
+    | '/home'
+    | '/login'
+    | '/portfolio'
+    | '/protocol-search'
+    | '/studies'
+    | '/studies/$studyId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/portfolio' | '/protocol-search' | '/studies/$studyId'
+  to:
+    | '/'
+    | '/configure'
+    | '/home'
+    | '/login'
+    | '/portfolio'
+    | '/protocol-search'
+    | '/studies'
+    | '/studies/$studyId'
   id:
     | '__root__'
     | '/'
+    | '/configure'
+    | '/home'
+    | '/login'
     | '/portfolio'
     | '/protocol-search'
+    | '/studies'
     | '/studies_/$studyId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConfigureRoute: typeof ConfigureRoute
+  HomeRoute: typeof HomeRoute
+  LoginRoute: typeof LoginRoute
   PortfolioRoute: typeof PortfolioRoute
   ProtocolSearchRoute: typeof ProtocolSearchRoute
+  StudiesRoute: typeof StudiesRoute
   StudiesStudyIdRoute: typeof StudiesStudyIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/studies': {
+      id: '/studies'
+      path: '/studies'
+      fullPath: '/studies'
+      preLoaderRoute: typeof StudiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/protocol-search': {
       id: '/protocol-search'
       path: '/protocol-search'
@@ -88,6 +155,27 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configure': {
+      id: '/configure'
+      path: '/configure'
+      fullPath: '/configure'
+      preLoaderRoute: typeof ConfigureRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -109,8 +197,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConfigureRoute: ConfigureRoute,
+  HomeRoute: HomeRoute,
+  LoginRoute: LoginRoute,
   PortfolioRoute: PortfolioRoute,
   ProtocolSearchRoute: ProtocolSearchRoute,
+  StudiesRoute: StudiesRoute,
   StudiesStudyIdRoute: StudiesStudyIdRoute,
 }
 export const routeTree = rootRouteImport

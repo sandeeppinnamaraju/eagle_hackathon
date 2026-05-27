@@ -11,25 +11,6 @@ export interface SiteRow {
   actual: number;
   pct: number;
   status: "ON HOLD" | "SCREENING" | "CLOSED" | "ENROLLING";
-  details?: {
-    siteId?: string;
-    country?: string;
-    status?: "ON HOLD" | "SCREENING" | "CLOSED" | "ENROLLING";
-    activatedOn?: string | null;
-    pi?: string | null;
-  };
-  screeningFunnel?: {
-    totalScreened?: number;
-    screenFailure?: number;
-    enrolled?: number;
-    target?: number;
-    percentEnrolled?: number;
-  };
-  monthlyEnrollment?: Array<{
-    month: string;
-    planned: number;
-    actual: number;
-  }>;
 }
 
 export interface PerfItem {
@@ -103,7 +84,6 @@ export interface StudyOverviewContentProps {
   onViewChange: (view: BreakdownView) => void;
   expanded: Record<string, boolean>;
   onToggle: (key: string) => void;
-  onSelectPerformanceTarget: (kind: "country" | "site", id: string) => void;
   onSelectSiteFromCountry: (siteId: string) => void;
   cumulative: CumulativePoint[];
   rates: RatePoint[];
