@@ -20,6 +20,12 @@ This folder contains scripts to automate schema management and data loading from
    - Orchestrates all the above steps in sequence.
    - Usage: `python run_etl_pipeline.py`
 
+5. **load_login_details.py**
+   - Reads `user_credentials.xlsx` and loads users into `public.login_details`.
+   - Hashes each plaintext password with bcrypt before storing it.
+   - Updates existing users by username; inserts new users otherwise.
+   - Usage: `python load_login_details.py --excel ../data/user_credentials.xlsx`
+
 ## Prerequisites
 - Python 3.8+
 - PostgreSQL database
