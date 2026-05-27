@@ -17,7 +17,7 @@ module.exports = defineConfig({
     ['json', { outputFile: 'evidence/latest-playwright-report.json' }],
   ],
   use: {
-    baseURL: process.env.TEST_BASE_URL || 'https://willfully-grumble-likely.ngrok-free.dev',
+    baseURL: process.env.TEST_BASE_URL || 'https://release-switching-veteran-usb.trycloudflare.com',
     headless: true,
     screenshot: 'on',
     trace: 'retain-on-failure',

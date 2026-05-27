@@ -1,6 +1,7 @@
 const { test, expect } = require('../utils/stepTest');
 
 const KPI_PATH = '/api/study-protocol/kpi-details';
+const KPI_PATH_WITH_PAGINATION = `${KPI_PATH}?page=1&limit=20`;
 
 async function parseJsonBody(response) {
   const contentType = response.headers()['content-type'] || '';
@@ -46,12 +47,12 @@ async function assertKpiSuccess(response) {
 
 test.describe('KPI details API', () => {
   test('@smoke scenario 17: KPI details happy path', async ({ request }) => {
-    const response = await request.get(KPI_PATH);
+    const response = await request.get(KPI_PATH_WITH_PAGINATION);
     await assertKpiSuccess(response);
   });
 
   test('scenario 18: KPI numeric shape checks', async ({ request }) => {
-    const response = await request.get(KPI_PATH);
+    const response = await request.get(KPI_PATH_WITH_PAGINATION);
     const body = await assertKpiSuccess(response);
 
     const sum = body.on_track.percentage + body.off_track_or_at_risk.percentage;
@@ -60,7 +61,7 @@ test.describe('KPI details API', () => {
   });
 
   test('scenario 21: KPI method not allowed', async ({ request }) => {
-    const response = await request.post(KPI_PATH, {
+    const response = await request.post(KPI_PATH_WITH_PAGINATION, {
       headers: {
         'Content-Type': 'application/json',
       },

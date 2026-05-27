@@ -2,12 +2,13 @@ const { test, expect } = require('../utils/stepTest');
 
 const RUN_ENV_DEPENDENT = process.env.RUN_ENV_DEPENDENT === 'true';
 const KPI_PATH = '/api/study-protocol/kpi-details';
+const KPI_PATH_WITH_PAGINATION = `${KPI_PATH}?page=1&limit=20`;
 
 test.describe('Environment dependent API checks', () => {
   test.skip(!RUN_ENV_DEPENDENT, 'Set RUN_ENV_DEPENDENT=true to run env-dependent scenarios.');
 
   test('@manual scenario 19: KPI empty data edge case', async ({ request }) => {
-    const response = await request.get(KPI_PATH);
+    const response = await request.get(KPI_PATH_WITH_PAGINATION);
     expect(response.status()).toBe(200);
 
     const body = await response.json();
@@ -22,7 +23,7 @@ test.describe('Environment dependent API checks', () => {
   });
 
   test('@manual scenario 20: KPI DB outage behavior', async ({ request }) => {
-    const response = await request.get(KPI_PATH);
+    const response = await request.get(KPI_PATH_WITH_PAGINATION);
     expect(response.status()).toBe(500);
 
     const body = await response.json();
