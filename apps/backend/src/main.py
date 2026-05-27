@@ -14,6 +14,7 @@ settings = get_settings()
 from eagle_hackathon.apps.backend.src.routers.fd_study_protocol import router as study_protocol_router
 from eagle_hackathon.apps.backend.src.routers.fd_protocol_similarity import router as protocol_similarity_router
 from eagle_hackathon.apps.backend.src.routers.fd_study_overview import router as study_overview_router
+from eagle_hackathon.apps.backend.src.routers.fd_admin_config import router as admin_config_router
 
 app = FastAPI(title=settings.app_name, version=settings.app_version)
 
@@ -29,11 +30,13 @@ app.add_middleware(
 app.include_router(study_protocol_router, prefix=settings.api_prefix)
 app.include_router(protocol_similarity_router, prefix=settings.api_prefix)
 app.include_router(study_overview_router, prefix=settings.api_prefix)
+app.include_router(admin_config_router, prefix=settings.api_prefix)
 
 # Versioned endpoints for future migrations.
 app.include_router(study_protocol_router, prefix=settings.api_version_prefix)
 app.include_router(protocol_similarity_router, prefix=settings.api_version_prefix)
 app.include_router(study_overview_router, prefix=settings.api_version_prefix)
+app.include_router(admin_config_router, prefix=settings.api_version_prefix)
 
 
 if __name__ == "__main__":
