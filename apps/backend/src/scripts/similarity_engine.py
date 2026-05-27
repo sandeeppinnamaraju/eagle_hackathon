@@ -1,7 +1,10 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from eagle_hackathon.apps.backend.services.protocol_service import get_protocols
+try:
+    from eagle_hackathon.apps.backend.services.protocol_service import get_protocols
+except ImportError:
+    from services.protocol_service import get_protocols
 
 
 # =========================================
