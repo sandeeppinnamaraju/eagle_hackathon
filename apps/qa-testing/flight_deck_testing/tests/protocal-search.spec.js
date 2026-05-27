@@ -1,12 +1,16 @@
 
 const { test, expect } = require('../utils/stepTest');
 
-const PROTOCOL_SEARCH_BASE_URL = process.env.TEST_BASE_URL || 'https://release-switching-veteran-usb.trycloudflare.com';
+// Set base URL for this test file only (easy to change)
+const BASE_URL = 'https://release-switching-veteran-usb.trycloudflare.com/';
 const PROTOCOL_SEARCH_PATH = '/protocol-search?mode=input';
+
+// Helper to get full URL
+const getProtocolSearchUrl = () => BASE_URL.replace(/\/$/, '') + PROTOCOL_SEARCH_PATH;
 
 // --- Helper functions ---
 async function getSearchUnavailableReason(page) {
-    const response = await page.goto(PROTOCOL_SEARCH_PATH);
+    const response = await page.goto(BASE_URL.replace(/\/$/, '') + PROTOCOL_SEARCH_PATH);
     await page.waitForLoadState('networkidle').catch(() => {});
 
     const hasHeading = await page.getByText(/Protocol Similarity Search/i).first().isVisible().catch(() => false);
@@ -27,7 +31,7 @@ async function getSearchUnavailableReason(page) {
 }
 
 async function openHome(page) {
-    await page.goto(PROTOCOL_SEARCH_BASE_URL, { waitUntil: 'domcontentloaded' });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
 }
 
 async function gotoSearch(page) {

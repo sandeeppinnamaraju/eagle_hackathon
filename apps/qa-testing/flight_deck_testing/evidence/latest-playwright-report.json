@@ -106,56 +106,20 @@
   },
   "suites": [
     {
-      "title": "studies-happy.spec.js",
-      "file": "studies-happy.spec.js",
+      "title": "story2-study-overview.spec.js",
+      "file": "story2-study-overview.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Studies API happy paths",
-          "file": "studies-happy.spec.js",
-          "line": 91,
+          "title": "Story 2 - Study Overview",
+          "file": "story2-study-overview.spec.js",
+          "line": 7,
           "column": 6,
           "specs": [
             {
-              "title": "@smoke scenario 1: studies happy path (required params)",
-              "ok": true,
-              "tags": [
-                "smoke"
-              ],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 345,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:03.728Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-86b3038d98ba7537b8fb",
-              "file": "studies-happy.spec.js",
-              "line": 92,
-              "column": 3
-            },
-            {
-              "title": "scenario 2: studies pagination page 2",
+              "title": "smooth end-to-end journey: complete Story 2 checks in a single browser flow",
               "ok": true,
               "tags": [],
               "tests": [
@@ -170,260 +134,28 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 228,
+                      "duration": 28901,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-27T05:00:04.193Z",
+                      "startTime": "2026-05-27T05:21:29.413Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-51f05-ks-in-a-single-browser-flow-chromium\\test-finished-1.png"
+                        }
+                      ]
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "5aa4e762eda6d555335a-06ac15b9502533e221d8",
-              "file": "studies-happy.spec.js",
-              "line": 97,
-              "column": 3
-            },
-            {
-              "title": "scenario 3: studies search filter",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 348,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:04.581Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-aa1a4b4077d35585afd9",
-              "file": "studies-happy.spec.js",
-              "line": 102,
-              "column": 3
-            },
-            {
-              "title": "scenario 4: studies therapeutic area single",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 10179,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:05.047Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-8338b2263e30d97af857",
-              "file": "studies-happy.spec.js",
-              "line": 107,
-              "column": 3
-            },
-            {
-              "title": "scenario 5: studies therapeutic area multi-select",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 349,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:15.263Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-0ce41da33b69557c77c5",
-              "file": "studies-happy.spec.js",
-              "line": 118,
-              "column": 3
-            },
-            {
-              "title": "scenario 6: studies valid phase filter",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 371,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:15.702Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-edc9071fa0c2706a82c3",
-              "file": "studies-happy.spec.js",
-              "line": 136,
-              "column": 3
-            },
-            {
-              "title": "scenario 7: studies valid status filter",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 328,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:16.168Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-24436479bfb34e6410b3",
-              "file": "studies-happy.spec.js",
-              "line": 147,
-              "column": 3
-            },
-            {
-              "title": "scenario 8: studies combined filters",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 325,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:16.595Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-bcec58940dd45ccc9b27",
-              "file": "studies-happy.spec.js",
-              "line": 158,
-              "column": 3
-            },
-            {
-              "title": "scenario 9: studies valid sorting",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 315,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-05-27T05:00:16.960Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "5aa4e762eda6d555335a-1064b6703e5941508b2e",
-              "file": "studies-happy.spec.js",
-              "line": 177,
+              "id": "a6888459a7d5473cfa4a-62c29e1c396316c8894d",
+              "file": "story2-study-overview.spec.js",
+              "line": 87,
               "column": 3
             }
           ]
@@ -433,9 +165,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-05-27T05:00:01.901Z",
-    "duration": 20635.142,
-    "expected": 9,
+    "startTime": "2026-05-27T05:21:27.399Z",
+    "duration": 39614.026,
+    "expected": 1,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

@@ -1,7 +1,8 @@
 const { test, expect } = require('../utils/stepTest');
 const { EXPECTED_COLUMNS } = require('../fixtures/dashboardData');
 
-const STORY2_BASE_URL = process.env.TEST_BASE_URL || 'https://release-switching-veteran-usb.trycloudflare.com';
+// Set base URL for this test file only (easy to change)
+const STORY2_BASE_URL = 'https://release-switching-veteran-usb.trycloudflare.com';
 
 test.describe('Story 2 - Study Overview', () => {
   test.describe.configure({ mode: 'serial' });

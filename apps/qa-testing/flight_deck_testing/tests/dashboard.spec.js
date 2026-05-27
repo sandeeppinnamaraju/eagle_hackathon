@@ -5,8 +5,8 @@ test.describe('Study Portfolio Dashboard', () => {
   test.describe.configure({ mode: 'serial', timeout: 90_000 });
 
 
-  // Set base URL for demo or CI: prefer env, else use demo default
-  const BASE_URL = process.env.TEST_BASE_URL || 'https://release-switching-veteran-usb.trycloudflare.com/';
+  // Set base URL for this test file only (easy to change)
+  const BASE_URL = 'https://release-switching-veteran-usb.trycloudflare.com/';
 
   let context;
   let page;
