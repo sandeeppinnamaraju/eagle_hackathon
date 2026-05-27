@@ -7,7 +7,7 @@ from functools import lru_cache
 from typing import List, Optional
 
 import psycopg2
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi import Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -111,8 +111,48 @@ SORT_COLUMN_MAP = {
     SortBy.PERCENT_VS_PLAN.value: "enrollment_plan_percent",
     SortBy.COUNTRIES.value: "countries_count",
     SortBy.SITES.value: "sites_count",
-    SortBy.PERFORMANCE.value: "performance_status",
+    SortBy.PERFORMANCE.value: "CASE WHEN COALESCE(enrollment_plan_percent, 0) > 95 THEN 3 WHEN COALESCE(enrollment_plan_percent, 0) >= 80 AND COALESCE(enrollment_plan_percent, 0) <= 94 THEN 2 ELSE 1 END",
 }
+
+
+def _clean_optional_text(raw_value: object) -> Optional[str]:
+    if raw_value is None:
+        return None
+    if not isinstance(raw_value, str):
+        raise ValueError("Invalid query parameter")
+
+    cleaned = raw_value.strip()
+    return cleaned or None
+
+
+def _clean_required_text(raw_value: object) -> str:
+    cleaned = _clean_optional_text(raw_value)
+    if not cleaned:
+        raise ValueError("Invalid query parameter")
+    return cleaned
+
+
+def _clean_optional_text_list(raw_value: object) -> Optional[List[str]]:
+    if raw_value is None:
+        return None
+    if not isinstance(raw_value, list):
+        raise ValueError("Invalid query parameter")
+
+    cleaned_values: List[str] = []
+    for item in raw_value:
+        if not isinstance(item, str):
+            raise ValueError("Invalid query parameter")
+        cleaned_item = item.strip()
+        if not cleaned_item:
+            raise ValueError("Invalid query parameter")
+        cleaned_values.append(cleaned_item)
+
+    return cleaned_values or None
+
+
+def _validate_date_range(start_date: Optional[date], end_date: Optional[date]) -> None:
+    if start_date and end_date and start_date > end_date:
+        raise ValueError("Invalid query parameter")
 
 
 def _parse_positive_int(raw_value: str) -> Optional[int]:
@@ -201,6 +241,15 @@ def _normalize_performance(performance: Optional[str]) -> StudyPerformance:
     return StudyPerformance.UNSET
 
 
+def _performance_from_percent(value: Optional[float]) -> StudyPerformance:
+    percent = float(value or 0)
+    if percent > 95:
+        return StudyPerformance.ON_TRACK
+    if 80 <= percent <= 94:
+        return StudyPerformance.OFF_TRACK
+    return StudyPerformance.AT_RISK
+
+
 def _build_trend(actual: Optional[float], target: Optional[float]) -> List[float]:
     anchor = float(actual or 0)
     if anchor <= 0:
@@ -243,9 +292,12 @@ def _apply_fpi_lpo_date_filters(
         params.append(lpo_end_date)
 
 
-def _parse_flexible_date(raw_value: Optional[str], *, is_end: bool) -> Optional[date]:
+def _parse_flexible_date(raw_value: object, *, is_end: bool) -> Optional[date]:
     if raw_value is None:
         return None
+
+    if not isinstance(raw_value, str):
+        raise ValueError("Invalid date format")
 
     raw = raw_value.strip()
     if not raw:
@@ -435,6 +487,25 @@ def get_studies(
     sort_by: Optional[str] = Query(SortBy.ID.value, alias="sortBy"),
     sort_order: Optional[str] = Query(SortOrder.ASC.value, alias="sortOrder"),
 ):
+    try:
+        page = _clean_required_text(page)
+        limit = _clean_required_text(limit)
+        search = _clean_optional_text(search)
+        therapeutic_area = _clean_optional_text_list(therapeutic_area)
+        phase = _clean_optional_text(phase)
+        status = _clean_optional_text(status)
+        portfolio = _clean_optional_text(portfolio)
+        program = _clean_optional_text(program)
+        region = _clean_optional_text(region)
+        fpi_start_date_raw = _clean_optional_text(fpi_start_date_raw)
+        fpi_end_date_raw = _clean_optional_text(fpi_end_date_raw)
+        lpo_start_date_raw = _clean_optional_text(lpo_start_date_raw)
+        lpo_end_date_raw = _clean_optional_text(lpo_end_date_raw)
+        sort_by = _clean_required_text(sort_by)
+        sort_order = _clean_required_text(sort_order)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
     parsed_page = _parse_positive_int(page)
     parsed_limit = _parse_positive_int(limit)
     if not parsed_page or not parsed_limit:
@@ -454,6 +525,8 @@ def get_studies(
         parsed_fpi_end_date = _parse_flexible_date(fpi_end_date_raw, is_end=True)
         parsed_lpo_start_date = _parse_flexible_date(lpo_start_date_raw, is_end=False)
         parsed_lpo_end_date = _parse_flexible_date(lpo_end_date_raw, is_end=True)
+        _validate_date_range(parsed_fpi_start_date, parsed_fpi_end_date)
+        _validate_date_range(parsed_lpo_start_date, parsed_lpo_end_date)
     except ValueError:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
@@ -490,7 +563,7 @@ def get_studies(
         SELECT
             study_id, phase, therapeutic_area, indication, title, portfolio, program,
             study_status, project_priority, target_enrollment, actual_enrollment,
-            enrollment_plan_percent, countries_count, sites_count, performance_status
+            enrollment_plan_percent, countries_count, sites_count
         FROM public.studies
         {where_sql}
         ORDER BY {order_by_clause}
@@ -524,7 +597,6 @@ def get_studies(
                 db_percent_vs_plan,
                 db_countries,
                 db_sites,
-                db_performance,
             ) = row
 
             items.append(
@@ -543,7 +615,7 @@ def get_studies(
                     percentVsPlan=(float(db_percent_vs_plan) if db_percent_vs_plan is not None else None),
                     countries=int(db_countries or 0),
                     sites=int(db_sites or 0),
-                    performance=_normalize_performance(db_performance),
+                    performance=_performance_from_percent(db_percent_vs_plan),
                     trend=_build_trend(db_actual, db_target),
                 )
             )
@@ -623,7 +695,7 @@ def get_on_track_percentage():
                         ) AS total_active_studies,
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
-                              AND UPPER(COALESCE(performance_status, '')) = 'ON_TRACK'
+                              AND COALESCE(enrollment_plan_percent, 0) > 95
                         ) AS on_track_studies_count
                     FROM public.studies
                     """
@@ -659,7 +731,7 @@ def get_off_track_or_at_risk_percentage():
                         ) AS total_active_studies,
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
-                              AND UPPER(COALESCE(performance_status, '')) IN ('OFF_TRACK', 'AT_RISK')
+                              AND COALESCE(enrollment_plan_percent, 0) <= 95
                         ) AS off_track_or_at_risk_studies_count
                     FROM public.studies
                     """
@@ -750,6 +822,7 @@ def get_average_velocity_vs_plan():
 
 @router.get("/study-protocol/kpi-details")
 def get_kpi_details(
+    request: Request = None,
     search: Optional[str] = Query(None),
     therapeutic_area: Optional[List[str]] = Query(None, alias="therapeuticArea"),
     phase: Optional[str] = Query(None),
@@ -762,12 +835,32 @@ def get_kpi_details(
     lpo_start_date_raw: Optional[str] = Query(None, alias="lpoStartDate", description="Apply on actual_lpo_date >= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
     lpo_end_date_raw: Optional[str] = Query(None, alias="lpoEndDate", description="Apply on planned_lpo_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
 ):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
     try:
+        search = _clean_optional_text(search)
+        therapeutic_area = _clean_optional_text_list(therapeutic_area)
+        phase = _clean_optional_text(phase)
+        status = _clean_optional_text(status)
+        portfolio = _clean_optional_text(portfolio)
+        program = _clean_optional_text(program)
+        region = _clean_optional_text(region)
+        fpi_start_date_raw = _clean_optional_text(fpi_start_date_raw)
+        fpi_end_date_raw = _clean_optional_text(fpi_end_date_raw)
+        lpo_start_date_raw = _clean_optional_text(lpo_start_date_raw)
+        lpo_end_date_raw = _clean_optional_text(lpo_end_date_raw)
         parsed_fpi_start_date = _parse_flexible_date(fpi_start_date_raw, is_end=False)
         parsed_fpi_end_date = _parse_flexible_date(fpi_end_date_raw, is_end=True)
         parsed_lpo_start_date = _parse_flexible_date(lpo_start_date_raw, is_end=False)
         parsed_lpo_end_date = _parse_flexible_date(lpo_end_date_raw, is_end=True)
+        _validate_date_range(parsed_fpi_start_date, parsed_fpi_end_date)
+        _validate_date_range(parsed_lpo_start_date, parsed_lpo_end_date)
     except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    allowed_statuses = {item.value for item in StudyStatus}
+    if status and status not in allowed_statuses:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
     try:
@@ -805,12 +898,12 @@ def get_kpi_details(
 
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
-                              AND UPPER(COALESCE(performance_status, '')) = 'ON_TRACK'
+                              AND COALESCE(enrollment_plan_percent, 0) > 95
                         ) AS on_track_count,
 
                         COUNT(*) FILTER (
                             WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
-                              AND UPPER(COALESCE(performance_status, '')) IN ('OFF_TRACK', 'AT_RISK')
+                              AND COALESCE(enrollment_plan_percent, 0) <= 95
                         ) AS off_track_or_at_risk_count,
 
                         COALESCE(

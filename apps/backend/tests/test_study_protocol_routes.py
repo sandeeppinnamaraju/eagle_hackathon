@@ -43,6 +43,11 @@ class FakeConnection:
         return False
 
 
+class FakeRequest:
+    def __init__(self, method: str):
+        self.method = method
+
+
 def test_get_studies_rejects_invalid_page_limit() -> None:
     response = study_router.get_studies(page="0", limit="10")
     assert isinstance(response, JSONResponse)
@@ -51,6 +56,18 @@ def test_get_studies_rejects_invalid_page_limit() -> None:
 
 def test_get_studies_rejects_invalid_status() -> None:
     response = study_router.get_studies(page="1", limit="10", status="Unknown")
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+def test_get_studies_rejects_reversed_date_range() -> None:
+    response = study_router.get_studies(
+        page="1",
+        limit="10",
+        fpi_start_date_raw="2026-02-01",
+        fpi_end_date_raw="2026-01-01",
+    )
+
     assert isinstance(response, JSONResponse)
     assert response.status_code == 400
 
@@ -108,5 +125,74 @@ def test_db_version_success(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_get_kpi_details_rejects_invalid_date() -> None:
     response = study_router.get_kpi_details(fpi_start_date_raw="not-a-date")
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+def test_get_kpi_details_rejects_blank_therapeutic_area() -> None:
+    response = study_router.get_kpi_details(therapeutic_area=[" "])
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+def test_get_studies_rejects_non_string_date_input() -> None:
+    response = study_router.get_studies(
+        page="1",
+        limit="10",
+        fpi_start_date_raw=123,
+    )
+
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+def test_get_kpi_details_rejects_invalid_status() -> None:
+    response = study_router.get_kpi_details(status="Unknown")
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+def test_get_kpi_details_returns_405_for_non_get_request() -> None:
+    response = study_router.get_kpi_details(request=FakeRequest("POST"))
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 405
+
+
+@pytest.mark.parametrize(
+    ("page", "limit"),
+    [
+        (None, "10"),
+        ("1", None),
+        (" ", "10"),
+        ("1", " "),
+        ("abc", "10"),
+        ("1", "xyz"),
+        ([], "10"),
+        ("1", {}),
+    ],
+)
+def test_get_studies_rejects_malformed_page_or_limit(page, limit) -> None:
+    response = study_router.get_studies(page=page, limit=limit)
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize("invalid_sort_by", [None, "", "unknown", [], {}])
+def test_get_studies_rejects_invalid_sort_by(invalid_sort_by) -> None:
+    response = study_router.get_studies(page="1", limit="10", sort_by=invalid_sort_by)
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize("invalid_sort_order", [None, "", "up", "descending", [], {}])
+def test_get_studies_rejects_invalid_sort_order(invalid_sort_order) -> None:
+    response = study_router.get_studies(page="1", limit="10", sort_order=invalid_sort_order)
+    assert isinstance(response, JSONResponse)
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize("invalid_date", [[], {}, 123, 45.6])
+def test_get_kpi_details_rejects_non_string_date_inputs(invalid_date) -> None:
+    response = study_router.get_kpi_details(fpi_start_date_raw=invalid_date)
     assert isinstance(response, JSONResponse)
     assert response.status_code == 400
