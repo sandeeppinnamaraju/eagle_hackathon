@@ -24,8 +24,8 @@ DATABASE_DIR = SCRIPT_DIR.parent
 DATA_DIR = (DATABASE_DIR / "data").resolve()
 SCHEMA_FILE = (DATA_DIR / "flightdeck-schema-definition.json").resolve()
 
-# Use the first xlsx found in data directory.
-excel_candidates = sorted(DATA_DIR.glob("*.xlsx"))
+# Use the latest xlsx found in data directory.
+excel_candidates = sorted(DATA_DIR.glob("*.xlsx"), key=lambda path: path.stat().st_mtime, reverse=True)
 if not excel_candidates:
     raise FileNotFoundError(f"No Excel file found in {DATA_DIR}")
 EXCEL_FILE = excel_candidates[0].resolve()

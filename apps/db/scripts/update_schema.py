@@ -13,8 +13,9 @@ import json
 import logging
 import os
 from pathlib import Path
+from urllib.parse import quote_plus
 from sqlalchemy import (
-    Column, Float, Integer, MetaData, Table, Text, create_engine, inspect
+    Column, Float, Integer, MetaData, Table, Text, create_engine, inspect, text
 )
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.types import NullType
@@ -33,11 +34,25 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DATABASE_DIR = SCRIPT_DIR.parent
 DATA_DIR = (DATABASE_DIR / "data").resolve()
 SCHEMA_FILE = (DATA_DIR / "flightdeck-schema-definition.json").resolve()
-ENV_PATH = (SCRIPT_DIR.parent / ".env").resolve()
 
-# Load env
-if ENV_PATH.exists():
-    load_dotenv(dotenv_path=ENV_PATH, override=False)
+
+def _load_env_files():
+    env_candidates = []
+    for candidate in [
+        (DATABASE_DIR / ".env").resolve(),
+        (DATABASE_DIR.parent / "database" / ".env").resolve(),
+        (DATABASE_DIR.parent / ".env").resolve(),
+        (DATABASE_DIR.parent.parent / ".env").resolve(),
+    ]:
+        if candidate not in env_candidates:
+            env_candidates.append(candidate)
+
+    for env_file in env_candidates:
+        if env_file.exists():
+            load_dotenv(dotenv_path=env_file, override=False)
+
+
+_load_env_files()
 
 required = ["PGHOST", "PGUSER", "PGPORT", "PGDATABASE", "PGPASSWORD"]
 values = {key: os.getenv(key) for key in required}
@@ -49,10 +64,10 @@ if missing:
         f"{', '.join(missing)}. Set them in a .env file or shell environment."
     )
 
-from urllib.parse import quote_plus
+encoded_user = quote_plus(values["PGUSER"])
 encoded_password = quote_plus(values["PGPASSWORD"])
 DATABASE_URL = (
-    f"postgresql+psycopg2://{values['PGUSER']}:{encoded_password}"
+    f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
     f"@{values['PGHOST']}:{values['PGPORT']}/{values['PGDATABASE']}"
     f"?sslmode={ssl_mode}"
 )
@@ -81,14 +96,14 @@ def add_column(engine, table_name, col_name, col_type):
     sql_type = col_type().compile(engine.dialect)
     alter_sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{col_name}" {sql_type};'
     with engine.begin() as conn:
-        conn.execute(alter_sql)
+        conn.execute(text(alter_sql))
     logging.info(f"Added column {col_name} to {table_name}")
 
 def alter_column_type(engine, table_name, col_name, col_type):
     sql_type = col_type().compile(engine.dialect)
     alter_sql = f'ALTER TABLE "{table_name}" ALTER COLUMN "{col_name}" TYPE {sql_type} USING "{col_name}"::{sql_type};'
     with engine.begin() as conn:
-        conn.execute(alter_sql)
+        conn.execute(text(alter_sql))
     logging.info(f"Altered column {col_name} in {table_name} to type {sql_type}")
 
 def create_table(engine, table_name, schema):
