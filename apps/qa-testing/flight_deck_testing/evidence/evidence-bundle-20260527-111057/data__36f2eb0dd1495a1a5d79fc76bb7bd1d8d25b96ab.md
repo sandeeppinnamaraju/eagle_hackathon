@@ -1,0 +1,214 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: studies-happy.spec.js >> Studies API happy paths >> @smoke scenario 1: studies happy path (required params)
+- Location: tests\studies-happy.spec.js:92:3
+
+# Error details
+
+```
+TypeError: apiRequestContext.get: Invalid URL
+```
+
+# Test source
+
+```ts
+  1   | const { test, expect } = require('../utils/stepTest');
+  2   | 
+  3   | const STUDIES_PATH = '/api/study-protocol/studies';
+  4   | 
+  5   | const REQUIRED_STUDY_KEYS = [
+  6   |   'id',
+  7   |   'phase',
+  8   |   'therapeuticArea',
+  9   |   'indication',
+  10  |   'title',
+  11  |   'portfolio',
+  12  |   'program',
+  13  |   'status',
+  14  |   'priority',
+  15  |   'target',
+  16  |   'actual',
+  17  |   'percentVsPlan',
+  18  |   'countries',
+  19  |   'sites',
+  20  |   'performance',
+  21  |   'trend',
+  22  | ];
+  23  | 
+  24  | async function parseJsonBody(response) {
+  25  |   const contentType = response.headers()['content-type'] || '';
+  26  |   const text = await response.text();
+  27  | 
+  28  |   expect(contentType.toLowerCase()).toContain('application/json');
+  29  | 
+  30  |   try {
+  31  |     return JSON.parse(text);
+  32  |   } catch {
+  33  |     throw new Error(`Expected JSON response but received: ${text.slice(0, 250)}`);
+  34  |   }
+  35  | }
+  36  | 
+  37  | async function assertStudiesSuccess(response, expectedPage, expectedLimit) {
+  38  |   expect(response.status()).toBe(200);
+  39  | 
+  40  |   const body = await parseJsonBody(response);
+  41  |   expect(typeof body).toBe('object');
+  42  |   expect(body).not.toBeNull();
+  43  | 
+  44  |   expect(body).toEqual(
+  45  |     expect.objectContaining({
+  46  |       items: expect.any(Array),
+  47  |       page: expect.any(Number),
+  48  |       limit: expect.any(Number),
+  49  |       total: expect.any(Number),
+  50  |       hasMore: expect.any(Boolean),
+  51  |     })
+  52  |   );
+  53  | 
+  54  |   expect(body.page).toBe(expectedPage);
+  55  |   expect(body.limit).toBe(expectedLimit);
+  56  |   expect(body.total).toBeGreaterThanOrEqual(0);
+  57  | 
+  58  |   if (body.items.length > 0) {
+  59  |     const first = body.items[0];
+  60  |     for (const key of REQUIRED_STUDY_KEYS) {
+  61  |       expect(first).toHaveProperty(key);
+  62  |     }
+  63  | 
+  64  |     expect(Array.isArray(first.trend)).toBeTruthy();
+  65  |     expect(first.trend).toHaveLength(6);
+  66  |     for (const point of first.trend) {
+  67  |       expect(typeof point).toBe('number');
+  68  |     }
+  69  |   }
+  70  | 
+  71  |   return body;
+  72  | }
+  73  | 
+  74  | function buildQuery(params) {
+  75  |   const searchParams = new URLSearchParams();
+  76  | 
+  77  |   for (const [key, value] of Object.entries(params)) {
+  78  |     if (Array.isArray(value)) {
+  79  |       for (const entry of value) {
+  80  |         searchParams.append(key, entry);
+  81  |       }
+  82  |       continue;
+  83  |     }
+  84  | 
+  85  |     searchParams.set(key, String(value));
+  86  |   }
+  87  | 
+  88  |   return `${STUDIES_PATH}?${searchParams.toString()}`;
+  89  | }
+  90  | 
+  91  | test.describe('Studies API happy paths', () => {
+  92  |   test('@smoke scenario 1: studies happy path (required params)', async ({ request }) => {
+> 93  |     const response = await request.get(buildQuery({ page: 1, limit: 10 }));
+      |                                    ^ TypeError: apiRequestContext.get: Invalid URL
+  94  |     await assertStudiesSuccess(response, 1, 10);
+  95  |   });
+  96  | 
+  97  |   test('scenario 2: studies pagination page 2', async ({ request }) => {
+  98  |     const response = await request.get(buildQuery({ page: 2, limit: 10 }));
+  99  |     await assertStudiesSuccess(response, 2, 10);
+  100 |   });
+  101 | 
+  102 |   test('scenario 3: studies search filter', async ({ request }) => {
+  103 |     const response = await request.get(buildQuery({ page: 1, limit: 10, search: 'oncology' }));
+  104 |     await assertStudiesSuccess(response, 1, 10);
+  105 |   });
+  106 | 
+  107 |   test('scenario 4: studies therapeutic area single', async ({ request }) => {
+  108 |     const response = await request.get(buildQuery({ page: 1, limit: 10, therapeuticArea: 'Oncology' }));
+  109 |     const body = await assertStudiesSuccess(response, 1, 10);
+  110 | 
+  111 |     for (const row of body.items) {
+  112 |       if (typeof row.therapeuticArea === 'string') {
+  113 |         expect(row.therapeuticArea.toLowerCase()).toContain('oncology');
+  114 |       }
+  115 |     }
+  116 |   });
+  117 | 
+  118 |   test('scenario 5: studies therapeutic area multi-select', async ({ request }) => {
+  119 |     const response = await request.get(
+  120 |       buildQuery({ page: 1, limit: 10, therapeuticArea: ['Oncology', 'Cardiology'] })
+  121 |     );
+  122 |     const body = await assertStudiesSuccess(response, 1, 10);
+  123 | 
+  124 |     const accepted = new Set(['Oncology', 'Cardiology']);
+  125 |     for (const row of body.items) {
+  126 |       if (typeof row.therapeuticArea === 'string') {
+  127 |         const tokens = row.therapeuticArea
+  128 |           .split(',')
+  129 |           .map((v) => v.trim())
+  130 |           .filter(Boolean);
+  131 |         expect(tokens.some((token) => accepted.has(token))).toBeTruthy();
+  132 |       }
+  133 |     }
+  134 |   });
+  135 | 
+  136 |   test('scenario 6: studies valid phase filter', async ({ request }) => {
+  137 |     const response = await request.get(buildQuery({ page: 1, limit: 10, phase: 'Ph II' }));
+  138 |     const body = await assertStudiesSuccess(response, 1, 10);
+  139 | 
+  140 |     for (const row of body.items) {
+  141 |       if (typeof row.phase === 'string') {
+  142 |         expect(row.phase).toBe('Ph II');
+  143 |       }
+  144 |     }
+  145 |   });
+  146 | 
+  147 |   test('scenario 7: studies valid status filter', async ({ request }) => {
+  148 |     const response = await request.get(buildQuery({ page: 1, limit: 10, status: 'Recruiting' }));
+  149 |     const body = await assertStudiesSuccess(response, 1, 10);
+  150 | 
+  151 |     for (const row of body.items) {
+  152 |       if (typeof row.status === 'string') {
+  153 |         expect(row.status).toBe('Recruiting');
+  154 |       }
+  155 |     }
+  156 |   });
+  157 | 
+  158 |   test('scenario 8: studies combined filters', async ({ request }) => {
+  159 |     const response = await request.get(
+  160 |       buildQuery({ page: 1, limit: 10, phase: 'Ph III', status: 'Planned', region: 'US' })
+  161 |     );
+  162 |     const body = await assertStudiesSuccess(response, 1, 10);
+  163 | 
+  164 |     for (const row of body.items) {
+  165 |       if (typeof row.phase === 'string') {
+  166 |         expect(row.phase).toBe('Ph III');
+  167 |       }
+  168 |       if (typeof row.status === 'string') {
+  169 |         expect(row.status).toBe('Planned');
+  170 |       }
+  171 |       if (typeof row.region === 'string') {
+  172 |         expect(row.region).toBe('US');
+  173 |       }
+  174 |     }
+  175 |   });
+  176 | 
+  177 |   test('scenario 9: studies valid sorting', async ({ request }) => {
+  178 |     const response = await request.get(
+  179 |       buildQuery({ page: 1, limit: 10, sortBy: 'sites', sortOrder: 'desc' })
+  180 |     );
+  181 |     const body = await assertStudiesSuccess(response, 1, 10);
+  182 | 
+  183 |     const siteValues = body.items
+  184 |       .map((row) => row.sites)
+  185 |       .filter((v) => typeof v === 'number');
+  186 | 
+  187 |     for (let i = 1; i < siteValues.length; i += 1) {
+  188 |       expect(siteValues[i - 1]).toBeGreaterThanOrEqual(siteValues[i]);
+  189 |     }
+  190 |   });
+  191 | });
+  192 | 
+```

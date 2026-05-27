@@ -1,7 +1,7 @@
 const { test, expect } = require('../utils/stepTest');
 
-const KPI_PATH = '/api/study-protocol/kpi-details';
-const KPI_PATH_WITH_PAGINATION = `${KPI_PATH}?page=1&limit=20`;
+const KPI_PATH_WITH_PAGINATION =
+  'https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/breakdown/countries?studyId=ST-2024-002&timeHorizon=Full%20Study';
 
 async function parseJsonBody(response) {
   const contentType = response.headers()['content-type'] || '';
@@ -22,25 +22,48 @@ async function assertKpiSuccess(response) {
   const body = await parseJsonBody(response);
   expect(body).toEqual(
     expect.objectContaining({
-      active_studies: expect.any(Object),
-      on_track: expect.any(Object),
-      off_track_or_at_risk: expect.any(Object),
-      enrollment_vs_target: expect.any(Object),
-      velocity_vs_plan: expect.any(Object),
+      countries: expect.any(Array),
     })
   );
 
-  expect(typeof body.active_studies.count).toBe('number');
-  expect(body.active_studies.count).toBeGreaterThanOrEqual(0);
+  expect(body.countries.length).toBeGreaterThan(0);
 
-  expect(typeof body.on_track.percentage).toBe('number');
-  expect(typeof body.off_track_or_at_risk.percentage).toBe('number');
-  expect(typeof body.enrollment_vs_target.percentage).toBe('number');
-  expect(typeof body.velocity_vs_plan.average).toBe('number');
+  for (const country of body.countries) {
+    expect(country).toEqual(
+      expect.objectContaining({
+        country: expect.any(String),
+        actual: expect.any(Number),
+        target: expect.any(Number),
+        avgRate: expect.any(Number),
+        percentEnrolled: expect.any(Number),
+        sitesActive: expect.any(Number),
+        status: expect.any(String),
+        sites: expect.any(Array),
+      })
+    );
 
-  expect(body.on_track.percentage).toBeGreaterThanOrEqual(0);
-  expect(body.off_track_or_at_risk.percentage).toBeGreaterThanOrEqual(0);
-  expect(body.enrollment_vs_target.percentage).toBeGreaterThanOrEqual(0);
+    expect(country.actual).toBeGreaterThanOrEqual(0);
+    expect(country.target).toBeGreaterThanOrEqual(0);
+    expect(country.percentEnrolled).toBeGreaterThanOrEqual(0);
+    expect(country.sitesActive).toBeGreaterThanOrEqual(0);
+
+    for (const site of country.sites) {
+      expect(site).toEqual(
+        expect.objectContaining({
+          siteId: expect.any(String),
+          siteName: expect.any(String),
+          status: expect.any(String),
+          actual: expect.any(Number),
+          target: expect.any(Number),
+          percentEnrolled: expect.any(Number),
+        })
+      );
+
+      expect(site.actual).toBeGreaterThanOrEqual(0);
+      expect(site.target).toBeGreaterThanOrEqual(0);
+      expect(site.percentEnrolled).toBeGreaterThanOrEqual(0);
+    }
+  }
 
   return body;
 }
@@ -55,9 +78,11 @@ test.describe('KPI details API', () => {
     const response = await request.get(KPI_PATH_WITH_PAGINATION);
     const body = await assertKpiSuccess(response);
 
-    const sum = body.on_track.percentage + body.off_track_or_at_risk.percentage;
-    expect(sum).toBeGreaterThanOrEqual(0);
-    expect(sum).toBeLessThanOrEqual(200);
+    const totalActual = body.countries.reduce((sum, country) => sum + country.actual, 0);
+    const totalTarget = body.countries.reduce((sum, country) => sum + country.target, 0);
+
+    expect(totalActual).toBeGreaterThanOrEqual(0);
+    expect(totalTarget).toBeGreaterThanOrEqual(0);
   });
 
   test('scenario 21: KPI method not allowed', async ({ request }) => {

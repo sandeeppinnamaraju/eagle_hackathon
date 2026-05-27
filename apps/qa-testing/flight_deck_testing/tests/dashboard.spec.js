@@ -6,7 +6,7 @@ test.describe('Study Portfolio Dashboard', () => {
 
 
   // Set base URL for this test file only (easy to change)
-  const BASE_URL = 'https://release-switching-veteran-usb.trycloudflare.com/';
+  const BASE_URL = 'https://ana-academics-reggae-farmer.trycloudflare.com/';
 
   let context;
   let page;

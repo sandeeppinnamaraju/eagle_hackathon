@@ -1,6 +1,6 @@
 const { test, expect } = require('../utils/stepTest');
 
-const STUDIES_PATH = '/api/study-protocol/studies';
+const STUDIES_PATH = 'https://willfully-grumble-likely.ngrok-free.dev/api/study-protocol/studies';
 
 async function parseJsonBody(response) {
   const contentType = response.headers()['content-type'] || '';

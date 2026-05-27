@@ -18,7 +18,7 @@
       {
         "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 0,
         "metadata": {
           "actualWorkers": 1
         },
@@ -37,7 +37,7 @@
       {
         "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 0,
         "metadata": {
           "actualWorkers": 1
         },
@@ -56,7 +56,7 @@
       {
         "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
         "repeatEach": 1,
-        "retries": 1,
+        "retries": 0,
         "metadata": {
           "actualWorkers": 1
         },
@@ -99,27 +99,63 @@
     "shard": null,
     "tags": [],
     "updateSnapshots": "missing",
-    "updateSourceMethod": "patch",
+    "updateSourceMethod": "3way",
     "version": "1.60.0",
     "workers": 1,
     "webServer": null
   },
   "suites": [
     {
-      "title": "story2-study-overview.spec.js",
-      "file": "story2-study-overview.spec.js",
+      "title": "kpi-details.spec.js",
+      "file": "kpi-details.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Story 2 - Study Overview",
-          "file": "story2-study-overview.spec.js",
-          "line": 7,
+          "title": "KPI details API",
+          "file": "kpi-details.spec.js",
+          "line": 71,
           "column": 6,
           "specs": [
             {
-              "title": "smooth end-to-end journey: complete Story 2 checks in a single browser flow",
+              "title": "@smoke scenario 17: KPI details happy path",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 819,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:10.160Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-72fa36c2e23e3cb395f9",
+              "file": "kpi-details.spec.js",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "scenario 18: KPI numeric shape checks",
               "ok": true,
               "tags": [],
               "tests": [
@@ -131,32 +167,1215 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 41,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 28901,
+                      "duration": 503,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-05-27T05:21:29.413Z",
+                      "startTime": "2026-05-27T15:20:11.074Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-51f05-ks-in-a-single-browser-flow-chromium\\test-finished-1.png"
-                        }
-                      ]
+                      "attachments": []
                     }
                   ],
                   "status": "expected"
                 }
               ],
-              "id": "a6888459a7d5473cfa4a-62c29e1c396316c8894d",
-              "file": "story2-study-overview.spec.js",
-              "line": 87,
+              "id": "be2dd6833cac20a80875-0791838ca31d95fc70ec",
+              "file": "kpi-details.spec.js",
+              "line": 77,
               "column": 3
+            },
+            {
+              "title": "scenario 21: KPI method not allowed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 90,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:11.613Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-bb7f89eaba9ee9a95f2a",
+              "file": "kpi-details.spec.js",
+              "line": 88,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "studies-happy.spec.js",
+      "file": "studies-happy.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Studies API happy paths",
+          "file": "studies-happy.spec.js",
+          "line": 91,
+          "column": 6,
+          "specs": [
+            {
+              "title": "@smoke scenario 1: studies happy path (required params)",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 291,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:11.818Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-86b3038d98ba7537b8fb",
+              "file": "studies-happy.spec.js",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "scenario 2: studies pagination page 2",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 380,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:12.141Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-06ac15b9502533e221d8",
+              "file": "studies-happy.spec.js",
+              "line": 97,
+              "column": 3
+            },
+            {
+              "title": "scenario 3: studies search filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 276,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:12.584Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-aa1a4b4077d35585afd9",
+              "file": "studies-happy.spec.js",
+              "line": 102,
+              "column": 3
+            },
+            {
+              "title": "scenario 4: studies therapeutic area single",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 352,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:12.891Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-8338b2263e30d97af857",
+              "file": "studies-happy.spec.js",
+              "line": 107,
+              "column": 3
+            },
+            {
+              "title": "scenario 5: studies therapeutic area multi-select",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 296,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:13.294Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-0ce41da33b69557c77c5",
+              "file": "studies-happy.spec.js",
+              "line": 118,
+              "column": 3
+            },
+            {
+              "title": "scenario 6: studies valid phase filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 355,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:13.618Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-edc9071fa0c2706a82c3",
+              "file": "studies-happy.spec.js",
+              "line": 136,
+              "column": 3
+            },
+            {
+              "title": "scenario 7: studies valid status filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 290,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:14.008Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-24436479bfb34e6410b3",
+              "file": "studies-happy.spec.js",
+              "line": 147,
+              "column": 3
+            },
+            {
+              "title": "scenario 8: studies combined filters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 209,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:14.327Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-bcec58940dd45ccc9b27",
+              "file": "studies-happy.spec.js",
+              "line": 158,
+              "column": 3
+            },
+            {
+              "title": "scenario 9: studies valid sorting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 287,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:14.574Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5aa4e762eda6d555335a-1064b6703e5941508b2e",
+              "file": "studies-happy.spec.js",
+              "line": 177,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "studies-validation.spec.js",
+      "file": "studies-validation.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Studies API validations and hardening",
+          "file": "studies-validation.spec.js",
+          "line": 45,
+          "column": 6,
+          "specs": [
+            {
+              "title": "@validation scenario 10: studies invalid page",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 73,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:14.896Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-98c446aae61f8ce14e83",
+              "file": "studies-validation.spec.js",
+              "line": 46,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 11: studies invalid limit format",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 64,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.004Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-d2c5d10e725c194fa95e",
+              "file": "studies-validation.spec.js",
+              "line": 51,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 12: studies invalid phase",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 72,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.091Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-3f17cedf21950a25b863",
+              "file": "studies-validation.spec.js",
+              "line": 56,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 13: studies invalid status",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 82,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.197Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-b00be2579b665429d6e6",
+              "file": "studies-validation.spec.js",
+              "line": 61,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 14: studies invalid sortBy (injection attempt)",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 74,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.305Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-e0be5eedfd43a201d92b",
+              "file": "studies-validation.spec.js",
+              "line": 66,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 15: studies search injection-like payload",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 205,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.413Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-7b9b08a9dd3b2800f5b3",
+              "file": "studies-validation.spec.js",
+              "line": 78,
+              "column": 3
+            },
+            {
+              "title": "@validation scenario 16: studies method not allowed",
+              "ok": true,
+              "tags": [
+                "validation"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 74,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.643Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ba04c32453780f8f4c70-24f4266ea2f39ef606c3",
+              "file": "studies-validation.spec.js",
+              "line": 92,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "study-overview-api.spec.js",
+      "file": "study-overview-api.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Study Overview API coverage",
+          "file": "study-overview-api.spec.js",
+          "line": 24,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /api/v1/study-overview/summary - happy path & field validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 222,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:15.756Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-e69037138b8f308a832b",
+              "file": "study-overview-api.spec.js",
+              "line": 26,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/kpi-details - invalid studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 233,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:16.029Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-12dc6e06ba5b30cf152e",
+              "file": "study-overview-api.spec.js",
+              "line": 41,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/kpi-details - missing studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 506,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:16.352Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-d05e7783c6919f9ef7e0",
+              "file": "study-overview-api.spec.js",
+              "line": 47,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/kpi-details - response time < 2s",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 69,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:16.899Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-e329a30c1bcdc0a96df1",
+              "file": "study-overview-api.spec.js",
+              "line": 53,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/summary - invalid studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 218,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:17.022Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-14e47098c7835820e4f3",
+              "file": "study-overview-api.spec.js",
+              "line": 41,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/summary - missing studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 116,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:17.280Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-b23f4841aa08ab3358d5",
+              "file": "study-overview-api.spec.js",
+              "line": 47,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/summary - response time < 2s",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 92,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:17.441Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-19d5de63fce7bad04189",
+              "file": "study-overview-api.spec.js",
+              "line": 53,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/enrollment-cumulative - invalid studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 213,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:17.571Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-10076c66f18967286728",
+              "file": "study-overview-api.spec.js",
+              "line": 41,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/enrollment-cumulative - missing studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 78,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:17.824Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-b657ec63e6a88ad5b654",
+              "file": "study-overview-api.spec.js",
+              "line": 47,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/enrollment-cumulative - response time < 2s",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 88,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:17.953Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-1cf182b412143e1070ac",
+              "file": "study-overview-api.spec.js",
+              "line": 53,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/enrollment-rate - invalid studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 216,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:18.089Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-3f5a89a2c64f8f2abe2e",
+              "file": "study-overview-api.spec.js",
+              "line": 41,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/enrollment-rate - missing studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 120,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:18.356Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-b5d2a4749b4163229284",
+              "file": "study-overview-api.spec.js",
+              "line": 47,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/enrollment-rate - response time < 2s",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 77,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:18.544Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-736f9984f48967ce29ca",
+              "file": "study-overview-api.spec.js",
+              "line": 53,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/breakdown/countries - invalid studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 219,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:18.665Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-ae9f5ae1d2161a9373fe",
+              "file": "study-overview-api.spec.js",
+              "line": 41,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/breakdown/countries - missing studyId",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 78,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:18.944Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-926a3cf57851936ba0b1",
+              "file": "study-overview-api.spec.js",
+              "line": 47,
+              "column": 5
+            },
+            {
+              "title": "GET https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/breakdown/countries - response time < 2s",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 41,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 85,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-27T15:20:19.070Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9529f82d763a0e7482f5-ff1d467f1b4b0911aca8",
+              "file": "study-overview-api.spec.js",
+              "line": 53,
+              "column": 5
             }
           ]
         }
@@ -165,9 +1384,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-05-27T05:21:27.399Z",
-    "duration": 39614.026,
-    "expected": 1,
+    "startTime": "2026-05-27T15:20:06.804Z",
+    "duration": 12619.84899999993,
+    "expected": 35,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

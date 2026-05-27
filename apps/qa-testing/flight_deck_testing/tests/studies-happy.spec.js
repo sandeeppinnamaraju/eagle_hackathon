@@ -1,6 +1,6 @@
 const { test, expect } = require('../utils/stepTest');
 
-const STUDIES_PATH = '/api/study-protocol/studies';
+const STUDIES_PATH = 'https://willfully-grumble-likely.ngrok-free.dev/api/study-protocol/studies';
 
 const REQUIRED_STUDY_KEYS = [
   'id',

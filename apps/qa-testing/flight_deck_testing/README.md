@@ -18,6 +18,7 @@ Test coverage and scripts are actively evolving; more test cases may be added an
 - `pages/` → Page objects for UI abstraction  
 - `fixtures/` → Reusable test data  
 - `utils/` → Helper utilities and shared functions  
+- `evidence/` → Test run evidence, HTML/JSON reports, zipped bundles  
 
 ## Setup Instructions
 
@@ -30,35 +31,55 @@ npx playwright install
 
 ## How to Run Tests
 
-Run all tests:
+### Run All Tests
+
 ```sh
 npx playwright test
 ```
 
-Run dashboard tests:
+### Run Individual UI Tests
+
+Dashboard:
 ```sh
 npx playwright test tests/dashboard.spec.js --headed --project=chromium --workers=1
 ```
 
-Run protocol search tests:
+Protocol Search:
 ```sh
 npx playwright test tests/protocal-search.spec.js --headed --project=chromium --workers=1
 ```
 
-Run Story 2 (Study Overview) tests:
+Story 2 (Study Overview):
 ```sh
-npx playwright test tests/story2-study-overview.spec.js --project=chromium --workers=1
+npx playwright test tests/story2-study-overview.spec.js --headed --project=chromium --workers=1
 ```
 
-Debug mode:
+### Run API Tests (with PowerShell script)
+
+```sh
+./run-api-tests-ngrok.ps1
+```
+
+### Debug Mode
+
 ```sh
 npx playwright test --debug
 ```
 
+
+**API Tests:**
+- The PowerShell script `run-api-tests-ngrok.ps1` sets the `TEST_BASE_URL` environment variable. Edit the script to update the URL.
+
+**Global Playwright Config:**
+- The Playwright config (`playwright.config.js`) uses `process.env.TEST_BASE_URL` for `baseURL` if set. You can also run tests with:
+  ```sh
+  TEST_BASE_URL=https://your-backend-url npx playwright test
+  ```
+
 ## Current Test Coverage
 
 - Dashboard testing (Story 1)
-	Validates core dashboard behavior such as page load, table/card visibility, required columns, search behavior, basic filter interaction, sorting interaction, and empty-state handling.
+	Validates core dashboard behavior such as page load, table/card visibility, columns, search, filters, sorting, empty-state.
 
 - Story 2 Study Overview flow
 	Covers a smooth end-to-end journey from dashboard to study detail and validates: navigation, studies list/table load, required columns, study header attributes, KPI tiles, chart section presence, time-filter interactions, country/site toggle behavior, row expansion details, optional popovers, and safe error-state handling.
@@ -68,6 +89,15 @@ npx playwright test --debug
 
 - KPI and study-related validations (API)
 	Covers backend contract checks for study and KPI endpoints, including happy-path responses, schema/shape validation, pagination/filter/sort behavior, and negative/validation scenarios (invalid parameters and method-not-allowed checks).
+
+## Evidence & Reporting
+
+- After each run, evidence (screenshots, traces, JSON, HTML report) is saved in the `evidence/` folder.
+- To view the latest HTML report:
+  ```sh
+  npx playwright show-report
+  ```
+- Evidence bundles and summaries are auto-generated for each run.
 
 ## Notes
 
@@ -80,3 +110,17 @@ npx playwright test --debug
 - Additional test cases will be added
 - Coverage will be expanded
 - Enhancements planned
+
+### UI Test Files
+- `tests/dashboard.spec.js` – Dashboard (Story 1): page load, table/card visibility, columns, search, filters, sorting, empty-state
+- `tests/protocal-search.spec.js` – Protocol Similarity Search (Story 3): input/search, result/empty-state, navigation
+- `tests/story2-study-overview.spec.js` – Story 2: dashboard to study detail, navigation, table, header, KPIs, charts, toggles, error handling
+
+### API Test Files
+- `tests/kpi-details.spec.js` – KPI endpoint contract, schema, values
+- `tests/studies-validation.spec.js` – Study endpoint validation, error/negative scenarios
+- `tests/studies-happy.spec.js` – Study endpoint happy path, schema, pagination, sorting
+ - `tests/study-overview-api.spec.js` – Study Overview API: summary endpoint happy path, invalid/missing studyId, response time checks
+
+
+
