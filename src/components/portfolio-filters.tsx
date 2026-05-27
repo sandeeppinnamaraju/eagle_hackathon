@@ -174,7 +174,15 @@ function MultiSelectTA({
   );
 }
 
-const TODAY = new Date(2026, 4, 20);
+// Use the real current date for presets
+const getToday = () => {
+  const now = new Date();
+  // Zero out time for consistency
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+};
+
+const TODAY = getToday();
+
 const MONTH_NAMES = [
   "Jan",
   "Feb",
@@ -198,9 +206,19 @@ function fmt(d: Date): string {
 }
 
 function addMonths(d: Date, n: number): Date {
-  const r = new Date(d);
-  r.setMonth(r.getMonth() + n);
-  return r;
+  const sourceDay = d.getDate();
+  const targetMonthStart = new Date(d.getFullYear(), d.getMonth() + n, 1);
+  const lastDayOfTargetMonth = new Date(
+    targetMonthStart.getFullYear(),
+    targetMonthStart.getMonth() + 1,
+    0,
+  ).getDate();
+
+  return new Date(
+    targetMonthStart.getFullYear(),
+    targetMonthStart.getMonth(),
+    Math.min(sourceDay, lastDayOfTargetMonth),
+  );
 }
 
 function monthInputValue(date: string | null): string {
@@ -253,15 +271,51 @@ function yearFromDate(date: string | null): number {
 export { monthBoundary, monthInputValue, monthYearLabel };
 
 const FPI_PRESETS: { label: string; range: () => [string, string] }[] = [
-  { label: "Last 6 Months", range: () => [fmt(addMonths(TODAY, -6)), fmt(TODAY)] },
-  { label: "Last 12 Months", range: () => [fmt(addMonths(TODAY, -12)), fmt(TODAY)] },
-  { label: "Year to Date", range: () => [fmt(new Date(TODAY.getFullYear(), 0, 1)), fmt(TODAY)] },
+  {
+    label: "Last 6 Months",
+    range: () => {
+      const today = getToday();
+      return [fmt(addMonths(today, -6)), fmt(today)];
+    },
+  },
+  {
+    label: "Last 12 Months",
+    range: () => {
+      const today = getToday();
+      return [fmt(addMonths(today, -12)), fmt(today)];
+    },
+  },
+  {
+    label: "Year to Date",
+    range: () => {
+      const today = getToday();
+      return [fmt(new Date(today.getFullYear(), 0, 1)), fmt(today)];
+    },
+  },
 ];
 
 const LPO_PRESETS: { label: string; range: () => [string, string] }[] = [
-  { label: "Next 6 Months", range: () => [fmt(TODAY), fmt(addMonths(TODAY, 6))] },
-  { label: "Next 12 Months", range: () => [fmt(TODAY), fmt(addMonths(TODAY, 12))] },
-  { label: "Year to Date", range: () => [fmt(TODAY), fmt(new Date(TODAY.getFullYear(), 11, 31))] },
+  {
+    label: "Next 6 Months",
+    range: () => {
+      const today = getToday();
+      return [fmt(today), fmt(addMonths(today, 6))];
+    },
+  },
+  {
+    label: "Next 12 Months",
+    range: () => {
+      const today = getToday();
+      return [fmt(today), fmt(addMonths(today, 12))];
+    },
+  },
+  {
+    label: "Year to Date",
+    range: () => {
+      const today = getToday();
+      return [fmt(today), fmt(new Date(today.getFullYear(), 11, 31))];
+    },
+  },
 ];
 
 function presetActive(from: string | null, to: string | null, preset: [string, string]): boolean {
@@ -273,12 +327,16 @@ function MonthPickerField({
   title,
   value,
   edge,
+  minDate,
+  maxDate,
   onChange,
 }: {
   label: string;
   title: string;
   value: string | null;
   edge: "start" | "end";
+  minDate?: string | null;
+  maxDate?: string | null;
   onChange: (value: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -337,17 +395,23 @@ function MonthPickerField({
             {MONTH_NAMES.map((monthName, monthIndex) => {
               const monthValue = `${pickerYear}-${String(monthIndex + 1).padStart(2, "0")}`;
               const active = monthInputValue(value) === monthValue;
+              const monthDate = monthBoundary(monthValue, edge);
+              const belowMin = !!minDate && !!monthDate && monthDate < minDate;
+              const aboveMax = !!maxDate && !!monthDate && monthDate > maxDate;
+              const disabled = (edge === "end" && belowMin) || (edge === "start" && aboveMax);
 
               return (
                 <button
                   key={monthName}
                   type="button"
+                  disabled={disabled}
                   onClick={() => handleMonthSelect(monthIndex)}
                   className={cn(
                     "rounded-md border px-2 py-1.5 text-xs transition",
                     active
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-input bg-card text-foreground hover:bg-muted",
+                    disabled && "cursor-not-allowed opacity-50 hover:bg-card",
                   )}
                 >
                   {monthName}
@@ -357,9 +421,6 @@ function MonthPickerField({
           </div>
         </PopoverContent>
       </Popover>
-      <span className="block text-[11px] text-muted-foreground">
-        {monthYearLabel(value) ?? "Any month"}
-      </span>
     </label>
   );
 }
@@ -406,14 +467,22 @@ function DateSection({
           title={title}
           value={from}
           edge="start"
-          onChange={(nextFrom) => onChange(nextFrom, to)}
+          maxDate={to}
+          onChange={(nextFrom) => {
+            if (to && nextFrom && nextFrom > to) return;
+            onChange(nextFrom, to);
+          }}
         />
         <MonthPickerField
           label="To"
           title={title}
           value={to}
           edge="end"
-          onChange={(nextTo) => onChange(from, nextTo)}
+          minDate={from}
+          onChange={(nextTo) => {
+            if (from && nextTo && nextTo < from) return;
+            onChange(from, nextTo);
+          }}
         />
       </div>
     </div>
