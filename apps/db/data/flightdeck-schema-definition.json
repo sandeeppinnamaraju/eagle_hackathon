@@ -1,341 +1,403 @@
 {
-  "Studies": {
-    "columns": {
-      "study_id": "str",
-      "title": "str",
-      "phase": "str",
-      "therapeutic_area": "str",
-      "indication": "str",
-      "portfolio": "str",
-      "program": "str",
-      "region": "str",
-      "study_status": "str",
-      "target_enrollment": "int",
-      "actual_enrollment": "int",
-      "planned_fpi_date": "str",
-      "planned_lpo_date": "str",
-      "countries_count": "int",
-      "sites_count": "int",
-      "planned_velocity_per_week": "float",
-      "actual_velocity_per_week": "float",
-      "performance_status": "str",
-      "study_stage": "str",
-      "project_description": "str",
-      "project_priority": "str",
-      "project_status": "str",
-      "partnership_type": "str",
-      "activity_planning_status": "str",
-      "project_id": "str",
-      "asset_name": "str",
-      "asset_number": "str",
-      "launch_strategy": "str",
-      "temp_budget_id": "str",
-      "study_lifecycle_state": "str",
-      "priority_study": "str",
-      "priority_from": "str",
-      "priority_to": "str",
-      "not_part_of_uq_objectives": "str",
-      "study_short_name": "str",
-      "study_description": "str",
-      "primary_indication": "str",
-      "primary_subject_population": "str",
-      "fso_model": "str",
-      "fso_model_vendor": "str",
-      "study_type": "str",
-      "study_designation": "str",
-      "business_area": "str",
-      "funding_source": "str",
-      "demographic_plan_in_scope": "str",
-      "sponsor_company": "str",
-      "study_sponsor": "str",
-      "eligible_for_outsourcing": "str",
-      "study_creation_date": "str",
-      "country_list": "str",
-      "asset_lead": "str",
-      "sdl_name": "str",
-      "clinical_scientist": "str",
-      "medical_director": "str",
-      "clinical_development_lead": "str",
-      "org_therapy_area": "str",
-      "csi_planned": "str",
-      "csi_actual": "str",
-      "cpa_planned": "str",
-      "cpa_actual": "str",
-      "fpa_planned": "str",
-      "fpa_actual": "str",
-      "fsa_planned": "str",
-      "fsa_actual": "str",
-      "fsfv_planned": "str",
-      "fsfv_actual": "str",
-      "lsfv_planned": "str",
-      "lsfv_actual": "str",
-      "lslv_planned": "str",
-      "lslv_actual": "str",
-      "dbl_planned": "str",
-      "dbl_actual": "str",
-      "sac_planned": "str",
-      "sac_actual": "str",
-      "rc_planned": "str",
-      "rc_actual": "str",
-      "epe_forecast_future_gbp": "int",
-      "epe_forecast_this_year_gbp": "int"
+    "Studies": {
+        "columns": {
+            "study_id": "str",
+            "title": "str",
+            "phase": "str",
+            "therapeutic_area": "str",
+            "indication": "str",
+            "portfolio": "str",
+            "program": "str",
+            "region": "str",
+            "study_status": "str",
+            "target_enrollment": "int",
+            "actual_enrollment": "int",
+            "enrollment_plan_percent": "float",
+            "planned_fpi_date": "object",
+            "planned_lpo_date": "object",
+            "countries_count": "int",
+            "sites_count": "int",
+            "planned_velocity_per_week": "float",
+            "actual_velocity_per_week": "float",
+            "performance_status": "str",
+            "study_stage": "str",
+            "project_description": "str",
+            "project_priority": "str",
+            "project_status": "str",
+            "partnership_type": "str",
+            "activity_planning_status": "str",
+            "project_id": "str",
+            "asset_name": "str",
+            "asset_number": "str",
+            "launch_strategy": "str",
+            "temp_budget_id": "str",
+            "study_lifecycle_state": "str",
+            "priority_study": "object",
+            "priority_from": "object",
+            "priority_to": "object",
+            "not_part_of_uq_objectives": "object",
+            "study_short_name": "str",
+            "study_description": "str",
+            "primary_indication": "str",
+            "primary_subject_population": "str",
+            "fso_model": "str",
+            "fso_model_vendor": "str",
+            "study_type": "str",
+            "study_designation": "str",
+            "business_area": "str",
+            "funding_source": "str",
+            "demographic_plan_in_scope": "object",
+            "sponsor_company": "str",
+            "study_sponsor": "str",
+            "eligible_for_outsourcing": "object",
+            "study_creation_date": "object",
+            "country_list": "str",
+            "asset_lead": "str",
+            "sdl_name": "str",
+            "clinical_scientist": "str",
+            "medical_director": "str",
+            "clinical_development_lead": "str",
+            "org_therapy_area": "str",
+            "csi_planned": "object",
+            "csi_actual": "object",
+            "cpa_planned": "object",
+            "cpa_actual": "object",
+            "fpa_planned": "object",
+            "fpa_actual": "object",
+            "fsa_planned": "object",
+            "fsa_actual": "object",
+            "fsfv_planned": "object",
+            "fsfv_actual": "object",
+            "lsfv_planned": "object",
+            "lsfv_actual": "object",
+            "lslv_planned": "object",
+            "lslv_actual": "object",
+            "dbl_planned": "object",
+            "dbl_actual": "object",
+            "sac_planned": "object",
+            "sac_actual": "object",
+            "rc_planned": "object",
+            "rc_actual": "object",
+            "epe_forecast_future_gbp": "int",
+            "epe_forecast_this_year_gbp": "int"
+        },
+        "primary_keys": [
+            "study_id"
+        ],
+        "foreign_keys": []
     },
-    "primary_keys": [
-      "study_id"
-    ]
-  },
-  "Enrollment Timeline": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "period_date": "str",
-      "planned_cumulative": "int",
-      "actual_cumulative": "float",
-      "forecast_cumulative": "int",
-      "enrolled_this_period": "float",
-      "below_plan_flag": "str"
+    "Enrollment Timeline": {
+        "columns": {
+            "id": "int",
+            "study_id": "str",
+            "period_date": "object",
+            "planned_cumulative": "int",
+            "actual_cumulative": "float",
+            "forecast_cumulative": "int",
+            "enrolled_this_period": "float",
+            "below_plan_flag": "object"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Enrollment Rate": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "period_date": "str",
-      "planned_rate": "int",
-      "actual_rate": "int",
-      "below_plan_flag": "str"
+    "Enrollment Rate": {
+        "columns": {
+            "id": "int",
+            "study_id": "str",
+            "period_date": "object",
+            "planned_rate": "int",
+            "actual_rate": "int",
+            "below_plan_flag": "object"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "KPI Snapshot": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "enrollment_vs_plan_percent": "float",
-      "current_rate_per_week": "float",
-      "planned_rate_per_week": "float",
-      "screen_failure_rate": "float",
-      "dropout_rate": "float",
-      "sites_activated": "int",
-      "sites_planned": "int",
-      "countries_activated": "int",
-      "countries_planned": "int",
-      "snapshot_date": "str"
+    "KPI Snapshot": {
+        "columns": {
+            "id": "int",
+            "study_id": "str",
+            "enrollment_vs_plan_percent": "float",
+            "current_rate_per_week": "float",
+            "planned_rate_per_week": "float",
+            "screen_failure_rate": "float",
+            "dropout_rate": "float",
+            "sites_activated": "int",
+            "sites_planned": "int",
+            "countries_activated": "int",
+            "countries_planned": "int",
+            "snapshot_date": "object"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "KPI Timeline": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "period_date": "str",
-      "screened_this_period": "int",
-      "failed_this_period": "int",
-      "enrolled_this_period": "int",
-      "dropouts_this_period": "int",
-      "cumul_screened": "int",
-      "cumul_failed": "int",
-      "cumul_enrolled": "int",
-      "cumul_dropouts": "int",
-      "sites_activated": "int",
-      "sites_planned": "int",
-      "countries_activated": "int",
-      "countries_planned": "int"
+    "Country Breakdown": {
+        "columns": {
+            "id": "int",
+            "study_id": "str",
+            "country": "str",
+            "target_enrollment": "int",
+            "actual_enrollment": "int",
+            "enrollment_percent": "float",
+            "sites_active": "int",
+            "avg_enrollment_rate": "float",
+            "performance_status": "str",
+            "country_lead": "str",
+            "country_selected": "object",
+            "ccpc_planned": "object",
+            "ccpc_actual": "object",
+            "reg_submission_planned": "object",
+            "reg_submission_actual": "object",
+            "reg_approval_planned": "object",
+            "reg_approval_actual": "object",
+            "ethics_submission_planned": "object",
+            "ethics_submission_actual": "object",
+            "ethics_approval_planned": "object",
+            "ethics_approval_actual": "object",
+            "country_fsa_planned": "object",
+            "country_fsa_actual": "object",
+            "country_fsi_planned": "object",
+            "country_fsi_actual": "object",
+            "country_lsi_planned": "object",
+            "country_lsi_actual": "object",
+            "country_lsld_planned": "object",
+            "country_lsld_actual": "object",
+            "country_end_planned": "object",
+            "country_end_actual": "object",
+            "country_lsc_planned": "object",
+            "country_lsc_actual": "object"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Country Breakdown": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "country": "str",
-      "target_enrollment": "int",
-      "actual_enrollment": "int",
-      "sites_active": "int",
-      "avg_enrollment_rate": "float",
-      "performance_status": "str",
-      "country_lead": "str",
-      "country_selected": "str",
-      "ccpc_planned": "str",
-      "ccpc_actual": "str",
-      "reg_submission_planned": "str",
-      "reg_submission_actual": "str",
-      "reg_approval_planned": "str",
-      "reg_approval_actual": "str",
-      "ethics_submission_planned": "str",
-      "ethics_submission_actual": "str",
-      "ethics_approval_planned": "str",
-      "ethics_approval_actual": "str",
-      "country_fsa_planned": "str",
-      "country_fsa_actual": "str",
-      "country_fsi_planned": "str",
-      "country_fsi_actual": "str",
-      "country_lsi_planned": "str",
-      "country_lsi_actual": "str",
-      "country_lsld_planned": "str",
-      "country_lsld_actual": "str",
-      "country_end_planned": "str",
-      "country_end_actual": "str",
-      "country_lsc_planned": "str",
-      "country_lsc_actual": "str",
-      "screened": "int",
-      "failed_screening": "int",
-      "dropouts": "int"
+    "Site Breakdown": {
+        "columns": {
+            "id": "int",
+            "study_id": "str",
+            "country": "str",
+            "site_id": "str",
+            "site_name": "str",
+            "target_enrollment": "int",
+            "actual_enrollment": "int",
+            "enrollment_percent": "float",
+            "enrollment_rate": "float",
+            "site_status": "str",
+            "principal_investigator": "str",
+            "site_coordinator": "str",
+            "site_selected": "object",
+            "site_contract_signed_planned": "object",
+            "site_contract_signed_actual": "object",
+            "greenlight_planned": "object",
+            "greenlight_actual": "object",
+            "siv_planned": "object",
+            "siv_actual": "object",
+            "site_initiated_planned": "object",
+            "site_initiated_actual": "object",
+            "site_activation_planned": "object",
+            "site_activation_actual": "object",
+            "site_fsi_planned": "object",
+            "site_fsi_actual": "object",
+            "site_monitoring_visit_planned": "object",
+            "site_monitoring_visit_actual": "object",
+            "site_lsi_planned": "object",
+            "site_lsi_actual": "object",
+            "site_lsdl_planned": "object",
+            "site_lsdl_actual": "object",
+            "site_study_end_planned": "object",
+            "site_study_end_actual": "object",
+            "site_closeout_visit_planned": "object",
+            "site_closeout_visit_actual": "object",
+            "site_closed_planned": "object",
+            "site_closed_actual": "object"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Site Breakdown": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "country": "str",
-      "site_id": "str",
-      "site_name": "str",
-      "target_enrollment": "int",
-      "actual_enrollment": "int",
-      "enrollment_rate": "float",
-      "site_status": "str",
-      "principal_investigator": "str",
-      "site_coordinator": "str",
-      "site_selected": "str",
-      "site_contract_signed_planned": "str",
-      "site_contract_signed_actual": "str",
-      "greenlight_planned": "str",
-      "greenlight_actual": "str",
-      "siv_planned": "str",
-      "siv_actual": "str",
-      "site_initiated_planned": "str",
-      "site_initiated_actual": "str",
-      "site_activation_planned": "str",
-      "site_activation_actual": "str",
-      "site_fsi_planned": "str",
-      "site_fsi_actual": "str",
-      "site_monitoring_visit_planned": "str",
-      "site_monitoring_visit_actual": "str",
-      "site_lsi_planned": "str",
-      "site_lsi_actual": "str",
-      "site_lsdl_planned": "str",
-      "site_lsdl_actual": "str",
-      "site_study_end_planned": "str",
-      "site_study_end_actual": "str",
-      "site_closeout_visit_planned": "str",
-      "site_closeout_visit_actual": "str",
-      "site_closed_planned": "str",
-      "site_closed_actual": "str",
-      "screened": "int",
-      "failed_screening": "int",
-      "dropouts": "int"
+    "Performance Drivers": {
+        "columns": {
+            "id": "int",
+            "study_id": "str",
+            "driver_type": "str",
+            "entity_type": "str",
+            "entity_id": "str",
+            "entity_name": "str",
+            "gap_to_target": "int",
+            "percent_above_target": "float",
+            "rank": "int"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Performance Drivers": {
-    "columns": {
-      "id": "int",
-      "study_id": "str",
-      "driver_type": "str",
-      "entity_type": "str",
-      "entity_id": "str",
-      "entity_name": "str",
-      "gap_to_target": "int",
-      "percent_above_target": "float",
-      "rank": "int"
+    "Site Detail": {
+        "columns": {
+            "id": "int",
+            "site_id": "str",
+            "site_name": "str",
+            "study_id": "str",
+            "enrollment_history": "str",
+            "site_status": "str",
+            "target_enrollment": "int",
+            "actual_enrollment": "int",
+            "enrollment_percent": "float",
+            "current_rate": "float",
+            "principal_investigator": "str",
+            "site_coordinator": "str"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "study_id"
+                ],
+                "ref_table": "Studies",
+                "ref_columns": [
+                    "study_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Site Detail": {
-    "columns": {
-      "id": "int",
-      "site_id": "str",
-      "site_name": "str",
-      "study_id": "str",
-      "enrollment_history": "str",
-      "site_status": "str",
-      "target_enrollment": "int",
-      "actual_enrollment": "int",
-      "current_rate": "float",
-      "principal_investigator": "str",
-      "site_coordinator": "str",
-      "screened": "int",
-      "failed_screening": "int",
-      "dropouts": "int"
+    "Protocols": {
+        "columns": {
+            "protocol_id": "str",
+            "title": "str",
+            "phase": "str",
+            "therapeutic_area": "str",
+            "indication": "str",
+            "full_summary": "str",
+            "inclusion_criteria": "str",
+            "exclusion_criteria": "str",
+            "target_enrollment": "int",
+            "actual_enrollment": "int",
+            "planned_start_date": "object",
+            "actual_end_date": "object",
+            "planned_duration_months": "int",
+            "actual_duration_months": "int",
+            "lessons_learned": "str"
+        },
+        "primary_keys": [
+            "protocol_id"
+        ],
+        "foreign_keys": []
     },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Protocols": {
-    "columns": {
-      "protocol_id": "str",
-      "title": "str",
-      "phase": "str",
-      "therapeutic_area": "str",
-      "indication": "str",
-      "full_summary": "str",
-      "inclusion_criteria": "str",
-      "exclusion_criteria": "str",
-      "target_enrollment": "int",
-      "actual_enrollment": "int",
-      "planned_start_date": "str",
-      "actual_end_date": "str",
-      "planned_duration_months": "int",
-      "actual_duration_months": "int",
-      "lessons_learned": "str"
+    "Protocol Sites": {
+        "columns": {
+            "id": "int",
+            "protocol_id": "str",
+            "site_id": "str",
+            "site_name": "str",
+            "country": "str",
+            "target_enrollment": "float",
+            "actual_enrollment": "float",
+            "performance_tier": "str"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "protocol_id"
+                ],
+                "ref_table": "Protocols",
+                "ref_columns": [
+                    "protocol_id"
+                ]
+            }
+        ]
     },
-    "primary_keys": [
-      "protocol_id"
-    ]
-  },
-  "Protocol Sites": {
-    "columns": {
-      "id": "int",
-      "protocol_id": "str",
-      "site_id": "str",
-      "site_name": "str",
-      "country": "str",
-      "target_enrollment": "float",
-      "actual_enrollment": "float",
-      "performance_tier": "float"
-    },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Lessons Learned": {
-    "columns": {
-      "id": "int",
-      "protocol_id": "str",
-      "category": "str",
-      "description": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Login Details": {
-    "columns": {
-      "id": "int",
-      "username": "str",
-      "password": "str",
-      "role": "str",
-      "created_at": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
-  }
+    "Lessons Learned": {
+        "columns": {
+            "id": "int",
+            "protocol_id": "str",
+            "category": "str",
+            "description": "str"
+        },
+        "primary_keys": [
+            "id"
+        ],
+        "foreign_keys": [
+            {
+                "columns": [
+                    "protocol_id"
+                ],
+                "ref_table": "Protocols",
+                "ref_columns": [
+                    "protocol_id"
+                ]
+            }
+        ]
+    }
 }

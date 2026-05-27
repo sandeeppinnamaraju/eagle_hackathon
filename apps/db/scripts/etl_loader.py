@@ -18,11 +18,11 @@ from sqlalchemy import (
     PrimaryKeyConstraint,
     Table,
     Text,
-    and_,
     create_engine,
     inspect,
     select,
 )
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import SQLAlchemyError
 
 # ========== CONFIG & LOGGING ==========
@@ -49,8 +49,8 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 SCHEMA_FILE = (DATA_DIR / "flightdeck-schema-definition.json").resolve()
 
-# Use the latest xlsx found in data directory. This avoids hardcoding timestamped filenames.
-excel_candidates = sorted(DATA_DIR.glob("*.xlsx"), key=lambda path: path.stat().st_mtime, reverse=True)
+# Use the first xlsx found in data directory. This avoids hardcoding timestamped filenames.
+excel_candidates = sorted(DATA_DIR.glob("*.xlsx"))
 EXCEL_FILE = excel_candidates[0].resolve() if excel_candidates else (DATA_DIR / "clinical_study_export.xlsx").resolve()
 
 LOG_FILE = (DATA_DIR / "etl_loader.log").resolve()
@@ -105,10 +105,9 @@ def _build_database_url():
     except ValueError as exc:
         raise RuntimeError("PGPORT must be a valid integer.") from exc
 
-    encoded_user = quote_plus(values["PGUSER"])
     encoded_password = quote_plus(values["PGPASSWORD"])
     return (
-        f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
+        f"postgresql+psycopg2://{values['PGUSER']}:{encoded_password}"
         f"@{values['PGHOST']}:{values['PGPORT']}/{values['PGDATABASE']}"
         f"?sslmode={ssl_mode}"
     )
@@ -205,38 +204,21 @@ def row_exists(engine, table_name, pk_cols, row):
 
 def upsert_row(engine, table_name, row, pk_cols):
     tbl = Table(table_name, metadata, autoload_with=engine)
+    stmt = pg_insert(tbl).values(**row)
+    if pk_cols:
+        update_cols = {col: stmt.excluded[col] for col in row if col not in pk_cols}
+        stmt = stmt.on_conflict_do_update(
+            index_elements=pk_cols,
+            set_=update_cols
+        )
     with engine.begin() as conn:
-        pk_filter = [getattr(tbl.c, col) == row[col] for col in pk_cols]
-        existing_row = conn.execute(select(tbl).where(and_(*pk_filter)).limit(1)).first()
-        if existing_row:
-            update_values = {col: value for col, value in row.items() if col not in pk_cols}
-            if update_values:
-                conn.execute(tbl.update().where(and_(*pk_filter)).values(**update_values))
-        else:
-            conn.execute(tbl.insert().values(**row))
+        conn.execute(stmt)
 
 def load_table(engine, sheet_name, schema, df):
     """Load: Upsert rows into the database (insert or update on PK conflict)."""
     table_name = normalize_table_name(sheet_name)
     pk_cols = schema.get("primary_keys", [])
     upserted, failed = 0, 0
-
-    # Tables without a primary key cannot be upserted reliably.
-    # For these tables, perform plain inserts.
-    if not pk_cols:
-        tbl = Table(table_name, metadata, autoload_with=engine)
-        for _, row in df.iterrows():
-            row_dict = row.where(pd.notna(row), None).to_dict()
-            try:
-                with engine.begin() as conn:
-                    conn.execute(tbl.insert().values(**row_dict))
-                upserted += 1
-            except SQLAlchemyError as e:
-                log_and_print(f"Failed to insert row in {table_name}: {e}", level="error")
-                failed += 1
-        log_and_print(f"{table_name}: Inserted {upserted}, Failed {failed} (no primary key configured)")
-        return
-
     for _, row in df.iterrows():
         row_dict = row.where(pd.notna(row), None).to_dict()
         if pk_cols and all(row_dict.get(pk) is not None for pk in pk_cols):

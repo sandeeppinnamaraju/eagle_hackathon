@@ -1,5 +1,3 @@
-# Database Requirements
-pandas
-sqlalchemy
-python-dotenv
-psycopg2-binary
+# Legacy location (kept for compatibility).
+# Preferred location: apps/db/requirements.txt
+-r ../db/requirements.txt

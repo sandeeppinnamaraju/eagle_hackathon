@@ -50,6 +50,27 @@ def test_search_protocols_db_error(monkeypatch: pytest.MonkeyPatch) -> None:
     assert exc_info.value.status_code == 503
 
 
+def test_search_protocols_rejects_blank_summary() -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.search_protocols(ProtocolSearchRequest(summary="   "))
+
+    assert exc_info.value.status_code == 400
+
+
+def test_search_protocols_rejects_invalid_top_k() -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.search_protocols(ProtocolSearchRequest(summary="Summary", top_k=0))
+
+    assert exc_info.value.status_code == 400
+
+
+def test_search_protocols_rejects_non_model_payload() -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.search_protocols({"summary": "Summary"})  # type: ignore[arg-type]
+
+    assert exc_info.value.status_code == 400
+
+
 def test_get_protocol_detail_not_found(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(similarity_router, "get_protocol_details", lambda _protocol_id: None)
 
@@ -80,3 +101,44 @@ def test_get_protocol_detail_unexpected_error(monkeypatch: pytest.MonkeyPatch) -
         similarity_router.get_protocol_detail("P-1")
 
     assert exc_info.value.status_code == 500
+
+
+def test_get_protocol_detail_rejects_blank_id() -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.get_protocol_detail("   ")
+
+    assert exc_info.value.status_code == 400
+
+
+@pytest.mark.parametrize("top_k", [-1, 0, 101, 999])
+def test_search_protocols_rejects_out_of_range_top_k(top_k: int) -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.search_protocols(ProtocolSearchRequest(summary="Summary", top_k=top_k))
+
+    assert exc_info.value.status_code == 400
+
+
+@pytest.mark.parametrize(
+    ("field_name", "field_value"),
+    [
+        ("therapeutic_areas", [" "]),
+        ("inclusion_criteria", 123),
+        ("exclusion_criteria", []),
+    ],
+)
+def test_search_protocols_rejects_malformed_optional_fields(field_name: str, field_value) -> None:
+    request = ProtocolSearchRequest(summary="Summary")
+    setattr(request, field_name, field_value)
+
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.search_protocols(request)
+
+    assert exc_info.value.status_code == 400
+
+
+@pytest.mark.parametrize("protocol_id", [None, 123, [], {}])
+def test_get_protocol_detail_rejects_non_string_ids(protocol_id) -> None:
+    with pytest.raises(HTTPException) as exc_info:
+        similarity_router.get_protocol_detail(protocol_id)  # type: ignore[arg-type]
+
+    assert exc_info.value.status_code == 400
