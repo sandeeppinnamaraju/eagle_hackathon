@@ -68,6 +68,330 @@ def _subtract_months(anchor: date, months: int) -> date:
         month += 12
         year -= 1
 
+
+@router.get("/study-overview/breakdown/sites")
+def get_site_overview(
+    request: Request = None,
+    time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_horizon = _normalize_time_horizon(time_horizon)
+    if not normalized_horizon:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                site_columns = table_columns.get("site_breakdown", set())
+
+                required = {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment", "enrollment_percent", "site_status"}
+                if not required.issubset(site_columns):
+                    return JSONResponse(status_code=500, content={"message": "Site breakdown table/columns are not available."})
+
+                # Resolve horizon start date
+                start_date: Optional[date] = None
+                if normalized_horizon == "last 3 months":
+                    start_date = _subtract_months(date.today(), 3)
+                elif normalized_horizon == "since fpi":
+                    start_date, horizon_error = _resolve_since_fpi_start_date(cursor, table_columns, validated_study_id)
+                    if horizon_error:
+                        return JSONResponse(status_code=400, content={"message": f"Unable to apply time horizon: {horizon_error}"})
+
+                # Determine whether site_breakdown supports a date column for filtering
+                has_period = "period_date" in site_columns
+
+                if has_period and start_date:
+                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                else:
+                    where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
+
+                # Build select list with optional fields
+                select_cols = [
+                    "site_id",
+                    "COALESCE(site_name, '') AS site_name",
+                    "COALESCE(country, '') AS country",
+                    "COALESCE(target_enrollment, 0) AS target_enrollment",
+                    "COALESCE(actual_enrollment, 0) AS actual_enrollment",
+                    "COALESCE(enrollment_percent, 0)::float AS enrollment_percent",
+                    "COALESCE(site_status, '') AS site_status",
+                ]
+
+                optional_map = {
+                    "activated_on": "COALESCE(activated_on::text, '') AS activated_on",
+                    "pi": "COALESCE(pi, '') AS pi",
+                    "total_screened": "COALESCE(total_screened, 0) AS total_screened",
+                    "screen_failure": "COALESCE(screen_failure, 0) AS screen_failure",
+                    "enrolled": "COALESCE(enrolled, 0) AS enrolled",
+                }
+
+                for col, expr in optional_map.items():
+                    if col in site_columns:
+                        select_cols.append(expr)
+
+                select_sql = ", ".join(select_cols)
+
+                cursor.execute(
+                    f"""
+                    SELECT {select_sql}
+                    FROM public.site_breakdown
+                    {where_sql}
+                    ORDER BY country, site_name, site_id
+                    """,
+                    where_params,
+                )
+
+                rows = cursor.fetchall()
+
+                sites = []
+                for row in rows:
+                    # Map columns by index using cursor.description
+                    cols = [d.name for d in cursor.description]
+                    row_map = dict(zip(cols, row))
+
+                    site_id_val = row_map.get("site_id")
+                    target = int(row_map.get("target_enrollment", 0) or 0)
+                    actual = int(row_map.get("actual_enrollment", 0) or 0)
+                    percent = round(float(row_map.get("enrollment_percent", 0) or 0), 2)
+
+                    # Details block
+                    details = {
+                        "siteId": site_id_val,
+                        "country": row_map.get("country") or "",
+                        "status": row_map.get("site_status") or "",
+                        "activatedOn": row_map.get("activated_on") or None,
+                        "pi": row_map.get("pi") or None,
+                    }
+
+                    # Screening funnel
+                    screening = {
+                        "totalScreened": int(row_map.get("total_screened", 0) or 0),
+                        "screenFailure": int(row_map.get("screen_failure", 0) or 0),
+                        "enrolled": int(row_map.get("enrolled", 0) or 0),
+                        "target": target,
+                        "%Enrolled": percent,
+                    }
+
+                    # Monthly enrollment: try to aggregate from enrollment_rate or enrollment_timeline if site-level data exists
+                    monthly: List[dict] = []
+
+                    # Prefer enrollment_rate if it has site-level fields
+                    et_cols = table_columns.get("enrollment_rate", set())
+                    if {"site_id", "period_date", "actual_rate"}.issubset(et_cols):
+                        where_sql2, where_params2 = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                        # add site filter
+                        if where_sql2:
+                            where_sql2 = where_sql2 + " AND site_id::text = %s"
+                        else:
+                            where_sql2 = "WHERE site_id::text = %s"
+                        params2 = where_params2 + [str(site_id_val)]
+                        cursor.execute(
+                            f"""
+                            SELECT date_trunc('month', period_date)::date AS month_start,
+                                   COALESCE(SUM(planned_rate), 0)::float AS planned_total,
+                                   COALESCE(SUM(actual_rate), 0)::float AS actual_total
+                            FROM public.enrollment_rate
+                            {where_sql2}
+                            GROUP BY month_start
+                            ORDER BY month_start
+                            """,
+                            params2,
+                        )
+                        rows2 = cursor.fetchall()
+                        for m_start, planned_total, actual_total in rows2:
+                            monthly.append({
+                                "month": m_start.strftime("%b %Y").upper(),
+                                "plan": float(planned_total),
+                                "actual": float(actual_total),
+                            })
+                    else:
+                        # Fall back to enrollment_timeline if it has site-level enrolled_this_period
+                        etl_cols = table_columns.get("enrollment_timeline", set())
+                        if {"site_id", "period_date", "enrolled_this_period"}.issubset(etl_cols):
+                            where_sql2, where_params2 = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                            if where_sql2:
+                                where_sql2 = where_sql2 + " AND site_id::text = %s"
+                            else:
+                                where_sql2 = "WHERE site_id::text = %s"
+                            params2 = where_params2 + [str(site_id_val)]
+                            cursor.execute(
+                                f"""
+                                SELECT date_trunc('month', period_date)::date AS month_start,
+                                       COALESCE(SUM(enrolled_this_period), 0)::float AS actual_total
+                                FROM public.enrollment_timeline
+                                {where_sql2}
+                                  AND period_date IS NOT NULL
+                                GROUP BY month_start
+                                ORDER BY month_start
+                                """,
+                                params2,
+                            )
+                            rows2 = cursor.fetchall()
+                            for m_start, actual_total in rows2:
+                                monthly.append({
+                                    "month": m_start.strftime("%b %Y").upper(),
+                                    "plan": None,
+                                    "actual": float(actual_total),
+                                })
+
+                    sites.append({
+                        "siteId": site_id_val,
+                        "siteName": row_map.get("site_name") or "",
+                        "country": row_map.get("country") or "",
+                        "target": target,
+                        "actual": actual,
+                        "%Enrolled": percent,
+                        "siteStatus": row_map.get("site_status") or "",
+                        "details": details,
+                        "screeningFunnel": screening,
+                        "monthlyEnrollment": monthly,
+                    })
+
+                return {
+                    "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
+                    "studyId": validated_study_id,
+                    "window": {"startDate": (start_date.isoformat() if start_date else None), "endDate": date.today().isoformat()},
+                    "sites": sites,
+                }
+    except Exception:
+        logger.exception("Failed to fetch site overview")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
+
+@router.get("/study-overview/breakdown/top-underperforming")
+def get_top_underperforming_sites(
+    request: Request = None,
+    time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
+    top_k: int = Query(3, alias="topK", description="Number of top sites to return per category"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_horizon = _normalize_time_horizon(time_horizon)
+    if not normalized_horizon:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                site_cols = table_columns.get("site_breakdown", set())
+                if not {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment"}.issubset(site_cols):
+                    return JSONResponse(status_code=500, content={"message": "Site breakdown table/columns are not available."})
+
+                # Resolve time window
+                start_date: Optional[date] = None
+                if normalized_horizon == "last 3 months":
+                    start_date = _subtract_months(date.today(), 3)
+                elif normalized_horizon == "since fpi":
+                    start_date, horizon_error = _resolve_since_fpi_start_date(cursor, table_columns, validated_study_id)
+                    if horizon_error:
+                        return JSONResponse(status_code=400, content={"message": f"Unable to apply time horizon: {horizon_error}"})
+
+                has_period = "period_date" in site_cols
+                if has_period and start_date:
+                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                else:
+                    where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
+
+                # Aggregate per-site totals (some deployments may have one row per site; SUM is safe)
+                cursor.execute(
+                    f"""
+                    SELECT
+                        site_id,
+                        COALESCE(site_name, '') AS site_name,
+                        COALESCE(country, '') AS country,
+                        COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                        COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                    FROM public.site_breakdown
+                    {where_sql}
+                    GROUP BY site_id, site_name, country
+                    """,
+                    where_params,
+                )
+
+                rows = cursor.fetchall()
+
+                sites_calc = []
+                for sid, sname, country, total_target, total_actual in rows:
+                    if total_target is None or total_target == 0:
+                        continue
+                    shortfall = int(total_target) - int(total_actual)
+                    pct_below = round(((shortfall) / float(total_target)) * 100.0, 2) if total_target else 0.0
+                    sites_calc.append({
+                        "site_id": sid,
+                        "site_name": sname,
+                        "country": country,
+                        "total_target": int(total_target),
+                        "total_actual": int(total_actual),
+                        "shortfall": shortfall,
+                        "pct_below": pct_below,
+                    })
+
+                # Largest absolute shortfall
+                largest_abs = sorted(sites_calc, key=lambda x: x["shortfall"], reverse=True)[:top_k]
+                # Highest percent below target
+                highest_pct = sorted(sites_calc, key=lambda x: x["pct_below"], reverse=True)[:top_k]
+
+                def format_abs(items):
+                    result = []
+                    for idx, it in enumerate(items, start=1):
+                        result.append({
+                            "rank": idx,
+                            "site": f"{it['site_name']} ({it['country']})",
+                            "shortfall": it["shortfall"],
+                        })
+                    return result
+
+                def format_pct(items):
+                    result = []
+                    for idx, it in enumerate(items, start=1):
+                        result.append({
+                            "rank": idx,
+                            "site": f"{it['site_name']} ({it['country']})",
+                            "%BelowTarget": it["pct_below"],
+                        })
+                    return result
+
+                return {
+                    "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
+                    "studyId": validated_study_id,
+                    "largestAbsoluteShortfall": format_abs(largest_abs),
+                    "highestPercentBelowTarget": format_pct(highest_pct),
+                }
+    except Exception:
+        logger.exception("Failed to compute top underperforming sites")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
     day = min(anchor.day, [31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
     return date(year, month, day)
 
