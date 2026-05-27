@@ -235,6 +235,38 @@ flowchart LR
   B --> D
 ```
 
+### 14) GET `/api/protocols/summary`
+Purpose: Return total number of protocols and number of distinct therapeutic areas in a single payload.
+
+Request URL:
+- `/api/protocols/summary`
+- `/api/v1/protocols/summary`
+
+Output format:
+```json
+{
+  "success": true,
+  "protocolCount": 123,
+  "distinctTherapeuticAreaCount": 9
+}
+```
+
+Schema relation diagram:
+```mermaid
+flowchart LR
+  A[/protocols/summary]
+  B[(public.protocols)]
+  C[COUNT(*) as protocolCount]
+  D[COUNT(DISTINCT therapeutic_area) as distinctTherapeuticAreaCount]
+  E[{success, protocolCount, distinctTherapeuticAreaCount}]
+
+  A --> B
+  B --> C
+  B --> D
+  C --> E
+  D --> E
+```
+
 ## Setup
 1. Install dependencies.
 ```bash
