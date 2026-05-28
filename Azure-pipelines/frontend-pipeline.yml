@@ -11,8 +11,8 @@
 # Inline variables (defined below — update before running):
 #   frontend-app-name        - Azure App Service name for the frontend
 #
-# App Settings on Azure App Service (set directly — VITE_* vars are build-time only):
-#   (add runtime env vars here if needed; VITE_* must be set at build time instead)
+# Inline variables:
+#   eagle-backend-url        - Backend App Service URL (not sensitive, defined inline)
 #
 # Service Connection (ADO Project Settings > Service Connections):
 #   fd_ser_con               - ARM service connection
@@ -50,6 +50,8 @@ variables:
     value: '20.x'
   - name: runDeploy
     value: 'true'    # Deploy enabled
+  - name: eagle-backend-url
+    value: 'https://eagle-backend01.azurewebsites.net'
 
 # =============================================================================
 # STAGE 1: BUILD
@@ -142,17 +144,6 @@ stages:
                 - download: current
                   artifact: fd-poc-frontend
                   displayName: 'Download frontend artifact'
-
-                # -------------------------------------------------------------------
-                # Fetch secrets from Azure Key Vault (fd-group)
-                # -------------------------------------------------------------------
-                - task: AzureKeyVault@2
-                  displayName: 'Fetch secrets from Azure Key Vault (fd-group)'
-                  inputs:
-                    azureSubscription: fd_ser_con
-                    KeyVaultName: 'fd-group'
-                    SecretsFilter: 'eagle-backend-url'
-                    RunAsPreJob: false
 
                 - task: AzureWebApp@1
                   displayName: 'Deploy TanStack Start app to Azure App Service'
