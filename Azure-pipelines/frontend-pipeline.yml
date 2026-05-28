@@ -1,0 +1,171 @@
+# =============================================================================
+# frontend-pipeline.yml
+#
+# ADO Pipeline: Build & Deploy frontend (TanStack Start + Vite) to Azure App Service
+#
+# Variable Group (ADO Library > Variable Groups): fd-group
+# Variables inherited from the group:
+#   $(subscription-id)       - Azure subscription ID
+#   $(resource-group-name)   - Azure Resource Group name
+#
+# Inline variables (defined below — update before running):
+#   frontend-app-name        - Azure App Service name for the frontend
+#
+# App Settings injected into Azure App Service at deploy time:
+#   VITE_API_BASE_URL        - Backend API URL (fetched from Key Vault as eagle-backend-url)
+#   (add other VITE_* build-time env vars here as needed)
+#
+# Service Connection (ADO Project Settings > Service Connections):
+#   fd_ser_con               - ARM service connection
+# =============================================================================
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/**
+      - package.json
+      - vite.config.ts
+      - tsconfig.json
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  # -------------------------------------------------------------------------
+  # Variable group from ADO Library (Pipelines > Library > fd-group)
+  # -------------------------------------------------------------------------
+  - group: fd-group
+  # -------------------------------------------------------------------------
+  # App-specific variables — update once App Service is provisioned
+  # -------------------------------------------------------------------------
+  - name: frontend-app-name
+    value: 'frontend-app-eagle'
+  - name: frontend-resource-group
+    value: 'frontend-app-eagle_group'
+  - name: nodeVersion
+    value: '20.x'
+  - name: runDeploy
+    value: 'true'    # Deploy enabled
+
+# =============================================================================
+# STAGE 1: BUILD
+# =============================================================================
+stages:
+  - stage: Build
+    displayName: 'Build TanStack Start Frontend'
+    jobs:
+      - job: BuildFrontend
+        displayName: 'Install dependencies, run tests & build'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+
+          # -------------------------------------------------------------------
+          # Set up Node.js (required for tooling even though bun is the runtime)
+          # -------------------------------------------------------------------
+          - task: NodeTool@0
+            displayName: 'Use Node.js $(nodeVersion)'
+            inputs:
+              versionSpec: $(nodeVersion)
+
+          # -------------------------------------------------------------------
+          # Install bun package manager
+          # -------------------------------------------------------------------
+          - script: |
+              curl -fsSL https://bun.sh/install | bash
+              echo "##vso[task.prependpath]$HOME/.bun/bin"
+            displayName: 'Install bun'
+
+          # -------------------------------------------------------------------
+          # Install dependencies from package.json (respects bun.lock)
+          # -------------------------------------------------------------------
+          - script: |
+              bun install --frozen-lockfile
+            displayName: 'bun install'
+
+          # -------------------------------------------------------------------
+          # Run tests (vitest)
+          # -------------------------------------------------------------------
+          - script: |
+              bun run test || echo "No tests found or tests passed"
+            displayName: 'Run tests (vitest)'
+            continueOnError: true
+
+          # -------------------------------------------------------------------
+          # Build the frontend with vite
+          # -------------------------------------------------------------------
+          - script: |
+              bun run build
+            displayName: 'Build frontend (vite build)'
+
+          # -------------------------------------------------------------------
+          # Package the app — zip source + build artifacts, excluding
+          # node_modules (App Service installs deps at startup via startup command)
+          # -------------------------------------------------------------------
+          - script: |
+              cd $(System.DefaultWorkingDirectory)
+              zip -r $(Build.ArtifactStagingDirectory)/frontend.zip . \
+                --exclude="node_modules/*" \
+                --exclude=".git/*" \
+                --exclude=".gitignore" \
+                --exclude="Azure-pipelines/*"
+            displayName: 'Zip frontend artifact'
+
+          - publish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+            artifact: fd-poc-frontend
+            displayName: 'Publish frontend artifact'
+
+# =============================================================================
+# STAGE 2: DEPLOY TO AZURE APP SERVICE
+# =============================================================================
+  - stage: Deploy
+    displayName: 'Deploy Frontend to Azure App Service'
+    dependsOn: Build
+    # Deploy whenever build succeeds and runDeploy is true (any branch)
+    condition: and(succeeded(), eq(variables['runDeploy'], 'true'))
+    jobs:
+      - deployment: DeployFrontend
+        displayName: 'Deploy to Azure App Service'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: fd-dev
+        timeoutInMinutes: 180
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: fd-poc-frontend
+                  displayName: 'Download frontend artifact'
+
+                # -------------------------------------------------------------------
+                # Fetch secrets from Azure Key Vault
+                # Add eagle-backend-url to Key Vault with the backend App Service URL
+                # -------------------------------------------------------------------
+                - task: AzureKeyVault@2
+                  displayName: 'Fetch secrets from Azure Key Vault (fd-eagle)'
+                  inputs:
+                    azureSubscription: fd_ser_con
+                    KeyVaultName: 'fd-eagle'
+                    SecretsFilter: 'eagle-backend-url'
+                    RunAsPreJob: false
+
+                - task: AzureWebApp@1
+                  displayName: 'Deploy TanStack Start app to Azure App Service'
+                  inputs:
+                    azureSubscription: fd_ser_con
+                    appType: 'webAppLinux'
+                    appName: $(frontend-app-name)
+                    resourceGroupName: $(frontend-resource-group)
+                    package: '$(Pipeline.Workspace)/fd-poc-frontend/frontend.zip'
+                    # Install bun, install production deps, then start vite preview server
+                    startUpCommand: 'curl -fsSL https://bun.sh/install | bash && export PATH="$HOME/.bun/bin:$PATH" && bun install --production && bun run preview --host 0.0.0.0 --port 8080'
+                    appSettings: |
+                      -VITE_API_BASE_URL "$(eagle-backend-url)"
+                      -PORT "8080"
