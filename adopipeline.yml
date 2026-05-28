@@ -42,9 +42,9 @@ variables:
   # App-specific variables — update once App Service is provisioned
   # -------------------------------------------------------------------------
   - name: backend-app-name
-    value: 'backend-app-eagle'
+    value: 'eagle-backend01'
   - name: backend-resource-group
-    value: 'backend-app-eagle_group'
+    value: 'backend-app-eagle-group'
   - name: pythonVersion
     value: '3.11'
   - name: runDeploy
