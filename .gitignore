@@ -1,0 +1,45 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment secrets
+**/.env
+*.env
+
+# Dependency directories
+pip-wheel-metadata/
+.build/
+.eggs/
+
+# Pytest cache
+.pytest_cache/
+
+# Installed packages
+dist/
+build/
+
+# Optional: avoid accidentally committing local database credentials
+*.db
