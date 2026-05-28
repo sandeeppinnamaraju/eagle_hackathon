@@ -4,6 +4,8 @@ export interface StudyOverviewTopUnderperformingQuery {
   studyId: string;
   timeHorizon: StudyRange;
   topK: number;
+  countryOrSite: string;
+  absoluteOrPercentage: string;
   fallbackSites: SiteRow[];
 }
 
