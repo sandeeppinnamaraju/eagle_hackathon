@@ -213,6 +213,69 @@ def test_get_study_overview_kpi_details_returns_actual_and_planned_kpis(monkeypa
     }
 
 
+def test_get_study_overview_kpi_details_uses_kpi_timeline_for_screen_failure_and_activation(monkeypatch) -> None:
+    cursor = _FakeCursor(
+        fetchone_values=[
+            (1,),
+            (1, 80, 100),
+            (1, 10, 13),
+            (1, 12, 15),
+            (1, 4, 6),
+        ],
+        fetchall_values=[
+            [
+                (
+                    date(2026, 1, 1),
+                    100,
+                    20,
+                    50,
+                    5,
+                    12,
+                    15,
+                    4,
+                    6,
+                ),
+            ]
+        ],
+    )
+    table_columns = {
+        "enrollment_timeline": {"study_id"},
+        "enrollment_rate": {"study_id", "period_date", "actual_rate", "planned_rate"},
+        "kpi_timeline": {
+            "study_id",
+            "period_date",
+            "screened_this_period",
+            "failed_this_period",
+            "enrolled_this_period",
+            "dropouts_this_period",
+            "sites_activated",
+            "sites_planned",
+            "countries_activated",
+            "countries_planned",
+        },
+        "kpi_snapshot": {"study_id"},
+    }
+
+    monkeypatch.setattr(overview_router, "get_conn_params", lambda: {"password": "test"})
+    monkeypatch.setattr(overview_router, "_get_public_table_columns", lambda _: table_columns)
+    monkeypatch.setattr(overview_router.psycopg2, "connect", lambda **_: _FakeConnection(cursor))
+
+    response = overview_router.get_study_overview_kpi_details(
+        time_horizon="Full Study",
+        study_id="S-100",
+    )
+
+    assert response["kpis"]["screenFailureRate"] == {"value": 20.0, "reason": None}
+    assert response["kpis"]["dropoutRate"] == {"value": 10.0, "reason": None}
+    assert response["kpis"]["sitesActivated"]["actualSitesActivated"] == 12
+    assert response["kpis"]["countriesActivated"]["actualCountriesActivated"] == 4
+    assert response["kpiTimeline"][0]["periodDate"] == "2026-01-01"
+    assert response["kpiTimeline"][0]["screened"] == 100
+    assert response["kpiTimeline"][0]["failed"] == 20
+    assert response["kpiTimeline"][0]["enrolled"] == 50
+    assert response["kpiTimeline"][0]["dropouts"] == 5
+
+
 def test_get_study_overview_kpi_details_rejects_unknown_study_id(monkeypatch) -> None:
     cursor = _FakeCursor(fetchone_values=[None, None, None])
     table_columns = {
