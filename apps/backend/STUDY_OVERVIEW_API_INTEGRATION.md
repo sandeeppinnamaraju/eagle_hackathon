@@ -298,6 +298,65 @@ Country-level status rule:
 
 ---
 
+## 5) Key Enrollment Milestones
+
+Endpoints:
+- `GET /study-overview/charts/milestones`
+- `GET /study-overview/milestones` (alias)
+
+Purpose:
+- Returns key study milestones from an enrollment perspective only.
+- Includes: `FSA`, `FSFV`, `LSFV`
+- Excludes: `DBL`, `RC`
+
+Variance rule:
+- `varianceDays = actual_date - planned_date` (in days)
+- `variance` text formatting:
+  - `Pending` when either date is unavailable
+  - `On time` when `varianceDays = 0`
+  - `+Xd` for positive variance
+  - `-Xd` for negative variance
+
+Example:
+```bash
+curl -s "https://willfully-grumble-likely.ngrok-free.dev/api/v1/study-overview/charts/milestones?studyId=ST-2024-002" -H "ngrok-skip-browser-warning: 1"
+```
+
+Response shape:
+```json
+{
+  "studyId": "ST-2024-002",
+  "milestones": [
+    {
+      "code": "FSA",
+      "milestone": "First Site Activated",
+      "planned": "29 Dec 2023",
+      "actual": "06 Jan 2024",
+      "variance": "+8d",
+      "varianceDays": 8
+    },
+    {
+      "code": "FSFV",
+      "milestone": "First Subject First Visit",
+      "planned": "28 Mar 2024",
+      "actual": "27 Mar 2024",
+      "variance": "-1d",
+      "varianceDays": -1
+    },
+    {
+      "code": "LSFV",
+      "milestone": "Last Subject First Visit",
+      "planned": "02 Jul 2029",
+      "actual": null,
+      "variance": "Pending",
+      "varianceDays": null
+    }
+  ]
+}
+```
+
+---
+
 ## Frontend Fetch Example (JavaScript/TypeScript)
 
 ```javascript
@@ -307,7 +366,7 @@ const params = new URLSearchParams({
   timeHorizon: "Last 3 Months" // optional
 });
 
-const [kpi, cumulative, rate, countries] = await Promise.all([
+const [kpi, cumulative, rate, countries, milestones] = await Promise.all([
   fetch(`${base}/study-overview/kpi-details?${params}`, {
     headers: { "ngrok-skip-browser-warning": "1" }
   }).then(r => r.json()),
@@ -318,6 +377,9 @@ const [kpi, cumulative, rate, countries] = await Promise.all([
     headers: { "ngrok-skip-browser-warning": "1" }
   }).then(r => r.json()),
   fetch(`${base}/study-overview/breakdown/countries?${params}`, {
+    headers: { "ngrok-skip-browser-warning": "1" }
+  }).then(r => r.json()),
+  fetch(`${base}/study-overview/charts/milestones?studyId=${encodeURIComponent("ST-2024-002")}`, {
     headers: { "ngrok-skip-browser-warning": "1" }
   }).then(r => r.json())
 ]);

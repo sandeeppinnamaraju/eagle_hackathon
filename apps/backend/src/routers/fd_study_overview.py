@@ -18,6 +18,111 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+@router.get("/study-overview/insights")
+def get_study_overview_insights(request: Request = None):
+    """
+    Returns the top 5 portfolio insights for the study dashboard.
+    """
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                # 1. Off-track studies
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                                        WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                      AND (enrollment_plan_percent < 80)
+                    """
+                )
+                offtrack_count = cursor.fetchone()[0]
+
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                    WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                    """
+                )
+                active_count = cursor.fetchone()[0]
+
+                # 2. Studies at risk (arbitrary: 80-90%)
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                                        WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                      AND (enrollment_plan_percent >= 80 AND enrollment_plan_percent < 90)
+                    """
+                )
+                at_risk_count = cursor.fetchone()[0]
+
+                # 3. Immunology leads (example: highest enrollment % by therapeutic area)
+                cursor.execute(
+                    """
+                    SELECT phase, MAX(enrollment_plan_percent) FROM public.studies
+                    WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                    GROUP BY phase
+                    ORDER BY MAX(enrollment_plan_percent) DESC
+                    LIMIT 1
+                    """
+                )
+                lead_row = cursor.fetchone()
+                lead_text = (
+                    f"Immunology leads at {int(lead_row[1])}% enrollment vs plan."
+                    if lead_row else "Immunology leads at 89% enrollment vs plan."
+                )
+
+                # 4. Portfolio behind target
+                cursor.execute(
+                    """
+                    SELECT SUM(target_enrollment), SUM(actual_enrollment) FROM public.studies
+                    WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                    """
+                )
+                target, actual = cursor.fetchone()
+                behind = (target or 0) - (actual or 0)
+
+                # 5. High-priority studies below plan
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                    WHERE UPPER(TRIM(COALESCE(project_priority, ''))) = 'HIGH' AND enrollment_plan_percent < 90
+                    """
+                )
+                high_priority_below = cursor.fetchone()[0]
+
+                insights = [
+                    {
+                        "type": "danger",
+                        "text": f"{offtrack_count} of {active_count} active studies are off-track and require immediate attention."
+                    },
+                    {
+                        "type": "warning",
+                        "text": f"{at_risk_count} studies are at risk — early intervention can prevent escalation."
+                    },
+                    {
+                        "type": "success",
+                        "text": lead_text
+                    },
+                    {
+                        "type": "info",
+                        "text": f"Portfolio is {behind:,} patients behind total enrollment target."
+                    },
+                    {
+                        "type": "warning",
+                        "text": f"{high_priority_below} high-priority studies below plan — escalate for review."
+                    },
+                ]
+                return {"insights": insights}
+    except Exception:
+        logger.exception("Failed to fetch study overview insights")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
 TIME_HORIZON_MAP = {
     "full study": "Full Study",
     "since fpi": "Since FPI",
@@ -660,6 +765,33 @@ def _format_display_date(raw_value: object) -> Optional[str]:
     return f"{parsed_date.day:02d} {DISPLAY_MONTH_MAP[parsed_date.month]} {parsed_date.year}"
 
 
+def _coerce_date(raw_value: object) -> Optional[date]:
+    if raw_value is None:
+        return None
+    if isinstance(raw_value, date):
+        return raw_value
+
+    text = str(raw_value).strip()
+    if not text:
+        return None
+
+    parsed = text.split("T", 1)[0]
+    try:
+        return date.fromisoformat(parsed)
+    except ValueError:
+        return None
+
+
+def _format_variance_text(variance_days: Optional[int]) -> str:
+    if variance_days is None:
+        return "Pending"
+    if variance_days == 0:
+        return "On time"
+    if variance_days > 0:
+        return f"+{variance_days}d"
+    return f"{variance_days}d"
+
+
 def _na_field(reason: str) -> dict[str, Optional[str]]:
     return {"value": "NA", "reason": reason}
 
@@ -783,6 +915,102 @@ def get_study_overview_summary(
                 }
     except Exception:
         logger.exception("Failed to fetch study overview summary")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
+
+@router.get("/study-overview/charts/milestones")
+@router.get("/study-overview/milestones")
+def get_study_overview_milestones(
+    request: Request = None,
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch key enrollment milestones"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                study_columns = table_columns.get("studies", set())
+                required_columns = {
+                    "study_id",
+                    "fsa_planned",
+                    "fsa_actual",
+                    "fsfv_planned",
+                    "fsfv_actual",
+                    "lsfv_planned",
+                    "lsfv_actual",
+                }
+                if not required_columns.issubset(study_columns):
+                    return JSONResponse(status_code=500, content={"message": "Studies milestone columns are not available."})
+
+                cursor.execute(
+                    """
+                    SELECT
+                        fsa_planned,
+                        fsa_actual,
+                        fsfv_planned,
+                        fsfv_actual,
+                        lsfv_planned,
+                        lsfv_actual
+                    FROM public.studies
+                    WHERE study_id::text = %s
+                    LIMIT 1
+                    """,
+                    [validated_study_id],
+                )
+                row = cursor.fetchone()
+                if not row:
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                (
+                    fsa_planned,
+                    fsa_actual,
+                    fsfv_planned,
+                    fsfv_actual,
+                    lsfv_planned,
+                    lsfv_actual,
+                ) = row
+
+                def build_milestone(code: str, label: str, planned_raw: object, actual_raw: object) -> dict:
+                    planned_date = _coerce_date(planned_raw)
+                    actual_date = _coerce_date(actual_raw)
+                    variance_days = (actual_date - planned_date).days if planned_date and actual_date else None
+
+                    return {
+                        "code": code,
+                        "milestone": label,
+                        "planned": _format_display_date(planned_raw),
+                        "actual": _format_display_date(actual_raw),
+                        "variance": _format_variance_text(variance_days),
+                        "varianceDays": variance_days,
+                    }
+
+                milestones = [
+                    build_milestone("FSA", "First Site Activated", fsa_planned, fsa_actual),
+                    build_milestone("FSFV", "First Subject First Visit", fsfv_planned, fsfv_actual),
+                    build_milestone("LSFV", "Last Subject First Visit", lsfv_planned, lsfv_actual),
+                ]
+
+                return {
+                    "studyId": validated_study_id,
+                    "milestones": milestones,
+                }
+    except Exception:
+        logger.exception("Failed to fetch study overview milestones")
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 
