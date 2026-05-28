@@ -120,7 +120,7 @@ stages:
         displayName: 'Deploy to Azure App Service'
         pool:
           vmImage: 'ubuntu-latest'
-        environment: rdfinrpt-uat
+        environment: fd-dev
         timeoutInMinutes: 180
         strategy:
           runOnce:
