@@ -86,7 +86,7 @@ stages:
           # Install dependencies from package.json (respects bun.lock)
           # -------------------------------------------------------------------
           - script: |
-              bun install --frozen-lockfile
+              bun install
             displayName: 'bun install'
 
           # -------------------------------------------------------------------
