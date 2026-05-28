@@ -26,7 +26,7 @@ trigger:
       - main
   paths:
     include:
-      - fd_poc/backend/**
+      - apps/backend/**
 
 pr:
   branches:
@@ -78,7 +78,7 @@ stages:
           # -------------------------------------------------------------------
           - script: |
               python -m pip install --upgrade pip
-              pip install -r fd_poc/backend/requirements.txt
+              pip install -r apps/backend/requirements.txt
             displayName: 'pip install requirements'
 
           # -------------------------------------------------------------------
@@ -87,7 +87,7 @@ stages:
           # -------------------------------------------------------------------
           - script: |
               pip install pytest
-              pytest fd_poc/backend/tests/ -v --tb=short || echo "No tests found or tests passed"
+              pytest apps/backend/tests/ -v --tb=short || echo "No tests found or tests passed"
             displayName: 'Run tests (pytest)'
             continueOnError: true
 
@@ -98,7 +98,7 @@ stages:
           - task: ArchiveFiles@2
             displayName: 'Zip backend artifact'
             inputs:
-              rootFolderOrFile: 'fd_poc/backend'
+              rootFolderOrFile: 'apps/backend'
               includeRootFolder: false
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
