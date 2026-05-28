@@ -22,16 +22,24 @@ from eagle_hackathon.apps.backend.src.routers.fd_auth import router as auth_rout
 app = FastAPI(title=settings.app_name, version=settings.app_version)
 
 allow_all_origins = "*" in settings.allowed_origins
-cors_allow_credentials = not allow_all_origins
+explicit_origins = [origin for origin in settings.allowed_origins if origin != "*"]
+cors_options = {
+	"allow_methods": ["*"],
+	"allow_headers": ["*"],
+	"allow_credentials": True,
+	"allow_origin_regex": ".*",
+}
+
 if allow_all_origins:
-    logger.warning("ALLOWED_ORIGINS contains '*'; disabling CORS credentials for valid browser preflight handling")
+	# Use origin regex for wildcard support with credentialed requests.
+	# This makes preflight succeed for login while ALLOWED_ORIGINS is broad.
+	cors_options["allow_origins"] = explicit_origins
+else:
+	cors_options["allow_origins"] = explicit_origins
 
 app.add_middleware(
 	CORSMiddleware,
-	allow_origins=settings.allowed_origins,
-	allow_credentials=cors_allow_credentials,
-	allow_methods=["*"],
-	allow_headers=["*"],
+	**cors_options,
 )
 
 # Backward-compatible unversioned endpoints.
