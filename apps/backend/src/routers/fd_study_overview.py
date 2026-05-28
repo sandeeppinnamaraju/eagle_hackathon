@@ -155,6 +155,36 @@ def _require_study_id(raw_value: object) -> str:
     return cleaned
 
 
+def _normalize_optional_text(raw_value: object) -> Optional[str]:
+    if raw_value is None:
+        return None
+
+    # FastAPI Query defaults are Param objects when functions are called directly in tests.
+    default_value = getattr(raw_value, "default", None)
+    if isinstance(default_value, str):
+        return _normalize_optional_text(default_value)
+
+    if not isinstance(raw_value, str):
+        return None
+    cleaned = raw_value.strip()
+    return cleaned if cleaned else None
+
+
+def _normalize_choice(raw_value: object, allowed: set[str], default: str) -> Optional[str]:
+    if raw_value is None:
+        return default
+
+    default_value = getattr(raw_value, "default", None)
+    if isinstance(default_value, str):
+        return _normalize_choice(default_value, allowed, default)
+
+    if not isinstance(raw_value, str):
+        return None
+
+    cleaned = raw_value.strip().lower()
+    return cleaned if cleaned in allowed else None
+
+
 def _normalize_time_horizon(raw_value: object) -> Optional[str]:
     if raw_value is None:
         return "full study"
@@ -391,6 +421,8 @@ def get_top_underperforming_sites(
     time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
     study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
     top_k: int = Query(3, alias="topK", description="Number of top sites to return per category"),
+    country_or_site: str = Query("country", alias="countryOrSite", description="Grouping dimension: country or site"),
+    absolute_or_percentage: str = Query("absolute", alias="absoluteOrPercentage", description="Metric type: absolute or percentage"),
 ):
     if request is not None and request.method.upper() != "GET":
         return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
@@ -398,6 +430,11 @@ def get_top_underperforming_sites(
     try:
         validated_study_id = _require_study_id(study_id)
     except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_group_by = _normalize_choice(country_or_site, {"country", "site"}, "country")
+    normalized_metric = _normalize_choice(absolute_or_percentage, {"absolute", "percentage"}, "absolute")
+    if not normalized_group_by or not normalized_metric:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
     normalized_horizon = _normalize_time_horizon(time_horizon)
@@ -435,70 +472,84 @@ def get_top_underperforming_sites(
                 else:
                     where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
 
-                # Aggregate per-site totals (some deployments may have one row per site; SUM is safe)
-                cursor.execute(
-                    f"""
-                    SELECT
-                        site_id,
-                        COALESCE(site_name, '') AS site_name,
-                        COALESCE(country, '') AS country,
-                        COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
-                        COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
-                    FROM public.site_breakdown
-                    {where_sql}
-                    GROUP BY site_id, site_name, country
-                    """,
-                    where_params,
-                )
-
-                rows = cursor.fetchall()
-
-                sites_calc = []
-                for sid, sname, country, total_target, total_actual in rows:
-                    if total_target is None or total_target == 0:
-                        continue
-                    shortfall = int(total_target) - int(total_actual)
-                    pct_below = round(((shortfall) / float(total_target)) * 100.0, 2) if total_target else 0.0
-                    sites_calc.append({
-                        "site_id": sid,
-                        "site_name": sname,
-                        "country": country,
-                        "total_target": int(total_target),
-                        "total_actual": int(total_actual),
-                        "shortfall": shortfall,
-                        "pct_below": pct_below,
-                    })
-
-                # Largest absolute shortfall
-                largest_abs = sorted(sites_calc, key=lambda x: x["shortfall"], reverse=True)[:top_k]
-                # Highest percent below target
-                highest_pct = sorted(sites_calc, key=lambda x: x["pct_below"], reverse=True)[:top_k]
-
-                def format_abs(items):
-                    result = []
-                    for idx, it in enumerate(items, start=1):
-                        result.append({
-                            "rank": idx,
-                            "site": f"{it['site_name']} ({it['country']})",
-                            "shortfall": it["shortfall"],
+                if normalized_group_by == "country":
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            COALESCE(country, '') AS group_name,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY country
+                        """,
+                        where_params,
+                    )
+                    rows = cursor.fetchall()
+                    entities = []
+                    for group_name, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        shortfall = int(total_target) - int(total_actual)
+                        pct_below = round((shortfall / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        entities.append({
+                            "name": group_name or "Unknown",
+                            "shortfall": shortfall,
+                            "pct_below": pct_below,
                         })
-                    return result
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            site_id,
+                            COALESCE(site_name, '') AS site_name,
+                            COALESCE(country, '') AS country,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY site_id, site_name, country
+                        """,
+                        where_params,
+                    )
 
-                def format_pct(items):
-                    result = []
-                    for idx, it in enumerate(items, start=1):
-                        result.append({
-                            "rank": idx,
-                            "site": f"{it['site_name']} ({it['country']})",
-                            "%BelowTarget": it["pct_below"],
+                    rows = cursor.fetchall()
+                    entities = []
+                    for sid, sname, country, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        shortfall = int(total_target) - int(total_actual)
+                        pct_below = round((shortfall / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        entities.append({
+                            "name": f"{sname} ({country})" if country else (sname or str(sid)),
+                            "shortfall": shortfall,
+                            "pct_below": pct_below,
                         })
-                    return result
+
+                if normalized_metric == "absolute":
+                    ranked = sorted(entities, key=lambda x: x["shortfall"], reverse=True)[:top_k]
+                    metric_key = "absoluteShortfall"
+                else:
+                    ranked = sorted(entities, key=lambda x: x["pct_below"], reverse=True)[:top_k]
+                    metric_key = "percentageBelowTarget"
+
+                items = []
+                for idx, it in enumerate(ranked, start=1):
+                    row = {
+                        "rank": idx,
+                        normalized_group_by: it["name"],
+                    }
+                    row[metric_key] = it["shortfall"] if normalized_metric == "absolute" else it["pct_below"]
+                    items.append(row)
 
                 return {
                     "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
                     "studyId": validated_study_id,
-                    "largestAbsoluteShortfall": format_abs(largest_abs),
-                    "highestPercentBelowTarget": format_pct(highest_pct),
+                    "filter": {
+                        "countryOrSite": normalized_group_by,
+                        "absoluteOrPercentage": normalized_metric,
+                    },
+                    "underperforming": items,
                 }
     except Exception:
         logger.exception("Failed to compute top underperforming sites")
@@ -510,6 +561,8 @@ def get_top_overperforming_sites(
     time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
     study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
     top_k: int = Query(3, alias="topK", description="Number of top sites to return per category"),
+    country_or_site: str = Query("country", alias="countryOrSite", description="Grouping dimension: country or site"),
+    absolute_or_percentage: str = Query("absolute", alias="absoluteOrPercentage", description="Metric type: absolute or percentage"),
 ):
     if request is not None and request.method.upper() != "GET":
         return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
@@ -517,6 +570,11 @@ def get_top_overperforming_sites(
     try:
         validated_study_id = _require_study_id(study_id)
     except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_group_by = _normalize_choice(country_or_site, {"country", "site"}, "country")
+    normalized_metric = _normalize_choice(absolute_or_percentage, {"absolute", "percentage"}, "absolute")
+    if not normalized_group_by or not normalized_metric:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
 
     normalized_horizon = _normalize_time_horizon(time_horizon)
@@ -554,72 +612,88 @@ def get_top_overperforming_sites(
                 else:
                     where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
 
-                # Aggregate per-site totals
-                cursor.execute(
-                    f"""
-                    SELECT
-                        site_id,
-                        COALESCE(site_name, '') AS site_name,
-                        COALESCE(country, '') AS country,
-                        COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
-                        COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
-                    FROM public.site_breakdown
-                    {where_sql}
-                    GROUP BY site_id, site_name, country
-                    """,
-                    where_params,
-                )
-
-                rows = cursor.fetchall()
-
-                sites_calc = []
-                for sid, sname, country, total_target, total_actual in rows:
-                    if total_target is None or total_target == 0:
-                        continue
-                    surplus = int(total_actual) - int(total_target)
-                    if surplus <= 0:
-                        continue
-                    pct_above = round((surplus / float(total_target)) * 100.0, 2) if total_target else 0.0
-                    sites_calc.append({
-                        "site_id": sid,
-                        "site_name": sname,
-                        "country": country,
-                        "total_target": int(total_target),
-                        "total_actual": int(total_actual),
-                        "surplus": surplus,
-                        "pct_above": pct_above,
-                    })
-
-                # Largest absolute surplus
-                largest_abs = sorted(sites_calc, key=lambda x: x["surplus"], reverse=True)[:top_k]
-                # Highest percent above target
-                highest_pct = sorted(sites_calc, key=lambda x: x["pct_above"], reverse=True)[:top_k]
-
-                def format_abs(items):
-                    result = []
-                    for idx, it in enumerate(items, start=1):
-                        result.append({
-                            "rank": idx,
-                            "site": f"{it['site_name']} ({it['country']})",
-                            "surplus": it["surplus"],
+                if normalized_group_by == "country":
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            COALESCE(country, '') AS group_name,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY country
+                        """,
+                        where_params,
+                    )
+                    rows = cursor.fetchall()
+                    entities = []
+                    for group_name, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        surplus = int(total_actual) - int(total_target)
+                        if surplus <= 0:
+                            continue
+                        pct_above = round((surplus / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        entities.append({
+                            "name": group_name or "Unknown",
+                            "surplus": surplus,
+                            "pct_above": pct_above,
                         })
-                    return result
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            site_id,
+                            COALESCE(site_name, '') AS site_name,
+                            COALESCE(country, '') AS country,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY site_id, site_name, country
+                        """,
+                        where_params,
+                    )
 
-                def format_pct(items):
-                    result = []
-                    for idx, it in enumerate(items, start=1):
-                        result.append({
-                            "rank": idx,
-                            "site": f"{it['site_name']} ({it['country']})",
-                            "%AboveTarget": it["pct_above"],
+                    rows = cursor.fetchall()
+                    entities = []
+                    for sid, sname, country, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        surplus = int(total_actual) - int(total_target)
+                        if surplus <= 0:
+                            continue
+                        pct_above = round((surplus / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        entities.append({
+                            "name": f"{sname} ({country})" if country else (sname or str(sid)),
+                            "surplus": surplus,
+                            "pct_above": pct_above,
                         })
-                    return result
+
+                if normalized_metric == "absolute":
+                    ranked = sorted(entities, key=lambda x: x["surplus"], reverse=True)[:top_k]
+                    metric_key = "absoluteSurplus"
+                else:
+                    ranked = sorted(entities, key=lambda x: x["pct_above"], reverse=True)[:top_k]
+                    metric_key = "percentageAboveTarget"
+
+                items = []
+                for idx, it in enumerate(ranked, start=1):
+                    row = {
+                        "rank": idx,
+                        normalized_group_by: it["name"],
+                    }
+                    row[metric_key] = it["surplus"] if normalized_metric == "absolute" else it["pct_above"]
+                    items.append(row)
 
                 return {
                     "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
                     "studyId": validated_study_id,
-                    "largestAbsoluteSurplus": format_abs(largest_abs),
-                    "highestPercentAboveTarget": format_pct(highest_pct),
+                    "filter": {
+                        "countryOrSite": normalized_group_by,
+                        "absoluteOrPercentage": normalized_metric,
+                    },
+                    "overperforming": items,
                 }
     except Exception:
         logger.exception("Failed to compute top overperforming sites")
