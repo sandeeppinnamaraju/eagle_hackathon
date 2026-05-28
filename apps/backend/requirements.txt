@@ -1,7 +1,11 @@
-# Backend Requirements
+pip install uvicornpip install uvicornuvicorn eagle_hackathon.apps.backend.src.main:app --reload --host 127.0.0.1 --port 8000# Backend Requirements
 fastapi
 uvicorn
 pydantic
 python-dotenv
 psycopg2-binary
+PyJWT
+bcrypt
+httpx
 pytest
+pytest-mock
