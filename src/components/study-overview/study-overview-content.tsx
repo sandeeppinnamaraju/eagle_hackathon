@@ -20,8 +20,12 @@ import { useStudyOverviewCountryBreakdown } from "@/hooks/use-study-overview-cou
 import { useStudyOverviewEnrollmentCumulative } from "@/hooks/use-study-overview-enrollment-cumulative";
 import { useStudyOverviewEnrollmentRate } from "@/hooks/use-study-overview-enrollment-rate";
 import { useStudyOverviewKpis } from "@/hooks/use-study-overview-kpis";
+import { useStudyOverviewMilestones } from "@/hooks/use-study-overview-milestones";
 import { useStudyOverviewSiteBreakdown } from "@/hooks/use-study-overview-site-breakdown";
 import { useStudyOverviewSummary } from "@/hooks/use-study-overview-summary";
+import { useStudyOverviewTopOverperforming } from "@/hooks/use-study-overview-top-overperforming";
+import { useStudyOverviewTopUnderperforming } from "@/hooks/use-study-overview-top-underperforming";
+import type { StudyOverviewMilestoneRow } from "@/lib/study-overview-milestones-types";
 import type { PerfGroups, PerfItem, SiteRow, StudyOverviewContentProps, StudyRange } from "./types";
 
 type StudyOverviewStudy = StudyOverviewContentProps["study"];
@@ -40,6 +44,7 @@ export function StudyOverviewContent({
   onViewChange,
   expanded,
   onToggle,
+  onSelectPerformanceTarget,
   onSelectSiteFromCountry,
   cumulative,
   rates,
@@ -75,6 +80,7 @@ export function StudyOverviewContent({
         detail={detail}
         expanded={expanded}
         onToggle={onToggle}
+        onSelectPerformanceTarget={onSelectPerformanceTarget}
         onSelectSiteFromCountry={onSelectSiteFromCountry}
       />
     </main>
@@ -522,12 +528,10 @@ function StudyHeader({
         {isLoading && <p className="mt-2 text-xs text-muted-foreground">Loading latest study summary...</p>}
         {error && <p className="mt-2 text-xs text-warning-foreground">Unable to load latest summary. Showing available data.</p>}
       </div>
-      <MilestonesPopover detail={detail} />
+      <MilestonesPopover studyId={study.id} detail={detail} />
     </div>
   );
 }
-
-interface MilestoneRow { code: string; label: string; planned: string; actual: string }
 
 function parseDate(value: string): Date | null {
   if (!value || value === "—") return null;
@@ -545,7 +549,7 @@ function addMonths(value: Date, months: number): Date {
   return next;
 }
 
-function buildMilestones(detail: StudyOverviewDetail): MilestoneRow[] {
+function buildMilestones(detail: StudyOverviewDetail): StudyOverviewMilestoneRow[] {
   const plannedFPI = parseDate(detail.plannedFPI);
   const actualFPI = parseDate(detail.actualFPI);
   const plannedLPI = parseDate(detail.plannedLPI);
@@ -555,11 +559,46 @@ function buildMilestones(detail: StudyOverviewDetail): MilestoneRow[] {
   const rcPlanned = plannedLPI ? addMonths(plannedLPI, 10) : null;
 
   return [
-    { code: "FSA", label: "First Site Activated", planned: fsaPlanned ? formatDate(fsaPlanned) : "—", actual: fsaActual ? formatDate(fsaActual) : "—" },
-    { code: "FSFV", label: "First Subject First Visit", planned: detail.plannedFPI, actual: detail.actualFPI },
-    { code: "LSFV", label: "Last Subject First Visit", planned: detail.plannedLPI, actual: "—" },
-    { code: "DBL", label: "Database Lock", planned: dblPlanned ? formatDate(dblPlanned) : "—", actual: "—" },
-    { code: "RC", label: "Report Complete", planned: rcPlanned ? formatDate(rcPlanned) : "—", actual: "—" },
+    {
+      code: "FSA",
+      label: "First Site Activated",
+      planned: fsaPlanned ? formatDate(fsaPlanned) : "—",
+      actual: fsaActual ? formatDate(fsaActual) : "—",
+      apiVarianceText: null,
+      apiVarianceDays: null,
+    },
+    {
+      code: "FSFV",
+      label: "First Subject First Visit",
+      planned: detail.plannedFPI,
+      actual: detail.actualFPI,
+      apiVarianceText: null,
+      apiVarianceDays: null,
+    },
+    {
+      code: "LSFV",
+      label: "Last Subject First Visit",
+      planned: detail.plannedLPI,
+      actual: "—",
+      apiVarianceText: null,
+      apiVarianceDays: null,
+    },
+    {
+      code: "DBL",
+      label: "Database Lock",
+      planned: dblPlanned ? formatDate(dblPlanned) : "—",
+      actual: "—",
+      apiVarianceText: null,
+      apiVarianceDays: null,
+    },
+    {
+      code: "RC",
+      label: "Report Complete",
+      planned: rcPlanned ? formatDate(rcPlanned) : "—",
+      actual: "—",
+      apiVarianceText: null,
+      apiVarianceDays: null,
+    },
   ];
 }
 
@@ -576,8 +615,29 @@ function variance(planned: string, actual: string): { text: string; tone: "neutr
   return { text: `+${diffDays}d`, tone: "bad" };
 }
 
-function MilestonesPopover({ detail }: { detail: StudyOverviewDetail }) {
-  const rows = buildMilestones(detail);
+function varianceFromApi(row: StudyOverviewMilestoneRow): { text: string; tone: "neutral" | "ok" | "warn" | "bad" } | null {
+  if (row.apiVarianceDays != null) {
+    if (row.apiVarianceDays <= 0) return { text: "On time", tone: "ok" };
+    if (row.apiVarianceDays <= 14) return { text: `+${row.apiVarianceDays}d`, tone: "warn" };
+    return { text: `+${row.apiVarianceDays}d`, tone: "bad" };
+  }
+
+  if (!row.apiVarianceText) return null;
+
+  const normalized = row.apiVarianceText.toLowerCase();
+  if (normalized.includes("pending")) return { text: row.apiVarianceText, tone: "neutral" };
+  if (normalized.includes("on time") || normalized.includes("ahead")) return { text: row.apiVarianceText, tone: "ok" };
+  if (normalized.includes("delay") || normalized.includes("late")) return { text: row.apiVarianceText, tone: "bad" };
+  return { text: row.apiVarianceText, tone: "neutral" };
+}
+
+function MilestonesPopover({ studyId, detail }: { studyId: string; detail: StudyOverviewDetail }) {
+  const fallbackRows = React.useMemo(() => buildMilestones(detail), [detail]);
+  const milestones = useStudyOverviewMilestones({
+    studyId,
+    fallbackRows,
+  });
+  const rows = milestones.milestones;
 
   return (
     <Popover>
@@ -588,6 +648,10 @@ function MilestonesPopover({ detail }: { detail: StudyOverviewDetail }) {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[520px] rounded-xl border border-border bg-card p-5 shadow-card">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Key Milestone Dates</h3>
+        {milestones.isLoading && <p className="mt-2 text-xs text-muted-foreground">Loading milestone dates...</p>}
+        {milestones.error && (
+          <p className="mt-2 text-xs text-warning-foreground">Unable to load latest milestone dates. Showing available data.</p>
+        )}
         <div className="mt-4 overflow-hidden rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead>
@@ -600,7 +664,7 @@ function MilestonesPopover({ detail }: { detail: StudyOverviewDetail }) {
             </thead>
             <tbody>
               {rows.map((row) => {
-                const result = variance(row.planned, row.actual);
+                const result = varianceFromApi(row) ?? variance(row.planned, row.actual);
                 const toneClass =
                   result.tone === "ok"
                     ? "text-success-foreground"
@@ -622,6 +686,13 @@ function MilestonesPopover({ detail }: { detail: StudyOverviewDetail }) {
                   </tr>
                 );
               })}
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-3 py-6 text-center text-xs text-muted-foreground">
+                    No milestone data available.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -723,6 +794,7 @@ function BreakdownTable({
   detail,
   expanded,
   onToggle,
+  onSelectPerformanceTarget,
   onSelectSiteFromCountry,
 }: {
   studyId: string;
@@ -732,6 +804,7 @@ function BreakdownTable({
   detail: StudyOverviewDetail;
   expanded: ExpandedState;
   onToggle: ToggleHandler;
+  onSelectPerformanceTarget: StudyOverviewContentProps["onSelectPerformanceTarget"];
   onSelectSiteFromCountry: SelectSiteHandler;
 }) {
   const countryBreakdown = useStudyOverviewCountryBreakdown({
@@ -746,8 +819,20 @@ function BreakdownTable({
     fallbackSites: detail.sites ?? [],
   });
 
+  const handlePerformanceSelect = (kind: "country" | "site", id: string) => {
+    onSelectPerformanceTarget(kind, id);
+  };
+
   return (
     <section className="mt-5">
+      <PerformancePanel
+        studyId={studyId}
+        range={range}
+        countries={countryBreakdown.countries}
+        sites={siteBreakdown.sites}
+        onSelect={handlePerformanceSelect}
+      />
+
       <div className="flex items-center justify-between">
         <BreakdownViewToggle view={view} onViewChange={onViewChange} />
       </div>
@@ -812,6 +897,333 @@ function BreakdownTable({
   );
 }
 
+interface PerfEntry {
+  key: string;
+  kind: "country" | "site";
+  id: string;
+  name: string;
+  typeLabel: string;
+  meta?: string;
+  delta: number;
+  pctDelta: number;
+  pct: number;
+}
+
+function PerformancePanel({
+  studyId,
+  range,
+  countries,
+  sites,
+  onSelect,
+}: {
+  studyId: string;
+  range: StudyRange;
+  countries: StudyOverviewDetail["countries"];
+  sites: SiteRow[];
+  onSelect: (kind: "country" | "site", id: string) => void;
+}) {
+  const [pView, setPView] = React.useState<"country" | "site">("country");
+  const [pShow, setPShow] = React.useState<"abs" | "pct">("abs");
+  const topK = 5;
+
+  const topUnderperforming = useStudyOverviewTopUnderperforming({
+    studyId,
+    timeHorizon: range,
+    topK,
+    fallbackSites: sites,
+  });
+  const topOverperforming = useStudyOverviewTopOverperforming({
+    studyId,
+    timeHorizon: range,
+    topK,
+    fallbackSites: sites,
+  });
+
+  const entries: PerfEntry[] =
+    pView === "country"
+      ? countries.map((country) => ({
+          key: `c-${country.name}`,
+          kind: "country" as const,
+          id: country.name,
+          name: country.name,
+          typeLabel: "COUNTRY",
+          meta: `${country.actual}/${country.target} enrolled`,
+          delta: country.actual - country.target,
+          pctDelta: country.pct - 100,
+          pct: country.pct,
+        }))
+      : sites.map((site) => ({
+          key: `s-${site.id}`,
+          kind: "site" as const,
+          id: site.id,
+          name: site.name,
+          typeLabel: "SITE",
+          meta: `${site.country} - ${site.actual}/${site.target}`,
+          delta: site.actual - site.target,
+          pctDelta: site.pct - 100,
+          pct: site.pct,
+        }));
+
+  const metric = (entry: PerfEntry) => (pShow === "abs" ? entry.delta : entry.pctDelta);
+  const format = (value: number) =>
+    pShow === "abs"
+      ? `${value > 0 ? "+" : ""}${Math.round(value)} pts`
+      : `${value > 0 ? "+" : ""}${Math.round(value)}%`;
+
+  const under = [...entries]
+    .sort((a, b) => metric(a) - metric(b))
+    .filter((entry) => metric(entry) < 0)
+    .slice(0, topK);
+
+  const resolveSiteFromApiLabel = React.useCallback(
+    (label: string): SiteRow | undefined => {
+      const normalizedLabel = label.trim().toLowerCase();
+      const normalizedWithoutCountry = normalizedLabel.replace(/\s*\([^)]*\)\s*$/, "");
+
+      return sites.find((site) => {
+        const siteName = site.name.trim().toLowerCase();
+        const siteWithCountry = `${site.name} (${site.country})`.trim().toLowerCase();
+        return siteName === normalizedWithoutCountry || siteWithCountry === normalizedLabel;
+      });
+    },
+    [sites],
+  );
+
+  const apiUnder = React.useMemo(() => {
+    const sourceItems =
+      pShow === "abs" ? topUnderperforming.largestAbsoluteShortfall : topUnderperforming.highestPercentBelowTarget;
+
+    return sourceItems.slice(0, topK).map((item, index) => {
+      const matchedSite = resolveSiteFromApiLabel(item.site);
+      const countryMatch = item.site.match(/\(([^)]+)\)\s*$/);
+      const country = countryMatch?.[1]?.trim() || null;
+      const cleanedName = item.site.replace(/\s*\([^)]*\)\s*$/, "").trim();
+      const shortfall = item.shortfall ?? (matchedSite ? Math.max(0, matchedSite.target - matchedSite.actual) : null);
+      const belowTargetPct = item.belowTargetPct ?? (matchedSite ? Math.max(0, 100 - matchedSite.pct) : null);
+      const pct = matchedSite?.pct ?? (belowTargetPct == null ? 0 : Math.max(0, 100 - belowTargetPct));
+      const delta = matchedSite ? matchedSite.actual - matchedSite.target : -(shortfall ?? belowTargetPct ?? 0);
+
+      return {
+        key: `api-under-${pShow}-${index}-${item.site}`,
+        kind: "site" as const,
+        id: matchedSite?.id ?? item.site,
+        name: cleanedName || item.site,
+        typeLabel: "SITE",
+        meta: matchedSite
+          ? `${matchedSite.country} - ${matchedSite.actual}/${matchedSite.target}`
+          : country
+            ? `${country} - API`
+            : "API",
+        delta,
+        pctDelta: belowTargetPct == null ? pct - 100 : -Math.abs(belowTargetPct),
+        pct,
+      } satisfies PerfEntry;
+    });
+  }, [pShow, resolveSiteFromApiLabel, topK, topUnderperforming.highestPercentBelowTarget, topUnderperforming.largestAbsoluteShortfall]);
+
+  const hasApiUnderData = pView === "site" && apiUnder.length > 0;
+  const resolvedUnder = hasApiUnderData ? apiUnder : under;
+
+  const over = [...entries]
+    .sort((a, b) => metric(b) - metric(a))
+    .filter((entry) => metric(entry) > 0)
+    .slice(0, topK);
+
+  const apiOver = React.useMemo(() => {
+    const sourceItems =
+      pShow === "abs" ? topOverperforming.largestAbsoluteSurplus : topOverperforming.highestPercentAboveTarget;
+
+    return sourceItems.slice(0, topK).map((item, index) => {
+      const matchedSite = resolveSiteFromApiLabel(item.site);
+      const countryMatch = item.site.match(/\(([^)]+)\)\s*$/);
+      const country = countryMatch?.[1]?.trim() || null;
+      const cleanedName = item.site.replace(/\s*\([^)]*\)\s*$/, "").trim();
+      const surplus = item.surplus ?? (matchedSite ? Math.max(0, matchedSite.actual - matchedSite.target) : null);
+      const aboveTargetPct = item.aboveTargetPct ?? (matchedSite ? Math.max(0, matchedSite.pct - 100) : null);
+      const achievementPct = item.achievementPct ?? (matchedSite ? matchedSite.pct : null);
+      const pct = achievementPct ?? (aboveTargetPct == null ? matchedSite?.pct ?? 0 : 100 + aboveTargetPct);
+      const delta = matchedSite ? matchedSite.actual - matchedSite.target : Math.abs(surplus ?? aboveTargetPct ?? 0);
+
+      return {
+        key: `api-over-${pShow}-${index}-${item.site}`,
+        kind: "site" as const,
+        id: matchedSite?.id ?? item.site,
+        name: cleanedName || item.site,
+        typeLabel: "SITE",
+        meta: matchedSite
+          ? `${matchedSite.country} - ${matchedSite.actual}/${matchedSite.target}`
+          : country
+            ? `${country} - API`
+            : "API",
+        delta,
+        pctDelta: aboveTargetPct == null ? pct - 100 : Math.abs(aboveTargetPct),
+        pct,
+      } satisfies PerfEntry;
+    });
+  }, [pShow, resolveSiteFromApiLabel, topK, topOverperforming.highestPercentAboveTarget, topOverperforming.largestAbsoluteSurplus]);
+
+  const hasApiOverData = pView === "site" && apiOver.length > 0;
+  const resolvedOver = hasApiOverData ? apiOver : over;
+
+  return (
+    <section className="mb-3 rounded-xl border border-border bg-card shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Performance Panel</h3>
+        <div className="flex flex-wrap items-center gap-4">
+          <SegGroup
+            label="View"
+            value={pView}
+            onChange={setPView}
+            options={[
+              { v: "country", l: "Country" },
+              { v: "site", l: "Site" },
+            ]}
+          />
+          <SegGroup
+            label="Show"
+            value={pShow}
+            onChange={setPShow}
+            options={[
+              { v: "abs", l: "Absolute" },
+              { v: "pct", l: "%" },
+            ]}
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-px bg-border md:grid-cols-2">
+        <PerfColumn tone="down" title="Underperforming" entries={resolvedUnder} format={format} metric={metric} onSelect={onSelect} />
+        <PerfColumn tone="up" title="Overperforming" entries={resolvedOver} format={format} metric={metric} onSelect={onSelect} />
+      </div>
+      {pView === "site" && topUnderperforming.isLoading && (
+        <p className="px-5 py-2 text-xs text-muted-foreground">Loading top underperforming sites...</p>
+      )}
+      {pView === "site" && topUnderperforming.error && (
+        <p className="px-5 pb-3 text-xs text-warning-foreground">
+          Unable to load top underperforming sites from API. Showing available data.
+        </p>
+      )}
+      {pView === "site" && topOverperforming.isLoading && (
+        <p className="px-5 py-2 text-xs text-muted-foreground">Loading top overperforming sites...</p>
+      )}
+      {pView === "site" && topOverperforming.error && (
+        <p className="px-5 pb-3 text-xs text-warning-foreground">
+          Unable to load top overperforming sites from API. Showing available data.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function SegGroup<T extends string>({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: T;
+  onChange: (value: T) => void;
+  options: Array<{ v: T; l: string }>;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <div className="inline-flex rounded-md bg-muted p-0.5">
+        {options.map((option) => (
+          <button
+            key={option.v}
+            type="button"
+            onClick={() => onChange(option.v)}
+            className={cn(
+              "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+              value === option.v
+                ? "bg-card text-primary shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {option.l}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PerfColumn({
+  tone,
+  title,
+  entries,
+  format,
+  metric,
+  onSelect,
+}: {
+  tone: "up" | "down";
+  title: string;
+  entries: PerfEntry[];
+  format: (value: number) => string;
+  metric: (entry: PerfEntry) => number;
+  onSelect: (kind: "country" | "site", id: string) => void;
+}) {
+  const Icon = tone === "down" ? TrendingDown : TrendingUp;
+  const accent =
+    tone === "down"
+      ? {
+          dot: "bg-danger",
+          text: "text-danger-foreground",
+          badge: "bg-danger-bg text-danger-foreground",
+          hover: "hover:bg-danger-bg/40",
+        }
+      : {
+          dot: "bg-success",
+          text: "text-success-foreground",
+          badge: "bg-success-bg text-success-foreground",
+          hover: "hover:bg-success-bg/40",
+        };
+
+  return (
+    <div className="bg-card p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <div className={cn("inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider", accent.text)}>
+          <Icon className="h-3.5 w-3.5" />
+          {title}
+        </div>
+        <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", accent.badge)}>{entries.length}</span>
+      </div>
+      {entries.length === 0 ? (
+        <p className="py-6 text-center text-xs text-muted-foreground">No entries.</p>
+      ) : (
+        <ul className="divide-y divide-border/60">
+          {entries.map((entry, index) => (
+            <li key={entry.key}>
+              <button
+                type="button"
+                onClick={() => onSelect(entry.kind, entry.id)}
+                className={cn("flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors", accent.hover)}
+              >
+                <span className="w-5 shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">{index + 1}</span>
+                <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", accent.dot)} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate text-sm font-medium text-foreground">{entry.name}</span>
+                    <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-muted-foreground">
+                      {entry.typeLabel}
+                    </span>
+                  </span>
+                  {entry.meta && <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{entry.meta}</span>}
+                </span>
+                <span className="shrink-0 text-right">
+                  <span className={cn("block text-sm font-semibold tabular-nums", accent.text)}>{format(metric(entry))}</span>
+                  <span className="block text-[10px] tabular-nums text-muted-foreground">{entry.pct.toFixed(1)}%</span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function BreakdownViewToggle({ view, onViewChange }: { view: BreakdownView; onViewChange: (view: BreakdownView) => void }) {
   return (
     <div className="inline-flex rounded-lg bg-muted p-1">
@@ -863,6 +1275,7 @@ function CountryTable({
         return (
           <React.Fragment key={c.name}>
             <tr
+              id={`country-row-${c.name}`}
               onClick={() => onToggle(`c-${c.name}`)}
               className="cursor-pointer border-b border-border/60 last:border-0 hover:bg-muted/40"
             >
