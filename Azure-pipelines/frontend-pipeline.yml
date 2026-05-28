@@ -106,6 +106,45 @@ stages:
             displayName: 'Build frontend (vite build)'
 
           # -------------------------------------------------------------------
+          # Generate a zero-dependency Node.js static file server.
+          # Serves dist/client as a SPA (falls back to index.html for all routes).
+          # Uses process.env.PORT provided by Azure App Service at runtime.
+          # -------------------------------------------------------------------
+          - script: |
+              cat > $(System.DefaultWorkingDirectory)/staticserver.js << 'EOF'
+              const http = require('http');
+              const fs = require('fs');
+              const path = require('path');
+              const port = process.env.PORT || 8080;
+              const root = path.join(__dirname, 'dist', 'client');
+              const mime = {
+                '.html': 'text/html', '.js': 'application/javascript',
+                '.css': 'text/css', '.json': 'application/json',
+                '.png': 'image/png', '.jpg': 'image/jpeg',
+                '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
+                '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf'
+              };
+              http.createServer((req, res) => {
+                const url = req.url.split('?')[0];
+                let file = path.join(root, url === '/' ? 'index.html' : url);
+                fs.readFile(file, (err, data) => {
+                  if (err) {
+                    fs.readFile(path.join(root, 'index.html'), (e2, idx) => {
+                      if (e2) { res.writeHead(404); res.end('Not found'); return; }
+                      res.writeHead(200, { 'Content-Type': 'text/html' });
+                      res.end(idx);
+                    });
+                    return;
+                  }
+                  const ext = path.extname(file);
+                  res.writeHead(200, { 'Content-Type': mime[ext] || 'application/octet-stream' });
+                  res.end(data);
+                });
+              }).listen(port, () => console.log('Listening on port ' + port));
+              EOF
+            displayName: 'Generate static file server (staticserver.js)'
+
+          # -------------------------------------------------------------------
           # Package the app — zip source + build artifacts, excluding
           # node_modules (App Service installs deps at startup via startup command)
           # -------------------------------------------------------------------
@@ -153,6 +192,6 @@ stages:
                     appName: $(frontend-app-name)
                     resourceGroupName: $(frontend-resource-group)
                     package: '$(Pipeline.Workspace)/fd-poc-frontend/frontend.zip'
-                    # Pre-install serve globally then serve the static client build as SPA
-                    startUpCommand: 'npm install -g serve && serve -s dist/client -l $PORT'
+                    # Zero-dependency Node.js static server (generated during build stage)
+                    startUpCommand: 'node staticserver.js'
                     appSettings: '-VITE_API_BASE_URL "$(eagle-backend-url)"'
