@@ -111,7 +111,7 @@ stages:
           # Uses process.env.PORT provided by Azure App Service at runtime.
           # -------------------------------------------------------------------
           - script: |
-              cat > $(System.DefaultWorkingDirectory)/staticserver.js << 'EOF'
+              cat > $(System.DefaultWorkingDirectory)/staticserver.cjs << 'EOF'
               const http = require('http');
               const fs = require('fs');
               const path = require('path');
@@ -142,7 +142,7 @@ stages:
                 });
               }).listen(port, () => console.log('Listening on port ' + port));
               EOF
-            displayName: 'Generate static file server (staticserver.js)'
+            displayName: 'Generate static file server (staticserver.cjs)'
 
           # -------------------------------------------------------------------
           # Package the app — zip source + build artifacts, excluding
@@ -193,5 +193,5 @@ stages:
                     resourceGroupName: $(frontend-resource-group)
                     package: '$(Pipeline.Workspace)/fd-poc-frontend/frontend.zip'
                     # Zero-dependency Node.js static server (generated during build stage)
-                    startUpCommand: 'node staticserver.js'
+                    startUpCommand: 'node staticserver.cjs'
                     appSettings: '-VITE_API_BASE_URL "$(eagle-backend-url)"'
