@@ -5,7 +5,6 @@ import { studyOverviewSiteBreakdownService } from "@/lib/study-overview-site-bre
 interface UseStudyOverviewSiteBreakdownOptions {
   studyId?: string;
   timeHorizon: StudyRange;
-  fallbackSites: SiteRow[];
 }
 
 interface UseStudyOverviewSiteBreakdownResult {
@@ -18,7 +17,6 @@ interface UseStudyOverviewSiteBreakdownResult {
 export function useStudyOverviewSiteBreakdown({
   studyId,
   timeHorizon,
-  fallbackSites,
 }: UseStudyOverviewSiteBreakdownOptions): UseStudyOverviewSiteBreakdownResult {
   const query = useQuery({
     queryKey: ["study-overview-site-breakdown", studyId, timeHorizon],
@@ -27,7 +25,6 @@ export function useStudyOverviewSiteBreakdown({
         {
           studyId: studyId ?? "",
           timeHorizon,
-          fallbackSites,
         },
         signal,
       ),
@@ -39,9 +36,9 @@ export function useStudyOverviewSiteBreakdown({
   const result = query.data;
 
   return {
-    sites: result?.data.sites ?? fallbackSites,
+    sites: result?.data.sites ?? [],
     isLoading: query.isLoading,
     error: result?.error ?? (query.error instanceof Error ? query.error : null),
-    isUsingFallback: result?.source === "fallback",
+    isUsingFallback: false,
   };
 }

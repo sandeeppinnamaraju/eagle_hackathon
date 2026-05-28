@@ -27,7 +27,7 @@ const toFiniteNumber = (value: unknown): number | null => {
   return null;
 };
 
-const toArrayRecords = <T extends Record<string, unknown>>(value: unknown): T[] => {
+const toArrayRecords = <T>(value: unknown): T[] => {
   if (!Array.isArray(value)) return [];
   return value.filter((item) => isRecord(item)) as T[];
 };
@@ -68,12 +68,6 @@ const normalizeSiteStatus = (value: unknown): SiteRow["status"] => {
   return "ENROLLING";
 };
 
-const fallbackData = (query: StudyOverviewCountryBreakdownQuery): StudyOverviewCountryBreakdownData => ({
-  countries: query.fallbackCountries,
-  sites: query.fallbackSites,
-  timeHorizonLabel: toTimeHorizonLabel(query.timeHorizon),
-});
-
 const mapSite = (site: StudyOverviewCountryBreakdownApiSite, countryName: string, index: number): SiteRow => {
   const target = toFiniteNumber(site.target) ?? 0;
   const actual = toFiniteNumber(site.actual) ?? 0;
@@ -90,7 +84,7 @@ const mapSite = (site: StudyOverviewCountryBreakdownApiSite, countryName: string
   };
 };
 
-const mapCountry = (country: StudyOverviewCountryBreakdownApiCountry, fallbackStatus: CountryBreakdown["status"]): CountryBreakdown => {
+const mapCountry = (country: StudyOverviewCountryBreakdownApiCountry): CountryBreakdown => {
   const target = toFiniteNumber(country.target) ?? 0;
   const actual = toFiniteNumber(country.actual) ?? 0;
   const rawPct = toFiniteNumber(country.percentEnrolled);
@@ -102,7 +96,7 @@ const mapCountry = (country: StudyOverviewCountryBreakdownApiCountry, fallbackSt
     pct: rawPct == null ? (target > 0 ? (actual / target) * 100 : 0) : normalizePercent(rawPct),
     sitesActive: toFiniteNumber(country.sitesActive) ?? 0,
     avgRate: toFiniteNumber(country.avgRate) ?? 0,
-    status: normalizeCountryStatus(country.status) ?? fallbackStatus,
+    status: normalizeCountryStatus(country.status),
   };
 };
 
@@ -111,11 +105,7 @@ const mapPayload = (
   query: StudyOverviewCountryBreakdownQuery,
 ): StudyOverviewCountryBreakdownData => {
   const countriesRaw = toArrayRecords<StudyOverviewCountryBreakdownApiCountry>(payload.countries);
-  if (countriesRaw.length === 0) {
-    return fallbackData(query);
-  }
-
-  const countries = countriesRaw.map((country, index) => mapCountry(country, query.fallbackCountries[index]?.status ?? "At Risk"));
+  const countries = countriesRaw.map((country) => mapCountry(country));
   const sites = countriesRaw.flatMap((country, countryIndex) => {
     const countryName = countries[countryIndex]?.name ?? "Unknown";
     return toArrayRecords<StudyOverviewCountryBreakdownApiSite>(country.sites).map((site, siteIndex) =>
@@ -125,7 +115,7 @@ const mapPayload = (
 
   return {
     countries,
-    sites: sites.length > 0 ? sites : query.fallbackSites,
+    sites,
     timeHorizonLabel: toStringOrNull(payload.timeHorizon) ?? toTimeHorizonLabel(query.timeHorizon),
   };
 };
@@ -138,7 +128,7 @@ async function fetchCountryBreakdown(
     timeHorizon: toTimeHorizonLabel(query.timeHorizon),
     studyId: query.studyId,
   });
-  const path = `/api/study-overview/breakdown/countries?${params.toString()}`;
+  const path = `/api/v1/study-overview/breakdown/countries?${params.toString()}`;
   const response = await fetch(
     withApiBaseUrl(path, path),
     withApiRequestConfig({ method: "GET", signal }),
@@ -173,8 +163,12 @@ export const studyOverviewCountryBreakdownService = {
         error instanceof Error ? error : new Error("Failed to load country breakdown from API");
 
       return {
-        data: fallbackData(query),
-        source: "fallback",
+        data: {
+          countries: [],
+          sites: [],
+          timeHorizonLabel: toTimeHorizonLabel(query.timeHorizon),
+        },
+        source: "api",
         error: normalizedError,
       };
     }

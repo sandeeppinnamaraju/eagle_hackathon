@@ -35,7 +35,7 @@ describe("kpiDetailsService", () => {
     const [requestUrl] = fetchMock.mock.calls[0] as [string, RequestInit];
     const parsedUrl = new URL(requestUrl, "https://example.test");
 
-    expect(parsedUrl.pathname).toBe("/api/study-protocol/kpi-details");
+    expect(parsedUrl.pathname).toBe("/api/v1/study-protocol/kpi-details");
     expect(parsedUrl.searchParams.get("search")).toBe("oncology");
     expect(parsedUrl.searchParams.getAll("therapeuticArea")).toEqual(["Oncology", "Immunology"]);
     expect(parsedUrl.searchParams.get("phase")).toBe("II");

@@ -108,8 +108,8 @@ function normalizePhase(raw: string | undefined): ProtocolResult["phase"] {
 
 // ── API call ──────────────────────────────────────────────────────────────────
 
-const SEARCH_PROTOCOLS_PATH = "/api/search-protocols";
-const SEARCH_PROTOCOLS_FALLBACK_URL = "/api/search-protocols";
+const SEARCH_PROTOCOLS_PATH = "/api/v1/search-protocols";
+const SEARCH_PROTOCOLS_FALLBACK_URL = "/api/v1/search-protocols";
 
 export async function searchProtocols(
   request: ProtocolSearchRequest,

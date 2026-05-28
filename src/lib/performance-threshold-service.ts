@@ -1,7 +1,7 @@
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
-const PERFORMANCE_THRESHOLD_PATH = "/api/admin/performance-threshold";
-const PERFORMANCE_THRESHOLD_FALLBACK_URL = "/api/admin/performance-threshold";
+const PERFORMANCE_THRESHOLD_PATH = "/api/v1/admin/performance-threshold";
+const PERFORMANCE_THRESHOLD_FALLBACK_URL = "/api/v1/admin/performance-threshold";
 
 export interface PerformanceThresholdRequest {
   onTrack: number;

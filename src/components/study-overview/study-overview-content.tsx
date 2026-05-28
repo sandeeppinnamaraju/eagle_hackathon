@@ -68,7 +68,7 @@ export function StudyOverviewContent({
 
       <RangeToggle range={range} onRangeChange={onRangeChange} />
 
-      <KpiTiles studyId={study.id} range={range} detail={detail} />
+      <KpiTiles studyId={study.id} range={range} />
 
       <ChartCards studyId={study.id} range={range} cumulative={cumulative} rates={rates} />
 
@@ -174,16 +174,13 @@ function MetaField({ label, value }: { label: string; value: string }) {
 function KpiTiles({
   studyId,
   range,
-  detail,
 }: {
   studyId: string;
   range: StudyRange;
-  detail: StudyOverviewContentProps["detail"];
 }) {
   const kpis = useStudyOverviewKpis({
     studyId,
     timeHorizon: range,
-    detail,
   });
   const resolvedDetail = kpis.detail;
 
@@ -225,7 +222,7 @@ function KpiTiles({
         />
       </div>
       {kpis.isLoading && <p className="mt-3 text-xs text-muted-foreground">Loading KPI details...</p>}
-      {kpis.error && <p className="mt-3 text-xs text-warning-foreground">Unable to load latest KPI details. Showing available data.</p>}
+      {kpis.error && <p className="mt-3 text-xs text-warning-foreground">Unable to load latest KPI details.</p>}
     </section>
   );
 }
@@ -528,7 +525,7 @@ function StudyHeader({
         {isLoading && <p className="mt-2 text-xs text-muted-foreground">Loading latest study summary...</p>}
         {error && <p className="mt-2 text-xs text-warning-foreground">Unable to load latest summary. Showing available data.</p>}
       </div>
-      <MilestonesPopover studyId={study.id} detail={detail} />
+      <MilestonesPopover studyId={study.id} />
     </div>
   );
 }
@@ -539,68 +536,6 @@ function parseDate(value: string): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-function formatDate(value: Date): string {
-  return value.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-function addMonths(value: Date, months: number): Date {
-  const next = new Date(value);
-  next.setMonth(next.getMonth() + months);
-  return next;
-}
-
-function buildMilestones(detail: StudyOverviewDetail): StudyOverviewMilestoneRow[] {
-  const plannedFPI = parseDate(detail.plannedFPI);
-  const actualFPI = parseDate(detail.actualFPI);
-  const plannedLPI = parseDate(detail.plannedLPI);
-  const fsaPlanned = plannedFPI ? addMonths(plannedFPI, -3) : null;
-  const fsaActual = actualFPI ? addMonths(actualFPI, -2) : null;
-  const dblPlanned = plannedLPI ? addMonths(plannedLPI, 5) : null;
-  const rcPlanned = plannedLPI ? addMonths(plannedLPI, 10) : null;
-
-  return [
-    {
-      code: "FSA",
-      label: "First Site Activated",
-      planned: fsaPlanned ? formatDate(fsaPlanned) : "—",
-      actual: fsaActual ? formatDate(fsaActual) : "—",
-      apiVarianceText: null,
-      apiVarianceDays: null,
-    },
-    {
-      code: "FSFV",
-      label: "First Subject First Visit",
-      planned: detail.plannedFPI,
-      actual: detail.actualFPI,
-      apiVarianceText: null,
-      apiVarianceDays: null,
-    },
-    {
-      code: "LSFV",
-      label: "Last Subject First Visit",
-      planned: detail.plannedLPI,
-      actual: "—",
-      apiVarianceText: null,
-      apiVarianceDays: null,
-    },
-    {
-      code: "DBL",
-      label: "Database Lock",
-      planned: dblPlanned ? formatDate(dblPlanned) : "—",
-      actual: "—",
-      apiVarianceText: null,
-      apiVarianceDays: null,
-    },
-    {
-      code: "RC",
-      label: "Report Complete",
-      planned: rcPlanned ? formatDate(rcPlanned) : "—",
-      actual: "—",
-      apiVarianceText: null,
-      apiVarianceDays: null,
-    },
-  ];
-}
 
 function variance(planned: string, actual: string): { text: string; tone: "neutral" | "ok" | "warn" | "bad" } {
   if (!actual || actual === "—") return { text: "Pending", tone: "neutral" };
@@ -631,11 +566,9 @@ function varianceFromApi(row: StudyOverviewMilestoneRow): { text: string; tone: 
   return { text: row.apiVarianceText, tone: "neutral" };
 }
 
-function MilestonesPopover({ studyId, detail }: { studyId: string; detail: StudyOverviewDetail }) {
-  const fallbackRows = React.useMemo(() => buildMilestones(detail), [detail]);
+function MilestonesPopover({ studyId }: { studyId: string }) {
   const milestones = useStudyOverviewMilestones({
     studyId,
-    fallbackRows,
   });
   const rows = milestones.milestones;
 
@@ -650,7 +583,7 @@ function MilestonesPopover({ studyId, detail }: { studyId: string; detail: Study
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Key Milestone Dates</h3>
         {milestones.isLoading && <p className="mt-2 text-xs text-muted-foreground">Loading milestone dates...</p>}
         {milestones.error && (
-          <p className="mt-2 text-xs text-warning-foreground">Unable to load latest milestone dates. Showing available data.</p>
+          <p className="mt-2 text-xs text-warning-foreground">Unable to load latest milestone dates.</p>
         )}
         <div className="mt-4 overflow-hidden rounded-lg border border-border">
           <table className="w-full text-sm">
@@ -716,13 +649,11 @@ function ChartCards({
   const enrollmentRate = useStudyOverviewEnrollmentRate({
     studyId,
     timeHorizon: range,
-    fallbackRates: rates,
   });
-  const enrollmentCumulative = useStudyOverviewEnrollmentCumulative({
-    studyId,
-    timeHorizon: range,
-    fallbackCumulative: cumulative,
-  });
+     const enrollmentCumulative = useStudyOverviewEnrollmentCumulative({
+       studyId,
+       timeHorizon: range,
+     });
   const chartCumulative = enrollmentCumulative.cumulative;
   const chartRates = enrollmentRate.rates;
 
@@ -810,13 +741,10 @@ function BreakdownTable({
   const countryBreakdown = useStudyOverviewCountryBreakdown({
     studyId,
     timeHorizon: range,
-    fallbackCountries: detail.countries,
-    fallbackSites: detail.sites ?? [],
   });
   const siteBreakdown = useStudyOverviewSiteBreakdown({
     studyId,
     timeHorizon: range,
-    fallbackSites: detail.sites ?? [],
   });
 
   const handlePerformanceSelect = (kind: "country" | "site", id: string) => {
@@ -886,11 +814,11 @@ function BreakdownTable({
         </div>
         {view === "country" && countryBreakdown.isLoading && <p className="px-5 py-3 text-xs text-muted-foreground">Loading country breakdown...</p>}
         {view === "country" && countryBreakdown.error && (
-          <p className="px-5 py-3 text-xs text-warning-foreground">Unable to load latest country breakdown. Showing available data.</p>
+          <p className="px-5 py-3 text-xs text-warning-foreground">Unable to load latest country breakdown.</p>
         )}
         {view === "site" && siteBreakdown.isLoading && <p className="px-5 py-3 text-xs text-muted-foreground">Loading site breakdown...</p>}
         {view === "site" && siteBreakdown.error && (
-          <p className="px-5 py-3 text-xs text-warning-foreground">Unable to load latest site breakdown. Showing available data.</p>
+          <p className="px-5 py-3 text-xs text-warning-foreground">Unable to load latest site breakdown.</p>
         )}
       </div>
     </section>
@@ -932,7 +860,6 @@ function PerformancePanel({
     topK: 3,
     countryOrSite: pView,
     absoluteOrPercentage: pShow === "abs" ? "absolute" : "percentage",
-    fallbackSites: sites,
   });
   const topOverperforming = useStudyOverviewTopOverperforming({
     studyId,
@@ -993,11 +920,38 @@ function PerformancePanel({
     [sites],
   );
 
+  const resolveCountryFromApiLabel = React.useCallback(
+    (label: string) => {
+      const normalized = label.trim().toLowerCase();
+      return countries.find((c) => c.name.trim().toLowerCase() === normalized);
+    },
+    [countries],
+  );
+
   const apiUnder = React.useMemo(() => {
     const sourceItems =
       pShow === "abs" ? topUnderperforming.largestAbsoluteShortfall : topUnderperforming.highestPercentBelowTarget;
 
     return sourceItems.slice(0, topK).map((item, index) => {
+      if (pView === "country") {
+        const matchedCountry = resolveCountryFromApiLabel(item.site);
+        const shortfall = item.shortfall ?? (matchedCountry ? Math.max(0, matchedCountry.target - matchedCountry.actual) : null);
+        const belowTargetPct = item.belowTargetPct ?? (matchedCountry ? Math.max(0, 100 - matchedCountry.pct) : null);
+        const pct = matchedCountry?.pct ?? (belowTargetPct == null ? 0 : Math.max(0, 100 - belowTargetPct));
+        const delta = -(shortfall ?? (matchedCountry ? Math.max(0, matchedCountry.target - matchedCountry.actual) : belowTargetPct ?? 0));
+        return {
+          key: `api-under-${pShow}-${index}-${item.site}`,
+          kind: "country" as const,
+          id: item.site,
+          name: item.site,
+          typeLabel: "COUNTRY",
+          meta: matchedCountry ? `${matchedCountry.actual}/${matchedCountry.target} enrolled` : undefined,
+          delta,
+          pctDelta: belowTargetPct == null ? pct - 100 : -Math.abs(belowTargetPct),
+          pct,
+        } satisfies PerfEntry;
+      }
+
       const matchedSite = resolveSiteFromApiLabel(item.site);
       const countryMatch = item.site.match(/\(([^)]+)\)\s*$/);
       const country = countryMatch?.[1]?.trim() || null;
@@ -1005,8 +959,7 @@ function PerformancePanel({
       const shortfall = item.shortfall ?? (matchedSite ? Math.max(0, matchedSite.target - matchedSite.actual) : null);
       const belowTargetPct = item.belowTargetPct ?? (matchedSite ? Math.max(0, 100 - matchedSite.pct) : null);
       const pct = matchedSite?.pct ?? (belowTargetPct == null ? 0 : Math.max(0, 100 - belowTargetPct));
-      const delta = matchedSite ? matchedSite.actual - matchedSite.target : -(shortfall ?? belowTargetPct ?? 0);
-
+      const delta = -(shortfall ?? (matchedSite ? Math.max(0, matchedSite.target - matchedSite.actual) : belowTargetPct ?? 0));
       return {
         key: `api-under-${pShow}-${index}-${item.site}`,
         kind: "site" as const,
@@ -1023,9 +976,9 @@ function PerformancePanel({
         pct,
       } satisfies PerfEntry;
     });
-  }, [pShow, resolveSiteFromApiLabel, topK, topUnderperforming.highestPercentBelowTarget, topUnderperforming.largestAbsoluteShortfall]);
+  }, [pShow, pView, resolveCountryFromApiLabel, resolveSiteFromApiLabel, topK, topUnderperforming.highestPercentBelowTarget, topUnderperforming.largestAbsoluteShortfall]);
 
-  const hasApiUnderData = pView === "site" && apiUnder.length > 0;
+  const hasApiUnderData = apiUnder.length > 0;
   const resolvedUnder = hasApiUnderData ? apiUnder : under;
 
   const over = [...entries]
@@ -1038,6 +991,26 @@ function PerformancePanel({
       pShow === "abs" ? topOverperforming.largestAbsoluteSurplus : topOverperforming.highestPercentAboveTarget;
 
     return sourceItems.slice(0, topK).map((item, index) => {
+      if (pView === "country") {
+        const matchedCountry = resolveCountryFromApiLabel(item.site);
+        const surplus = item.surplus ?? (matchedCountry ? Math.max(0, matchedCountry.actual - matchedCountry.target) : null);
+        const aboveTargetPct = item.aboveTargetPct ?? (matchedCountry ? Math.max(0, matchedCountry.pct - 100) : null);
+        const achievementPct = item.achievementPct ?? matchedCountry?.pct ?? null;
+        const pct = achievementPct ?? (aboveTargetPct == null ? matchedCountry?.pct ?? 0 : 100 + aboveTargetPct);
+        const delta = surplus ?? (matchedCountry ? Math.max(0, matchedCountry.actual - matchedCountry.target) : Math.abs(aboveTargetPct ?? 0));
+        return {
+          key: `api-over-${pShow}-${index}-${item.site}`,
+          kind: "country" as const,
+          id: item.site,
+          name: item.site,
+          typeLabel: "COUNTRY",
+          meta: matchedCountry ? `${matchedCountry.actual}/${matchedCountry.target} enrolled` : undefined,
+          delta,
+          pctDelta: aboveTargetPct == null ? pct - 100 : Math.abs(aboveTargetPct),
+          pct,
+        } satisfies PerfEntry;
+      }
+
       const matchedSite = resolveSiteFromApiLabel(item.site);
       const countryMatch = item.site.match(/\(([^)]+)\)\s*$/);
       const country = countryMatch?.[1]?.trim() || null;
@@ -1046,8 +1019,7 @@ function PerformancePanel({
       const aboveTargetPct = item.aboveTargetPct ?? (matchedSite ? Math.max(0, matchedSite.pct - 100) : null);
       const achievementPct = item.achievementPct ?? (matchedSite ? matchedSite.pct : null);
       const pct = achievementPct ?? (aboveTargetPct == null ? matchedSite?.pct ?? 0 : 100 + aboveTargetPct);
-      const delta = matchedSite ? matchedSite.actual - matchedSite.target : Math.abs(surplus ?? aboveTargetPct ?? 0);
-
+      const delta = surplus ?? (matchedSite ? Math.max(0, matchedSite.actual - matchedSite.target) : Math.abs(aboveTargetPct ?? 0));
       return {
         key: `api-over-${pShow}-${index}-${item.site}`,
         kind: "site" as const,
@@ -1064,9 +1036,9 @@ function PerformancePanel({
         pct,
       } satisfies PerfEntry;
     });
-  }, [pShow, resolveSiteFromApiLabel, topK, topOverperforming.highestPercentAboveTarget, topOverperforming.largestAbsoluteSurplus]);
+  }, [pShow, pView, resolveCountryFromApiLabel, resolveSiteFromApiLabel, topK, topOverperforming.highestPercentAboveTarget, topOverperforming.largestAbsoluteSurplus]);
 
-  const hasApiOverData = pView === "site" && apiOver.length > 0;
+  const hasApiOverData = apiOver.length > 0;
   const resolvedOver = hasApiOverData ? apiOver : over;
 
   return (

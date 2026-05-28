@@ -5,8 +5,8 @@ import type {
   ProtocolsSummaryResult,
 } from "@/lib/protocols-summary-types";
 
-const PROTOCOLS_SUMMARY_PATH = "/api/protocols/summary";
-const PROTOCOLS_SUMMARY_FALLBACK_URL = "/api/protocols/summary";
+const PROTOCOLS_SUMMARY_PATH = "/api/v1/protocols/summary";
+const PROTOCOLS_SUMMARY_FALLBACK_URL = "/api/v1/protocols/summary";
 
 const toNonNegativeNumber = (value: unknown, fallback: number): number => {
   if (typeof value === "number" && Number.isFinite(value) && value >= 0) return value;

@@ -47,11 +47,6 @@ const toDisplayDate = (value: unknown): string => {
   return parsed ? formatDate(parsed) : raw;
 };
 
-const fallbackData = (query: StudyOverviewMilestonesQuery): StudyOverviewMilestonesData => ({
-  studyId: query.studyId,
-  milestones: query.fallbackRows,
-});
-
 const mapItem = (item: StudyOverviewMilestonesApiItem, index: number): StudyOverviewMilestoneRow => {
   const code = toStringOrNull(item.code) ?? `M${index + 1}`;
   const label = toStringOrNull(item.milestone) ?? toStringOrNull(item.label) ?? `Milestone ${index + 1}`;
@@ -69,10 +64,6 @@ const mapItem = (item: StudyOverviewMilestonesApiItem, index: number): StudyOver
 const mapPayload = (payload: StudyOverviewMilestonesApiResponse, query: StudyOverviewMilestonesQuery): StudyOverviewMilestonesData => {
   const milestonesRaw = toArrayRecords<StudyOverviewMilestonesApiItem>(payload.milestones);
 
-  if (milestonesRaw.length === 0) {
-    return fallbackData(query);
-  }
-
   return {
     studyId: toStringOrNull(payload.studyId) ?? query.studyId,
     milestones: milestonesRaw.map(mapItem),
@@ -84,7 +75,7 @@ async function fetchMilestones(
   signal?: AbortSignal,
 ): Promise<StudyOverviewMilestonesApiResponse> {
   const params = new URLSearchParams({ studyId: query.studyId });
-  const path = `/api/study-overview/charts/milestones?${params.toString()}`;
+  const path = `/api/v1/study-overview/charts/milestones?${params.toString()}`;
   const response = await fetch(withApiBaseUrl(path, path), withApiRequestConfig({ method: "GET", signal }));
 
   if (!response.ok) {
@@ -116,8 +107,11 @@ export const studyOverviewMilestonesService = {
         error instanceof Error ? error : new Error("Failed to load milestones from API");
 
       return {
-        data: fallbackData(query),
-        source: "fallback",
+        data: {
+          studyId: query.studyId,
+          milestones: [],
+        },
+        source: "api",
         error: normalizedError,
       };
     }

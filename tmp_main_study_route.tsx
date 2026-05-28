@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 export const Route = createFileRoute("/studies_/$studyId")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.studyId} GÇö Study Overview GÇö Flight Deck` },
+      { title: `${params.studyId} Gï¿½ï¿½ Study Overview Gï¿½ï¿½ Flight Deck` },
       { name: "description", content: "Detailed study overview including enrollment, performance, and country breakdown." },
     ],
   }),
@@ -35,7 +35,7 @@ const SHARED_BREAKDOWN: Pick<StudyDetail,
   plannedFPI: "28 Mar 2024",
   actualFPI: "27 Mar 2024",
   plannedLPI: "30 Sept 2029",
-  forecastLPI: "GÇö",
+  forecastLPI: "Gï¿½ï¿½",
   enrollmentVsPlan: 106.5,
   enrollmentActual: 49,
   enrollmentPlan: 46,
@@ -248,7 +248,7 @@ function buildFallback(studyId: string, study: (typeof studies)[number]): StudyD
     plannedFPI: "15 Jan 2024",
     actualFPI: "12 Feb 2024",
     plannedLPI: "30 Sept 2029",
-    forecastLPI: "GÇö",
+    forecastLPI: "Gï¿½ï¿½",
     enrollmentVsPlan: evp,
     enrollmentActual: actual,
     enrollmentPlan,
@@ -295,7 +295,7 @@ function StudyOverviewPage() {
     return (
       <main className="mx-auto max-w-[1600px] px-6 py-12 text-center">
         <p className="text-muted-foreground">Study not found.</p>
-        <Link to="/portfolio" className="mt-4 inline-block text-primary hover:underline">GåÉ Back to Study Portfolio</Link>
+        <Link to="/portfolio" className="mt-4 inline-block text-primary hover:underline">Gï¿½ï¿½ Back to Study Portfolio</Link>
       </main>
     );
   }
@@ -1038,7 +1038,7 @@ function PerfColumn({
 interface MilestoneRow { code: string; label: string; planned: string; actual: string }
 
 function parseDate(s: string): Date | null {
-  if (!s || s === "GÇö") return null;
+  if (!s || s === "Gï¿½ï¿½") return null;
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
@@ -1058,18 +1058,18 @@ function buildMilestones(detail: StudyDetail): MilestoneRow[] {
   const dblPlanned = plannedLPI ? addMonths(plannedLPI, 5) : null;
   const rcPlanned = plannedLPI ? addMonths(plannedLPI, 10) : null;
   return [
-    { code: "FSA",  label: "First Site Activated",     planned: fsaPlanned ? fmt(fsaPlanned) : "GÇö", actual: fsaActual ? fmt(fsaActual) : "GÇö" },
+    { code: "FSA",  label: "First Site Activated",     planned: fsaPlanned ? fmt(fsaPlanned) : "Gï¿½ï¿½", actual: fsaActual ? fmt(fsaActual) : "Gï¿½ï¿½" },
     { code: "FSFV", label: "First Subject First Visit", planned: detail.plannedFPI, actual: detail.actualFPI },
-    { code: "LSFV", label: "Last Subject First Visit",  planned: detail.plannedLPI, actual: "GÇö" },
-    { code: "DBL",  label: "Database Lock",             planned: dblPlanned ? fmt(dblPlanned) : "GÇö", actual: "GÇö" },
-    { code: "RC",   label: "Report Complete",           planned: rcPlanned ? fmt(rcPlanned) : "GÇö", actual: "GÇö" },
+    { code: "LSFV", label: "Last Subject First Visit",  planned: detail.plannedLPI, actual: "Gï¿½ï¿½" },
+    { code: "DBL",  label: "Database Lock",             planned: dblPlanned ? fmt(dblPlanned) : "Gï¿½ï¿½", actual: "Gï¿½ï¿½" },
+    { code: "RC",   label: "Report Complete",           planned: rcPlanned ? fmt(rcPlanned) : "Gï¿½ï¿½", actual: "Gï¿½ï¿½" },
   ];
 }
 
 function variance(planned: string, actual: string): { text: string; tone: "neutral" | "ok" | "warn" | "bad" } {
-  if (!actual || actual === "GÇö") return { text: "Pending", tone: "neutral" };
+  if (!actual || actual === "Gï¿½ï¿½") return { text: "Pending", tone: "neutral" };
   const p = parseDate(planned); const a = parseDate(actual);
-  if (!p || !a) return { text: "GÇö", tone: "neutral" };
+  if (!p || !a) return { text: "Gï¿½ï¿½", tone: "neutral" };
   const diff = Math.round((a.getTime() - p.getTime()) / 86400000);
   if (diff <= 0) return { text: "On time", tone: "ok" };
   if (diff <= 14) return { text: `+${diff}d`, tone: "warn" };
@@ -1109,10 +1109,10 @@ function MilestonesPopover({ detail }: { detail: StudyDetail }) {
                   <tr key={r.code} className="border-t border-border">
                     <td className="px-3 py-2.5 align-top">
                       <span className="font-semibold text-foreground">{r.code}</span>
-                      <span className="text-muted-foreground"> GÇö {r.label}</span>
+                      <span className="text-muted-foreground"> Gï¿½ï¿½ {r.label}</span>
                     </td>
-                    <td className="px-3 py-2.5 align-top tabular-nums text-foreground">{r.planned || "GÇö"}</td>
-                    <td className="px-3 py-2.5 align-top tabular-nums text-foreground">{r.actual || "GÇö"}</td>
+                    <td className="px-3 py-2.5 align-top tabular-nums text-foreground">{r.planned || "Gï¿½ï¿½"}</td>
+                    <td className="px-3 py-2.5 align-top tabular-nums text-foreground">{r.actual || "Gï¿½ï¿½"}</td>
                     <td className={cn("px-3 py-2.5 align-top text-sm font-medium tabular-nums", toneCls)}>{v.text}</td>
                   </tr>
                 );

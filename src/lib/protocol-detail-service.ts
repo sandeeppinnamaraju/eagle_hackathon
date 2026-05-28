@@ -409,7 +409,7 @@ async function fetchProtocolDetailFromApi(
 ): Promise<ProtocolDetailData> {
   const encodedProtocolId = encodeURIComponent(protocolId);
   const response = await fetch(
-    withApiBaseUrl(`/api/protocol/${encodedProtocolId}`, `/api/protocol/${encodedProtocolId}`),
+    withApiBaseUrl(`/api/v1/protocol/${encodedProtocolId}`, `/api/v1/protocol/${encodedProtocolId}`),
     withApiRequestConfig({
       method: "GET",
       signal,

@@ -246,8 +246,8 @@ function mapSummaryPayload(
 
 async function fetchSummaryFromApi(studyId: string, signal?: AbortSignal): Promise<StudyOverviewSummaryApiResponse> {
   const encodedStudyId = encodeURIComponent(studyId);
-  const endpoint = `/api/study-overview/summary?studyId=${encodedStudyId}`;
-  const fallbackEndpoint = `/api/study-overview/summary?studyId=${encodedStudyId}`;
+  const endpoint = `/api/v1/study-overview/summary?studyId=${encodedStudyId}`;
+  const fallbackEndpoint = `/api/v1/study-overview/summary?studyId=${encodedStudyId}`;
   const response = await fetch(
     withApiBaseUrl(endpoint, fallbackEndpoint),
     withApiRequestConfig({ method: "GET", signal }),

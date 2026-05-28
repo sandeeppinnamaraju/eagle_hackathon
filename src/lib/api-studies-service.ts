@@ -2,8 +2,8 @@ import { buildStudiesQueryParams } from "@/lib/query-param-builder";
 import type { IStudiesService, StudiesPage, StudiesQuery } from "@/lib/studies-service-types";
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
-const STUDIES_API_PATH = "/api/study-protocol/studies";
-const STUDIES_API_FALLBACK_URL = "/api/study-protocol/studies";
+const STUDIES_API_PATH = "/api/v1/study-protocol/studies";
+const STUDIES_API_FALLBACK_URL = "/api/v1/study-protocol/studies";
 
 function normalizeStudiesPage(payload: unknown, query: StudiesQuery): StudiesPage {
   if (!payload || typeof payload !== "object") {

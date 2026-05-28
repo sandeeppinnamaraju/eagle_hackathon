@@ -1,8 +1,8 @@
 import type { Study } from "@/lib/data";
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
-const STUDIES_API_PATH = "/api/studies";
-const STUDIES_API_FALLBACK_URL = "/api/studies";
+const STUDIES_API_PATH = "/api/v1/studies";
+const STUDIES_API_FALLBACK_URL = "/api/v1/studies";
 
 export async function fetchStudiesFromApi(signal?: AbortSignal): Promise<Study[] | null> {
   const response = await fetch(

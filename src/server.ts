@@ -234,7 +234,7 @@ export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const url = new URL(request.url);
 
-    if (request.method === "GET" && url.pathname === "/api/study-protocol/studies") {
+    if (request.method === "GET" && url.pathname === "/api/v1/study-protocol/studies") {
       return new Response(JSON.stringify(buildStudiesPagePayload(url)), {
         status: 200,
         headers: {
@@ -244,7 +244,7 @@ export default {
       });
     }
 
-    if (request.method === "GET" && url.pathname === "/api/study-protocol/kpi-details") {
+    if (request.method === "GET" && url.pathname === "/api/v1/study-protocol/kpi-details") {
       return new Response(JSON.stringify(buildKpiDetailsPayload(url)), {
         status: 200,
         headers: {
@@ -254,7 +254,7 @@ export default {
       });
     }
 
-    if (request.method === "GET" && url.pathname === "/api/studies") {
+    if (request.method === "GET" && url.pathname === "/api/v1/studies") {
       return new Response(JSON.stringify(localStudies), {
         status: 200,
         headers: {
@@ -264,7 +264,7 @@ export default {
       });
     }
 
-    if (request.method === "GET" && url.pathname === "/api/protocol-results") {
+    if (request.method === "GET" && url.pathname === "/api/v1/protocol-results") {
       return new Response(JSON.stringify(localProtocolResults), {
         status: 200,
         headers: {

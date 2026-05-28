@@ -27,7 +27,7 @@ const toFiniteNumber = (value: unknown): number | null => {
   return null;
 };
 
-const toArrayRecords = <T extends Record<string, unknown>>(value: unknown): T[] => {
+const toArrayRecords = <T>(value: unknown): T[] => {
   if (!Array.isArray(value)) return [];
   return value.filter((item) => isRecord(item)) as T[];
 };
@@ -101,15 +101,23 @@ const fallbackData = (query: StudyOverviewTopOverperformingQuery): StudyOverview
 
 const mapMetricItem = (item: StudyOverviewTopOverperformingApiItem, index: number): StudyOverviewTopOverperformingMetric => {
   const rank = toFiniteNumber(item.rank) ?? index + 1;
-  const surplus = toFiniteNumber(item.surplus);
-  const aboveTargetPct = toFiniteNumber(item["%AboveTarget"]);
-  const achievementPct = toFiniteNumber(item.achievementPct);
+  const totalEnrolled = toFiniteNumber(item.totalEnrolled);
+  const totalTarget = toFiniteNumber(item.totalTarget);
+  const absoluteSurplus = toFiniteNumber(item.absoluteSurplus);
+  const surplus = absoluteSurplus ?? toFiniteNumber(item.surplus);
+  const enrollmentPercentage = toFiniteNumber(item.enrollmentPercentage);
+  const aboveTargetFromEnrollment = enrollmentPercentage == null ? null : enrollmentPercentage - 100;
+  const aboveTargetPct = aboveTargetFromEnrollment ?? toFiniteNumber(item["%AboveTarget"]);
+  const achievementPct = toFiniteNumber(item.achievementPct) ?? enrollmentPercentage;
   const performanceTier = toStringOrNull(item.performanceTier);
+  const computedSurplus =
+    surplus ?? (totalEnrolled != null && totalTarget != null ? Math.max(0, totalEnrolled - totalTarget) : null);
+  const label = toStringOrNull(item.site) ?? toStringOrNull(item.country);
 
   return {
     rank,
-    site: toStringOrNull(item.site) ?? `Site ${index + 1}`,
-    surplus: surplus == null ? null : Math.abs(surplus),
+    site: label ?? `Site ${index + 1}`,
+    surplus: computedSurplus == null ? null : Math.abs(computedSurplus),
     aboveTargetPct: aboveTargetPct == null ? null : Math.abs(aboveTargetPct),
     achievementPct,
     performanceTier,
@@ -120,11 +128,29 @@ const mapPayload = (
   payload: StudyOverviewTopOverperformingApiResponse,
   query: StudyOverviewTopOverperformingQuery,
 ): StudyOverviewTopOverperformingData => {
+  const overperformingRaw = toArrayRecords<StudyOverviewTopOverperformingApiItem>(payload.overperforming);
+
+  if (overperformingRaw.length > 0) {
+    const mappedOverperforming = overperformingRaw.map(mapMetricItem).slice(0, query.topK);
+
+    return {
+      timeHorizonLabel: toStringOrNull(payload.timeHorizon) ?? toTimeHorizonLabel(query.timeHorizon),
+      studyId: toStringOrNull(payload.studyId) ?? query.studyId,
+      largestAbsoluteSurplus: mappedOverperforming,
+      highestPercentAboveTarget: mappedOverperforming,
+    };
+  }
+
   const largestAbsoluteSurplusRaw = toArrayRecords<StudyOverviewTopOverperformingApiItem>(payload.largestAbsoluteSurplus);
   const highestPercentAboveTargetRaw = toArrayRecords<StudyOverviewTopOverperformingApiItem>(payload.highestPercentAboveTarget);
 
   if (largestAbsoluteSurplusRaw.length === 0 && highestPercentAboveTargetRaw.length === 0) {
-    return fallbackData(query);
+    return {
+      timeHorizonLabel: toStringOrNull(payload.timeHorizon) ?? toTimeHorizonLabel(query.timeHorizon),
+      studyId: toStringOrNull(payload.studyId) ?? query.studyId,
+      largestAbsoluteSurplus: [],
+      highestPercentAboveTarget: [],
+    };
   }
 
   return {
@@ -147,7 +173,7 @@ async function fetchTopOverperforming(
     absoluteOrPercentage: query.absoluteOrPercentage,
   });
 
-  const path = `/api/study-overview/breakdown/top-performing?${params.toString()}`;
+  const path = `/api/v1/study-overview/breakdown/top-performing?${params.toString()}`;
   const response = await fetch(withApiBaseUrl(path, path), withApiRequestConfig({ method: "GET", signal }));
 
   if (!response.ok) {

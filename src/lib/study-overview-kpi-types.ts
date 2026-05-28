@@ -1,4 +1,4 @@
-import type { StudyOverviewContentProps, StudyRange } from "@/components/study-overview/types";
+import type { StudyRange } from "@/components/study-overview/types";
 
 export interface StudyOverviewKpiValueWithReason {
   value?: unknown;
@@ -39,7 +39,19 @@ export interface StudyOverviewKpiApiResponse {
 }
 
 export interface StudyOverviewKpiData {
-  detail: StudyOverviewContentProps["detail"];
+  detail: {
+    enrollmentVsPlan: number;
+    enrollmentActual: number;
+    enrollmentPlan: number;
+    rateActual: number;
+    ratePlan: number;
+    screenFailureRate: number;
+    dropoutRate: number;
+    sitesActivated: number;
+    sitesPlanned: number;
+    countriesActivated: number;
+    countriesPlanned: number;
+  };
   timeHorizonLabel: string;
   window: {
     startDate: string | null;
@@ -50,11 +62,10 @@ export interface StudyOverviewKpiData {
 export interface StudyOverviewKpiQuery {
   studyId: string;
   timeHorizon: StudyRange;
-  fallback: StudyOverviewContentProps["detail"];
 }
 
 export interface StudyOverviewKpiResult {
   data: StudyOverviewKpiData;
-  source: "api" | "mock";
+  source: "api";
   error: Error | null;
 }

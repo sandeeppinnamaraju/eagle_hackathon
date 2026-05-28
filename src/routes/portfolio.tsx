@@ -9,9 +9,7 @@ import { InsightsButton } from "@/components/insights-button";
 import { ViewToggle } from "@/components/view-toggle";
 import { StudyTable } from "@/components/study-table";
 import { StudyCardGrid } from "@/components/study-card-grid";
-import { studies as fallbackStudies, type Study } from "@/lib/data";
 import { filterStudies } from "@/lib/filter-studies";
-import { sortStudies } from "@/lib/study-sorting";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -31,7 +29,6 @@ function PortfolioPage() {
     total: studiesTotal,
     hasMore,
     isLoading: isStudiesLoading,
-    error: studiesError,
     loadMoreRef,
     setSearch,
     setFilters: setApiFilters,
@@ -103,48 +100,30 @@ function PortfolioPage() {
   const { data: kpiData } = useKpiDetails(kpiQuery);
 
   const filterOptionSourceStudies = useMemo(() => {
-    const uniqueById = new Map<string, Study>();
+    const uniqueById = new Map<string, (typeof loadedStudies)[number]>();
 
-    for (const study of fallbackStudies) {
+    for (const study of loadedStudies) {
       if (!uniqueById.has(study.id)) {
         uniqueById.set(study.id, study);
       }
     }
 
     return Array.from(uniqueById.values());
-  }, []);
+  }, [loadedStudies]);
 
-  const fallbackSortedStudies = useMemo(() => {
-    const withoutDateFilters = {
+  const clientFilters = useMemo(() => {
+    // API results are already filtered by date query params.
+    // Re-applying date logic on the client can hide valid API rows.
+    return {
       ...filters,
       fpiFrom: null,
       fpiTo: null,
       lpoFrom: null,
       lpoTo: null,
     };
-
-    return sortStudies(filterStudies(filterOptionSourceStudies, withoutDateFilters), sortBy, sortOrder);
-  }, [filterOptionSourceStudies, filters, sortBy, sortOrder]);
-
-  const usingFallbackStudies = loadedStudies.length === 0 && studiesError != null;
-  const baseStudies = usingFallbackStudies ? fallbackSortedStudies : loadedStudies;
-  const clientFilters = useMemo(() => {
-    // API results are already filtered by date query params.
-    // Re-applying fallback-derived date logic can incorrectly hide valid API rows.
-    if (!usingFallbackStudies) {
-      return {
-        ...filters,
-        fpiFrom: null,
-        fpiTo: null,
-        lpoFrom: null,
-        lpoTo: null,
-      };
-    }
-
-    return filters;
-  }, [filters, usingFallbackStudies]);
-  const filtered = useMemo(() => filterStudies(baseStudies, clientFilters), [baseStudies, clientFilters]);
-  const totalStudies = usingFallbackStudies ? fallbackSortedStudies.length : studiesTotal;
+  }, [filters]);
+  const filtered = useMemo(() => filterStudies(loadedStudies, clientFilters), [loadedStudies, clientFilters]);
+  const totalStudies = studiesTotal;
   const hasDateFilters = Boolean(filters.fpiFrom || filters.fpiTo || filters.lpoFrom || filters.lpoTo);
   const cardsResetKey = JSON.stringify({
     search: filters.search,
@@ -238,7 +217,7 @@ function PortfolioPage() {
       </div>
 
       <div className="mt-3">
-        {isStudiesLoading && baseStudies.length === 0 ? (
+        {isStudiesLoading && loadedStudies.length === 0 ? (
           <div className="rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
             Loading studies...
           </div>
@@ -248,18 +227,18 @@ function PortfolioPage() {
             studies={filtered}
             totalCount={totalStudies}
             visibleCount={filtered.length}
-            useInfiniteScrollDisplay={!usingFallbackStudies && !hasDateFilters}
+            useInfiniteScrollDisplay={!hasDateFilters}
             sortBy={sortBy}
             sortDirection={sortOrder}
             onSortChange={handleSortChange}
           />
-          {!usingFallbackStudies && hasMore && <div ref={loadMoreRef} className="h-8" aria-hidden="true" />}
+          {hasMore && <div ref={loadMoreRef} className="h-8" aria-hidden="true" />}
           </div>
         ) : (
           <div className="space-y-3">
             <StudyCardGrid studies={visibleCardStudies} />
             {visibleCardCount < filtered.length && <div ref={cardsLoadMoreRef} className="h-8" aria-hidden="true" />}
-            {!usingFallbackStudies && hasMore && <div ref={loadMoreRef} className="h-8" aria-hidden="true" />}
+            {hasMore && <div ref={loadMoreRef} className="h-8" aria-hidden="true" />}
           </div>
         )}
       </div>

@@ -60,7 +60,7 @@ export async function authenticateLoginApi({
   studyId,
 }: LoginApiRequest): Promise<LoginApiResult> {
   const params = new URLSearchParams({ studyId });
-  const path = `/api/auth/login?${params.toString()}`;
+  const path = `/api/v1/auth/login?${params.toString()}`;
   const response = await fetch(
     withApiBaseUrl(path, path),
     withApiRequestConfig({

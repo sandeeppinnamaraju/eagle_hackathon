@@ -59,60 +59,44 @@ const normalizeSiteStatus = (value: unknown): SiteRow["status"] => {
   return "ENROLLING";
 };
 
-const getFallbackData = (query: StudyOverviewSiteBreakdownQuery): StudyOverviewSiteBreakdownData => ({
-  sites: query.fallbackSites,
-  timeHorizonLabel: toTimeHorizonLabel(query.timeHorizon),
-  window: {
-    startDate: null,
-    endDate: null,
-  },
-});
-
-const mapSite = (site: StudyOverviewSiteBreakdownApiSite, fallbackSite: SiteRow | undefined, index: number): SiteRow => {
-  const target = toFiniteNumber(site.target) ?? fallbackSite?.target ?? 0;
-  const actual = toFiniteNumber(site.actual) ?? fallbackSite?.actual ?? 0;
+const mapSite = (site: StudyOverviewSiteBreakdownApiSite, index: number): SiteRow => {
+  const target = toFiniteNumber(site.target) ?? 0;
+  const actual = toFiniteNumber(site.actual) ?? 0;
   const rawPct = toFiniteNumber(site["%Enrolled"]) ?? toFiniteNumber(site.percentEnrolled);
   const details = isRecord(site.details) ? site.details : null;
   const screeningFunnel = isRecord(site.screeningFunnel) ? site.screeningFunnel : null;
-  const hasDetails = !!details || !!fallbackSite?.details;
-  const hasScreeningFunnel = !!screeningFunnel || !!fallbackSite?.screeningFunnel;
+  const hasDetails = !!details;
+  const hasScreeningFunnel = !!screeningFunnel;
   const mappedDetails = hasDetails
     ? {
-        siteId: toStringOrNull(details?.siteId) ?? fallbackSite?.details?.siteId ?? undefined,
-        country: toStringOrNull(details?.country) ?? fallbackSite?.details?.country ?? undefined,
-        status: normalizeSiteStatus(details?.status ?? fallbackSite?.details?.status),
-        activatedOn: toStringOrNull(details?.activatedOn) ?? fallbackSite?.details?.activatedOn ?? null,
-        pi: toStringOrNull(details?.pi) ?? fallbackSite?.details?.pi ?? null,
+        siteId: toStringOrNull(details?.siteId) ?? undefined,
+        country: toStringOrNull(details?.country) ?? undefined,
+        status: normalizeSiteStatus(details?.status),
+        activatedOn: toStringOrNull(details?.activatedOn) ?? null,
+        pi: toStringOrNull(details?.pi) ?? null,
       }
     : undefined;
   const mappedScreeningFunnel = hasScreeningFunnel
     ? {
-        totalScreened:
-          toFiniteNumber(screeningFunnel?.totalScreened) ??
-          fallbackSite?.screeningFunnel?.totalScreened ??
-          Math.round(actual * 1.4) + 2,
-        screenFailure:
-          toFiniteNumber(screeningFunnel?.screenFailure) ??
-          fallbackSite?.screeningFunnel?.screenFailure ??
-          Math.max(0, (Math.round(actual * 1.4) + 2) - actual),
-        enrolled: toFiniteNumber(screeningFunnel?.enrolled) ?? fallbackSite?.screeningFunnel?.enrolled ?? actual,
-        target: toFiniteNumber(screeningFunnel?.target) ?? fallbackSite?.screeningFunnel?.target ?? target,
+        totalScreened: toFiniteNumber(screeningFunnel?.totalScreened) ?? 0,
+        screenFailure: toFiniteNumber(screeningFunnel?.screenFailure) ?? 0,
+        enrolled: toFiniteNumber(screeningFunnel?.enrolled) ?? actual,
+        target: toFiniteNumber(screeningFunnel?.target) ?? target,
         percentEnrolled:
           toFiniteNumber(screeningFunnel?.["%Enrolled"]) ??
           toFiniteNumber(screeningFunnel?.percentEnrolled) ??
-          fallbackSite?.screeningFunnel?.percentEnrolled ??
           (target > 0 ? (actual / target) * 100 : 0),
       }
     : undefined;
 
   return {
-    id: toStringOrNull(site.siteId) ?? fallbackSite?.id ?? `SITE-${index + 1}`,
-    name: toStringOrNull(site.siteName) ?? fallbackSite?.name ?? `Site ${index + 1}`,
-    country: toStringOrNull(site.country) ?? fallbackSite?.country ?? "Unknown",
+    id: toStringOrNull(site.siteId) ?? `SITE-${index + 1}`,
+    name: toStringOrNull(site.siteName) ?? `Site ${index + 1}`,
+    country: toStringOrNull(site.country) ?? "Unknown",
     target,
     actual,
     pct: rawPct == null ? (target > 0 ? (actual / target) * 100 : 0) : normalizePercent(rawPct),
-    status: normalizeSiteStatus(site.siteStatus ?? site.status ?? fallbackSite?.status),
+    status: normalizeSiteStatus(site.siteStatus ?? site.status),
     details: mappedDetails,
     screeningFunnel: mappedScreeningFunnel,
   };
@@ -123,10 +107,10 @@ const mapPayload = (
   query: StudyOverviewSiteBreakdownQuery,
 ): StudyOverviewSiteBreakdownData => {
   const rawSites = toArrayRecords<StudyOverviewSiteBreakdownApiSite>(payload.sites);
-  const mappedSites = rawSites.map((site, index) => mapSite(site, query.fallbackSites[index], index));
+  const mappedSites = rawSites.map((site, index) => mapSite(site, index));
 
   return {
-    sites: mappedSites.length > 0 ? mappedSites : query.fallbackSites,
+    sites: mappedSites,
     timeHorizonLabel: toStringOrNull(payload.timeHorizon) ?? toTimeHorizonLabel(query.timeHorizon),
     window: {
       startDate: toStringOrNull(payload.window?.startDate) ?? null,
@@ -143,7 +127,7 @@ async function fetchSiteBreakdown(
     timeHorizon: toTimeHorizonLabel(query.timeHorizon),
     studyId: query.studyId,
   });
-  const path = `/api/study-overview/breakdown/sites?${params.toString()}`;
+  const path = `/api/v1/study-overview/breakdown/sites?${params.toString()}`;
   const response = await fetch(
     withApiBaseUrl(path, path),
     withApiRequestConfig({ method: "GET", signal }),
@@ -178,8 +162,15 @@ export const studyOverviewSiteBreakdownService = {
         error instanceof Error ? error : new Error("Failed to load site breakdown from API");
 
       return {
-        data: getFallbackData(query),
-        source: "fallback",
+        data: {
+          sites: [],
+          timeHorizonLabel: toTimeHorizonLabel(query.timeHorizon),
+          window: {
+            startDate: null,
+            endDate: null,
+          },
+        },
+        source: "api",
         error: normalizedError,
       };
     }

@@ -139,7 +139,7 @@ async function fetchEnrollmentRate(
     timeHorizon: toTimeHorizonLabel(query.timeHorizon),
     studyId: query.studyId,
   });
-  const path = `/api/study-overview/charts/enrollment-rate?${params.toString()}`;
+  const path = `/api/v1/study-overview/charts/enrollment-rate?${params.toString()}`;
   const response = await fetch(
     withApiBaseUrl(path, path),
     withApiRequestConfig({ method: "GET", signal }),
