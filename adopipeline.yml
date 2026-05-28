@@ -3,7 +3,7 @@
 #
 # ADO Pipeline: Build & Deploy fd_poc/backend (FastAPI) to Azure App Service
 #
-# Variable Group (ADO Library > Variable Groups): finance-reporting-uat
+# Variable Group (ADO Library > Variable Groups): fd-group
 # Variables inherited from the group:
 #   $(subscription-id)       - Azure subscription ID
 #   $(resource-group-name)   - Azure Resource Group name
@@ -35,9 +35,9 @@ pr:
 
 variables:
   # -------------------------------------------------------------------------
-  # Reuses the existing 'finance-reporting-uat' variable group from ADO Library
+  # Variable group from ADO Library (Pipelines > Library > fd-group)
   # -------------------------------------------------------------------------
-  - group: finance-reporting-uat
+  - group: fd-group
   # -------------------------------------------------------------------------
   # App-specific variables — update once App Service is provisioned
   # -------------------------------------------------------------------------
