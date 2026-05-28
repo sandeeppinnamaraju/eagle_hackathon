@@ -46,7 +46,7 @@ variables:
   - name: backend-resource-group
     value: 'backend-app-eagle_group'
   - name: pythonVersion
-    value: '3.11'
+    value: '3.13'
   - name: runDeploy
     value: 'true'    # Deploy enabled
 
@@ -118,18 +118,23 @@ stages:
               touch $PKG/eagle_hackathon/apps/backend/models/__init__.py
               touch $PKG/eagle_hackathon/apps/backend/services/__init__.py
 
-              # Copy requirements.txt to package root for App Service auto-install
+              # Copy requirements.txt to package root
               cp $(Build.SourcesDirectory)/apps/backend/requirements.txt $PKG/requirements.txt
 
-              # Create startup.sh — explicitly sets PYTHONPATH before uvicorn starts
+              # Pre-install ALL Python packages into the deployment ZIP.
+              # Avoids running pip install at startup — scikit-learn+numpy+scipy
+              # alone take >230s to install, exceeding Azure's startup timeout.
+              # Python version in pipeline must match App Service container (3.13).
+              mkdir -p $PKG/app_packages
+              pip install -r $PKG/requirements.txt --target $PKG/app_packages --quiet
+
+              # Create startup.sh — packages are pre-bundled, starts in <5 seconds
               cat > $PKG/startup.sh << 'EOF'
               #!/bin/bash
               set -e
-              export PYTHONPATH=/home/site/wwwroot
+              export PYTHONPATH=/home/site/wwwroot/app_packages:/home/site/wwwroot
               echo "[startup] PYTHONPATH=$PYTHONPATH"
-              echo "[startup] Python: $(python --version)"
-              pip install -r /home/site/wwwroot/requirements.txt --quiet
-              exec uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000
+              exec python -m uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000
               EOF
               chmod +x $PKG/startup.sh
             displayName: 'Prepare deployment package structure'
