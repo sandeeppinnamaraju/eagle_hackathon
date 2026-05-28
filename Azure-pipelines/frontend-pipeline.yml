@@ -106,6 +106,28 @@ stages:
             displayName: 'Build frontend (vite build)'
 
           # -------------------------------------------------------------------
+          # Generate dist/client/index.html from the Vite manifest so the
+          # static server has an entry point to serve for all SPA routes.
+          # -------------------------------------------------------------------
+          - script: |
+              node -e "
+              const fs = require('fs');
+              const manifest = JSON.parse(fs.readFileSync('dist/server/.vite/manifest.json', 'utf8'));
+              const entries = Object.values(manifest).filter(e => e.isEntry);
+              console.log('Entry points found:', JSON.stringify(entries.map(e => e.file)));
+              const scripts = entries
+                .filter(e => e.file && e.file.endsWith('.js'))
+                .map(e => '<script type=\"module\" src=\"/' + e.file + '\"></script>')
+                .join('\n  ');
+              const allCss = [...new Set(entries.flatMap(e => e.css || []))];
+              const links = allCss.map(c => '<link rel=\"stylesheet\" href=\"/' + c + '\">').join('\n  ');
+              const html = '<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Eagle</title>\n  ' + links + '\n</head>\n<body>\n  <div id=\"root\"></div>\n  ' + scripts + '\n</body>\n</html>';
+              fs.writeFileSync('dist/client/index.html', html);
+              console.log('Generated dist/client/index.html');
+              "
+            displayName: 'Generate index.html from Vite manifest'
+
+          # -------------------------------------------------------------------
           # Generate a zero-dependency Node.js static file server.
           # Serves dist/client as a SPA (falls back to index.html for all routes).
           # Uses process.env.PORT provided by Azure App Service at runtime.
@@ -125,15 +147,7 @@ stages:
                 '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf'
               };
               console.log('__dirname:', __dirname);
-              console.log('root:', root);
-              console.log('root exists:', fs.existsSync(root));
-              if (fs.existsSync(root)) {
-                console.log('root contents:', fs.readdirSync(root));
-              } else {
-                const distPath = path.join(__dirname, 'dist');
-                console.log('dist exists:', fs.existsSync(distPath));
-                if (fs.existsSync(distPath)) console.log('dist contents:', fs.readdirSync(distPath));
-              }
+              console.log('Serving from:', root);
               console.log('index.html exists:', fs.existsSync(path.join(root, 'index.html')));
               http.createServer((req, res) => {
                 const url = req.url.split('?')[0];
