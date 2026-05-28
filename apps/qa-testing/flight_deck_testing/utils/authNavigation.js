@@ -1,6 +1,6 @@
 const { expect } = require('@playwright/test');
 
-const DEFAULT_BASE_URL = 'https://spend-mhz-bufing-characteristics.trycloudflare.com';
+const DEFAULT_BASE_URL = 'https://eagle-frontend01-hpe9hhhngdc9addx.centralus-01.azurewebsites.net';
 const DEFAULT_LOGIN_PATH = '/login';
 const DEFAULT_PORTFOLIO_PATH = '/portfolio';
 

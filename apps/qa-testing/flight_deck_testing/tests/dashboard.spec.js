@@ -2,7 +2,7 @@ const { test, expect } = require('../utils/stepTest');
 const { EXPECTED_COLUMNS } = require('../fixtures/dashboardData');
 const { setupAuthenticatedStudyPortfolio, openStudyPortfolio } = require('../utils/authNavigation');
 
-const BASE_URL = 'https://spend-mhz-bufing-characteristics.trycloudflare.com'; // username: eagle_user1, password: FD_hack@user1
+const BASE_URL = 'https://eagle-frontend01-hpe9hhhngdc9addx.centralus-01.azurewebsites.net/'; // username: eagle_user1, password: FD_hack@user1
 
 test.describe('Study Portfolio Dashboard', () => {
   test.describe.configure({ mode: 'serial', timeout: 90_000 });

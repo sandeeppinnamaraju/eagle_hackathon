@@ -4,11 +4,11 @@ test.describe('Login page validation', () => {
   test.describe.configure({ mode: 'serial', timeout: 90_000 });
 
   // Hardcoded for test environment
-  const BASE_URL = 'https://spend-mhz-bufing-characteristics.trycloudflare.com/';
+  const BASE_URL = 'https://eagle-frontend01-hpe9hhhngdc9addx.centralus-01.azurewebsites.net/';
   const LOGIN_PATH = '/login';
   // Credentials are now managed via environment variables or utility defaults for security.
   const VALID_USERNAME = process.env.LOGIN_USERNAME || 'eagle_user1';
-  const VALID_PASSWORD = process.env.LOGIN_PASSWORD || 'FD_hack@user1';
+  const VALID_PASSWORD = process.env.LOGIN_PASSWORD || 'default_password'; // Replace with a secure default if needed
 
   let context;
   let page;
