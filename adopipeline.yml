@@ -113,8 +113,8 @@ stages:
   - stage: Deploy
     displayName: 'Deploy FastAPI Backend to Azure App Service'
     dependsOn: Build
-    # Only deploy from main branch and when runDeploy is true
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['runDeploy'], 'true'))
+    # Deploy whenever build succeeds and runDeploy is true (any branch)
+    condition: and(succeeded(), eq(variables['runDeploy'], 'true'))
     jobs:
       - deployment: DeployBackend
         displayName: 'Deploy to Azure App Service'
