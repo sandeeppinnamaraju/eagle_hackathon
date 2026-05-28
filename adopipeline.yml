@@ -114,6 +114,9 @@ stages:
               touch $PKG/eagle_hackathon/apps/backend/src/core/__init__.py
               touch $PKG/eagle_hackathon/apps/backend/src/db/__init__.py
               touch $PKG/eagle_hackathon/apps/backend/src/routers/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/src/scripts/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/models/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/services/__init__.py
 
               # Copy requirements.txt to package root for App Service auto-install
               cp $(Build.SourcesDirectory)/apps/backend/requirements.txt $PKG/requirements.txt
