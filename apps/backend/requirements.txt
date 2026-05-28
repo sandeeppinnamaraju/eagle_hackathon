@@ -5,4 +5,5 @@ pydantic
 python-dotenv
 psycopg2-binary
 sqlalchemy
+scikit-learn
 pytest
