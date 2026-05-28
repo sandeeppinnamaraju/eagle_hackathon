@@ -44,7 +44,7 @@ variables:
   - name: backend-app-name
     value: 'eagle-backend01'
   - name: backend-resource-group
-    value: 'backend-app-eagle-group'
+    value: 'backend-app-eagle_group'
   - name: pythonVersion
     value: '3.11'
   - name: runDeploy
