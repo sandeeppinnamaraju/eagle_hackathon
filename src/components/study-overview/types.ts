@@ -11,6 +11,25 @@ export interface SiteRow {
   actual: number;
   pct: number;
   status: "ON HOLD" | "SCREENING" | "CLOSED" | "ENROLLING";
+  details?: {
+    siteId?: string;
+    country?: string;
+    status?: "ON HOLD" | "SCREENING" | "CLOSED" | "ENROLLING";
+    activatedOn?: string | null;
+    pi?: string | null;
+  };
+  screeningFunnel?: {
+    totalScreened?: number;
+    screenFailure?: number;
+    enrolled?: number;
+    target?: number;
+    percentEnrolled?: number;
+  };
+  monthlyEnrollment?: Array<{
+    month: string;
+    planned: number;
+    actual: number;
+  }>;
 }
 
 export interface PerfItem {

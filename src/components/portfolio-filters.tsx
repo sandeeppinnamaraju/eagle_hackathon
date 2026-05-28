@@ -574,10 +574,11 @@ export function PortfolioFilters({
   const set = <K extends keyof FilterState>(key: K, value: FilterState[K]) =>
     onChange({ ...filters, [key]: value });
 
+  const safeStudies = Array.isArray(studies) ? studies : [];
   const available = useMemo(() => {
-    const opts = (pick: (s: Study) => string, order?: string[]) => uniqSorted(studies.map(pick), order);
+    const opts = (pick: (s: Study) => string, order?: string[]) => uniqSorted(safeStudies.map(pick), order);
     const regionPool = new Set<string>();
-    for (const s of studies) {
+    for (const s of safeStudies) {
       for (const r of getStudyRegions(s)) regionPool.add(r);
     }
     return {
@@ -588,7 +589,7 @@ export function PortfolioFilters({
       programs: opts((s) => s.program),
       regions: REGIONS.filter((r) => regionPool.has(r)),
     };
-  }, [studies]);
+  }, [safeStudies]);
 
 
 
