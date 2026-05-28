@@ -43,7 +43,7 @@ variables:
   # App-specific variables — update once App Service is provisioned
   # -------------------------------------------------------------------------
   - name: frontend-app-name
-    value: 'frontend-app-eagle'
+    value: 'eagle-frontend01'
   - name: frontend-resource-group
     value: 'GSK-Eagle-POC'
   - name: nodeVersion
