@@ -4,4 +4,8 @@ uvicorn
 pydantic
 python-dotenv
 psycopg2-binary
+PyJWT
+bcrypt
+httpx
 pytest
+pytest-mock

@@ -1,12 +1,16 @@
 import logging
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 
 import psycopg2
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
 from eagle_hackathon.apps.backend.src.db.connection import get_conn_params
+from eagle_hackathon.apps.backend.src.core.performance_thresholds import (
+    classify_performance,
+    get_performance_thresholds,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -67,6 +71,8 @@ def _subtract_months(anchor: date, months: int) -> date:
     while month <= 0:
         month += 12
         year -= 1
+    day = min(anchor.day, [31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
+    return date(year, month, day)
 
 
 @router.get("/study-overview/breakdown/sites")
@@ -513,8 +519,6 @@ def get_top_overperforming_sites(
     except Exception:
         logger.exception("Failed to compute top overperforming sites")
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
-    day = min(anchor.day, [31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
-    return date(year, month, day)
 
 
 def _get_public_table_columns(cursor) -> dict[str, set[str]]:
@@ -637,12 +641,7 @@ def _study_time_filter_sql(study_id_column: str, date_column: str, study_id: str
 
 
 def _performance_status_from_percent(value: Optional[float]) -> str:
-    percent = float(value or 0)
-    if percent > 95:
-        return "ON_TRACK"
-    if 80 <= percent <= 94:
-        return "OFF_TRACK"
-    return "AT_RISK"
+    return classify_performance(value)
 
 
 def _format_display_date(raw_value: object) -> Optional[str]:
@@ -754,7 +753,11 @@ def get_study_overview_summary(
                     return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
 
                 row_data = dict(zip(select_columns, row))
-                performance_status = _performance_status_from_percent(row_data.get("enrollment_plan_percent"))
+                thresholds = get_performance_thresholds()
+                performance_status = classify_performance(
+                    row_data.get("enrollment_plan_percent"),
+                    thresholds,
+                )
                 actual_fpi = _format_display_date(row_data.get("actual_fpi_date"))
                 forecast_lpo = _format_display_date(row_data.get("forecast_lpo_date"))
 
@@ -898,6 +901,7 @@ def get_country_breakdown(
                     )
 
                 countries = []
+                thresholds = get_performance_thresholds()
                 for (
                     country,
                     target_enrollment,
@@ -916,7 +920,7 @@ def get_country_breakdown(
                             "percentEnrolled": percent_enrolled_value,
                             "sitesActive": int(sites_active or 0),
                             "avgRate": round(float(avg_enrollment_rate or 0), 2),
-                            "status": _performance_status_from_percent(percent_enrolled_value),
+                            "status": classify_performance(percent_enrolled_value, thresholds),
                             "sites": sites_by_country.get(country_key, []),
                         }
                     )
@@ -1447,20 +1451,13 @@ def get_study_overview_kpi_details(
                 if horizon_error:
                     kpis["sitesActivated"] = _kpi_result(None, reason_if_na=f"Sites activated cannot be filtered: {horizon_error}")
                 elif kpi_timeline_has_site_activation:
-                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
-                    sites_planned_sql = ", MAX(COALESCE(sites_planned, 0))" if kpi_timeline_has_sites_planned else ""
-                    cursor.execute(
-                        f"""
-                        SELECT COUNT(*), MAX(COALESCE(sites_activated, 0)){sites_planned_sql}
-                        FROM public.kpi_timeline
-                        {where_sql}
-                        """,
-                        where_params,
+                    row_count = len(timeline_points)
+                    total_sites = max((int(point.get("siteActivation", 0) or 0) for point in timeline_points), default=0)
+                    total_sites_planned = (
+                        max((int(point.get("sitesPlanned", 0) or 0) for point in timeline_points if isinstance(point.get("sitesPlanned"), int)), default=0)
+                        if kpi_timeline_has_sites_planned
+                        else None
                     )
-                    sites_row = cursor.fetchone()
-                    row_count = sites_row[0]
-                    total_sites = sites_row[1]
-                    total_sites_planned = sites_row[2] if kpi_timeline_has_sites_planned else None
                     if not row_count:
                         kpis["sitesActivated"] = _kpi_result(None, reason_if_na="Sites activated data is not available for the selected study and time horizon.")
                     else:
@@ -1523,20 +1520,13 @@ def get_study_overview_kpi_details(
                 if horizon_error:
                     kpis["countriesActivated"] = _kpi_result(None, reason_if_na=f"Countries activated cannot be filtered: {horizon_error}")
                 elif kpi_timeline_has_country_activation:
-                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
-                    countries_planned_sql = ", MAX(COALESCE(countries_planned, 0))" if kpi_timeline_has_countries_planned else ""
-                    cursor.execute(
-                        f"""
-                        SELECT COUNT(*), MAX(COALESCE(countries_activated, 0)){countries_planned_sql}
-                        FROM public.kpi_timeline
-                        {where_sql}
-                        """,
-                        where_params,
+                    row_count = len(timeline_points)
+                    total_countries = max((int(point.get("countryActivation", 0) or 0) for point in timeline_points), default=0)
+                    total_countries_planned = (
+                        max((int(point.get("countriesPlanned", 0) or 0) for point in timeline_points if isinstance(point.get("countriesPlanned"), int)), default=0)
+                        if kpi_timeline_has_countries_planned
+                        else None
                     )
-                    countries_row = cursor.fetchone()
-                    row_count = countries_row[0]
-                    total_countries = countries_row[1]
-                    total_countries_planned = countries_row[2] if kpi_timeline_has_countries_planned else None
                     if not row_count:
                         kpis["countriesActivated"] = _kpi_result(None, reason_if_na="Countries activated data is not available for the selected study and time horizon.")
                     else:
