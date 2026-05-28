@@ -97,15 +97,38 @@ stages:
           # Also creates any missing __init__.py files needed for package imports
           # -------------------------------------------------------------------
           - script: |
-              mkdir -p $(Build.BinariesDirectory)/package/eagle_hackathon
-              cp -r $(Build.SourcesDirectory)/. $(Build.BinariesDirectory)/package/eagle_hackathon/
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/__init__.py
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/__init__.py
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/__init__.py
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/__init__.py
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/core/__init__.py
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/db/__init__.py
-              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/routers/__init__.py
+              set -e
+              PKG=$(Build.BinariesDirectory)/package
+
+              # Create eagle_hackathon wrapper directory
+              mkdir -p $PKG/eagle_hackathon
+
+              # Copy entire repo into it
+              cp -r $(Build.SourcesDirectory)/. $PKG/eagle_hackathon/
+
+              # Ensure all __init__.py files exist for package imports
+              touch $PKG/eagle_hackathon/__init__.py
+              touch $PKG/eagle_hackathon/apps/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/src/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/src/core/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/src/db/__init__.py
+              touch $PKG/eagle_hackathon/apps/backend/src/routers/__init__.py
+
+              # Copy requirements.txt to package root for App Service auto-install
+              cp $(Build.SourcesDirectory)/apps/backend/requirements.txt $PKG/requirements.txt
+
+              # Create startup.sh — explicitly sets PYTHONPATH before uvicorn starts
+              cat > $PKG/startup.sh << 'EOF'
+              #!/bin/bash
+              set -e
+              export PYTHONPATH=/home/site/wwwroot
+              echo "[startup] PYTHONPATH=$PYTHONPATH"
+              echo "[startup] Python: $(python --version)"
+              pip install -r /home/site/wwwroot/requirements.txt --quiet
+              exec uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000
+              EOF
+              chmod +x $PKG/startup.sh
             displayName: 'Prepare deployment package structure'
 
           # -------------------------------------------------------------------
@@ -169,5 +192,5 @@ stages:
                     package: '$(Pipeline.Workspace)/fd-poc-backend/backend.zip'
                     # Startup command: run uvicorn pointing to the FastAPI app
                     # The module path matches the import structure in main.py
-                    startUpCommand: 'pip install -r eagle_hackathon/apps/backend/requirements.txt && uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000'
+                    startUpCommand: 'bash /home/site/wwwroot/startup.sh'
                     appSettings: -APP_NAME "FlightDeck APIs" -APP_VERSION "1.0.0" -API_PREFIX "/api" -API_VERSION_PREFIX "/api/v1" -ALLOWED_ORIGINS "*" -PGPORT "$(eagle-pg-port)" -PGSSLMODE "require" -PGHOST "$(eagle-pg-host)" -PGUSER "$(eagle-pg-user)" -PGDATABASE "$(eagle-pg-db)" -PGPASSWORD "$(eagle-pg-pwd)" -PYTHONPATH "/home/site/wwwroot"
