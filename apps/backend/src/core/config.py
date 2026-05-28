@@ -16,6 +16,9 @@ class Settings:
     pg_database: str
     pg_password: str
     pg_sslmode: str = "require"
+    jwt_secret: str = "change-me-in-production"
+    jwt_expire_minutes: int = 60
+    cookie_secure: bool = True
 
 
 def _parse_csv(raw_value: str, default: str) -> List[str]:
@@ -36,4 +39,7 @@ def get_settings() -> Settings:
         pg_database=os.getenv("PGDATABASE", ""),
         pg_password=os.getenv("PGPASSWORD", ""),
         pg_sslmode=os.getenv("PGSSLMODE", "require"),
+        jwt_secret=os.getenv("JWT_SECRET", "change-me-in-production"),
+        jwt_expire_minutes=int(os.getenv("JWT_EXPIRE_MINUTES", "60")),
+        cookie_secure=os.getenv("COOKIE_SECURE", "true").lower() != "false",
     )
