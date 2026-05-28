@@ -45,7 +45,7 @@ variables:
   - name: frontend-app-name
     value: 'eagle-frontend01'
   - name: frontend-resource-group
-    value: 'GSK-Eagle-POC'
+    value: 'backend-app-eagle_group'
   - name: nodeVersion
     value: '20.x'
   - name: runDeploy
