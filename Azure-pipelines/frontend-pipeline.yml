@@ -106,26 +106,46 @@ stages:
             displayName: 'Build frontend (vite build)'
 
           # -------------------------------------------------------------------
-          # Generate dist/client/index.html from the Vite manifest so the
-          # static server has an entry point to serve for all SPA routes.
+          # Generate dist/client/index.html by pre-rendering the /login route
+          # using wrangler dev --local (runs the Cloudflare Worker in miniflare,
+          # no real Cloudflare account needed).
           # -------------------------------------------------------------------
           - script: |
-              node -e "
-              const fs = require('fs');
-              const manifest = JSON.parse(fs.readFileSync('dist/server/.vite/manifest.json', 'utf8'));
-              const entries = Object.values(manifest).filter(e => e.isEntry);
-              console.log('Entry points found:', JSON.stringify(entries.map(e => e.file)));
-              const scripts = entries
-                .filter(e => e.file && e.file.endsWith('.js'))
-                .map(e => '<script type=\"module\" src=\"/' + e.file + '\"></script>')
-                .join('\n  ');
-              const allCss = [...new Set(entries.flatMap(e => e.css || []))];
-              const links = allCss.map(c => '<link rel=\"stylesheet\" href=\"/' + c + '\">').join('\n  ');
-              const html = '<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Eagle</title>\n  ' + links + '\n</head>\n<body>\n  <div id=\"root\"></div>\n  ' + scripts + '\n</body>\n</html>';
-              fs.writeFileSync('dist/client/index.html', html);
-              console.log('Generated dist/client/index.html');
-              "
-            displayName: 'Generate index.html from Vite manifest'
+              echo "Starting wrangler dev --local for pre-render..."
+              bunx wrangler dev --local --port 8787 2>&1 &
+              WRANGLER_PID=$!
+
+              echo "Waiting for worker to be ready..."
+              for i in $(seq 1 20); do
+                sleep 2
+                HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8787/login 2>/dev/null || echo "000")
+                echo "Attempt $i: HTTP $HTTP"
+                if [ "$HTTP" = "200" ]; then break; fi
+              done
+
+              echo "Fetching pre-rendered login page..."
+              HTTP_STATUS=$(curl -s -o dist/client/index.html -w "%{http_code}" http://localhost:8787/login)
+              echo "Final HTTP status: $HTTP_STATUS"
+
+              if [ "$HTTP_STATUS" = "200" ] && [ -s dist/client/index.html ]; then
+                echo "Successfully pre-rendered login page ($(wc -c < dist/client/index.html) bytes)"
+              else
+                echo "Pre-render failed (status $HTTP_STATUS), falling back to manifest-based HTML"
+                node -e "
+                const fs = require('fs');
+                const manifest = JSON.parse(fs.readFileSync('dist/server/.vite/manifest.json', 'utf8'));
+                const entries = Object.values(manifest).filter(e => e.isEntry);
+                const scripts = entries.filter(e => e.file && e.file.endsWith('.js')).map(e => '<script type=\"module\" src=\"/' + e.file + '\"></script>').join('\n  ');
+                const allCss = [...new Set(entries.flatMap(e => e.css || []))];
+                const links = allCss.map(c => '<link rel=\"stylesheet\" href=\"/' + c + '\">').join('\n  ');
+                const html = '<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Eagle</title>\n  ' + links + '\n</head>\n<body>\n  ' + scripts + '\n</body>\n</html>';
+                fs.writeFileSync('dist/client/index.html', html);
+                console.log('Fallback index.html generated');
+                "
+              fi
+
+              kill $WRANGLER_PID 2>/dev/null || true
+            displayName: 'Pre-render login page via wrangler dev'
 
           # -------------------------------------------------------------------
           # Generate a zero-dependency Node.js static file server.
