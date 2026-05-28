@@ -9,7 +9,6 @@ export interface StudyOverviewMilestoneRow {
 
 export interface StudyOverviewMilestonesQuery {
   studyId: string;
-  fallbackRows: StudyOverviewMilestoneRow[];
 }
 
 export interface StudyOverviewMilestonesApiItem {
@@ -35,6 +34,6 @@ export interface StudyOverviewMilestonesData {
 
 export interface StudyOverviewMilestonesResult {
   data: StudyOverviewMilestonesData;
-  source: "api" | "fallback";
+  source: "api";
   error: Error | null;
 }

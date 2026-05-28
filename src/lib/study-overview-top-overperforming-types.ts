@@ -11,7 +11,12 @@ export interface StudyOverviewTopOverperformingQuery {
 
 export interface StudyOverviewTopOverperformingApiItem {
   rank?: unknown;
+  country?: unknown;
   site?: unknown;
+  totalEnrolled?: unknown;
+  totalTarget?: unknown;
+  enrollmentPercentage?: unknown;
+  absoluteSurplus?: unknown;
   surplus?: unknown;
   "%AboveTarget"?: unknown;
   achievementPct?: unknown;
@@ -21,6 +26,7 @@ export interface StudyOverviewTopOverperformingApiItem {
 export interface StudyOverviewTopOverperformingApiResponse {
   timeHorizon?: unknown;
   studyId?: unknown;
+  overperforming?: unknown;
   largestAbsoluteSurplus?: unknown;
   highestPercentAboveTarget?: unknown;
 }

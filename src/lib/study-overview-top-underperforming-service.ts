@@ -1,4 +1,4 @@
-import type { SiteRow, StudyRange } from "@/components/study-overview/types";
+import type { StudyRange } from "@/components/study-overview/types";
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 import type {
   StudyOverviewTopUnderperformingApiItem,
@@ -27,7 +27,7 @@ const toFiniteNumber = (value: unknown): number | null => {
   return null;
 };
 
-const toArrayRecords = <T extends Record<string, unknown>>(value: unknown): T[] => {
+const toArrayRecords = <T>(value: unknown): T[] => {
   if (!Array.isArray(value)) return [];
   return value.filter((item) => isRecord(item)) as T[];
 };
@@ -44,66 +44,23 @@ const toTimeHorizonLabel = (timeHorizon: StudyRange): string => {
   }
 };
 
-const buildFallbackMetrics = (sites: SiteRow[], topK: number): StudyOverviewTopUnderperformingData => {
-  const k = Math.max(1, topK);
-
-  const largestAbsoluteShortfall = sites
-    .map((site) => ({
-      site,
-      shortfall: Math.max(0, site.target - site.actual),
-    }))
-    .filter((item) => item.shortfall > 0)
-    .sort((a, b) => b.shortfall - a.shortfall)
-    .slice(0, k)
-    .map((item, index) => ({
-      rank: index + 1,
-      site: `${item.site.name} (${item.site.country})`,
-      shortfall: item.shortfall,
-      belowTargetPct: Math.max(0, Math.round(100 - item.site.pct)),
-    }));
-
-  const highestPercentBelowTarget = sites
-    .map((site) => ({
-      site,
-      belowTargetPct: Math.max(0, 100 - site.pct),
-    }))
-    .filter((item) => item.belowTargetPct > 0)
-    .sort((a, b) => b.belowTargetPct - a.belowTargetPct)
-    .slice(0, k)
-    .map((item, index) => ({
-      rank: index + 1,
-      site: `${item.site.name} (${item.site.country})`,
-      shortfall: Math.max(0, item.site.target - item.site.actual),
-      belowTargetPct: Math.round(item.belowTargetPct),
-    }));
-
-  return {
-    timeHorizonLabel: "",
-    studyId: "",
-    largestAbsoluteShortfall,
-    highestPercentBelowTarget,
-  };
-};
-
-const fallbackData = (query: StudyOverviewTopUnderperformingQuery): StudyOverviewTopUnderperformingData => {
-  const fallback = buildFallbackMetrics(query.fallbackSites, query.topK);
-
-  return {
-    ...fallback,
-    timeHorizonLabel: toTimeHorizonLabel(query.timeHorizon),
-    studyId: query.studyId,
-  };
-};
-
 const mapMetricItem = (item: StudyOverviewTopUnderperformingApiItem, index: number): StudyOverviewTopUnderperformingMetric => {
   const rank = toFiniteNumber(item.rank) ?? index + 1;
-  const shortfall = toFiniteNumber(item.shortfall);
-  const belowTargetPct = toFiniteNumber(item["%BelowTarget"]);
+  const totalEnrolled = toFiniteNumber(item.totalEnrolled);
+  const totalTarget = toFiniteNumber(item.totalTarget);
+  const absoluteShortfall = toFiniteNumber(item.absoluteShortfall);
+  const shortfall = absoluteShortfall ?? toFiniteNumber(item.shortfall);
+  const enrollmentPercentage = toFiniteNumber(item.enrollmentPercentage);
+  const belowTargetFromEnrollment = enrollmentPercentage == null ? null : 100 - enrollmentPercentage;
+  const belowTargetPct = belowTargetFromEnrollment ?? toFiniteNumber(item["%BelowTarget"]);
+  const computedShortfall =
+    shortfall ?? (totalEnrolled != null && totalTarget != null ? Math.max(0, totalTarget - totalEnrolled) : null);
+  const label = toStringOrNull(item.site) ?? toStringOrNull(item.country);
 
   return {
     rank,
-    site: toStringOrNull(item.site) ?? `Site ${index + 1}`,
-    shortfall: shortfall == null ? null : Math.abs(shortfall),
+    site: label ?? `Site ${index + 1}`,
+    shortfall: computedShortfall == null ? null : Math.abs(computedShortfall),
     belowTargetPct: belowTargetPct == null ? null : Math.abs(belowTargetPct),
   };
 };
@@ -112,18 +69,14 @@ const mapPayload = (
   payload: StudyOverviewTopUnderperformingApiResponse,
   query: StudyOverviewTopUnderperformingQuery,
 ): StudyOverviewTopUnderperformingData => {
-  const largestAbsoluteShortfallRaw = toArrayRecords<StudyOverviewTopUnderperformingApiItem>(payload.largestAbsoluteShortfall);
-  const highestPercentBelowTargetRaw = toArrayRecords<StudyOverviewTopUnderperformingApiItem>(payload.highestPercentBelowTarget);
-
-  if (largestAbsoluteShortfallRaw.length === 0 && highestPercentBelowTargetRaw.length === 0) {
-    return fallbackData(query);
-  }
+  const underperformingRaw = toArrayRecords<StudyOverviewTopUnderperformingApiItem>(payload.underperforming);
+  const mappedUnderperforming = underperformingRaw.map(mapMetricItem).slice(0, query.topK);
 
   return {
     timeHorizonLabel: toStringOrNull(payload.timeHorizon) ?? toTimeHorizonLabel(query.timeHorizon),
     studyId: toStringOrNull(payload.studyId) ?? query.studyId,
-    largestAbsoluteShortfall: largestAbsoluteShortfallRaw.map(mapMetricItem).slice(0, query.topK),
-    highestPercentBelowTarget: highestPercentBelowTargetRaw.map(mapMetricItem).slice(0, query.topK),
+    largestAbsoluteShortfall: mappedUnderperforming,
+    highestPercentBelowTarget: mappedUnderperforming,
   };
 };
 
@@ -139,7 +92,7 @@ async function fetchTopUnderperforming(
     absoluteOrPercentage: query.absoluteOrPercentage,
   });
 
-  const path = `/api/study-overview/breakdown/top-underperforming?${params.toString()}`;
+  const path = `/api/v1/study-overview/breakdown/top-underperforming?${params.toString()}`;
   const response = await fetch(withApiBaseUrl(path, path), withApiRequestConfig({ method: "GET", signal }));
 
   if (!response.ok) {
@@ -171,8 +124,13 @@ export const studyOverviewTopUnderperformingService = {
         error instanceof Error ? error : new Error("Failed to load top underperforming sites from API");
 
       return {
-        data: fallbackData(query),
-        source: "fallback",
+        data: {
+          timeHorizonLabel: toTimeHorizonLabel(query.timeHorizon),
+          studyId: query.studyId,
+          largestAbsoluteShortfall: [],
+          highestPercentBelowTarget: [],
+        },
+        source: "api" as const,
         error: normalizedError,
       };
     }

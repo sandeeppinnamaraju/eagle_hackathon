@@ -5,8 +5,6 @@ import { studyOverviewCountryBreakdownService } from "@/lib/study-overview-count
 interface UseStudyOverviewCountryBreakdownOptions {
   studyId?: string;
   timeHorizon: StudyRange;
-  fallbackCountries: CountryBreakdown[];
-  fallbackSites: SiteRow[];
 }
 
 interface UseStudyOverviewCountryBreakdownResult {
@@ -20,8 +18,6 @@ interface UseStudyOverviewCountryBreakdownResult {
 export function useStudyOverviewCountryBreakdown({
   studyId,
   timeHorizon,
-  fallbackCountries,
-  fallbackSites,
 }: UseStudyOverviewCountryBreakdownOptions): UseStudyOverviewCountryBreakdownResult {
   const query = useQuery({
     queryKey: ["study-overview-country-breakdown", studyId, timeHorizon],
@@ -30,8 +26,6 @@ export function useStudyOverviewCountryBreakdown({
         {
           studyId: studyId ?? "",
           timeHorizon,
-          fallbackCountries,
-          fallbackSites,
         },
         signal,
       ),
@@ -43,10 +37,10 @@ export function useStudyOverviewCountryBreakdown({
   const result = query.data;
 
   return {
-    countries: result?.data.countries ?? fallbackCountries,
-    sites: result?.data.sites ?? fallbackSites,
+    countries: result?.data.countries ?? [],
+    sites: result?.data.sites ?? [],
     isLoading: query.isLoading,
     error: result?.error ?? (query.error instanceof Error ? query.error : null),
-    isUsingFallback: result?.source === "fallback",
+    isUsingFallback: false,
   };
 }

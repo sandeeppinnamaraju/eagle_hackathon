@@ -1,7 +1,7 @@
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
-const STUDY_OVERVIEW_INSIGHTS_PATH = "/api/study-overview/insights";
-const STUDY_OVERVIEW_INSIGHTS_FALLBACK_URL = "/api/study-overview/insights";
+const STUDY_OVERVIEW_INSIGHTS_PATH = "/api/v1/study-overview/insights";
+const STUDY_OVERVIEW_INSIGHTS_FALLBACK_URL = "/api/v1/study-overview/insights";
 
 export type InsightTone = "danger" | "warning" | "success" | "info";
 

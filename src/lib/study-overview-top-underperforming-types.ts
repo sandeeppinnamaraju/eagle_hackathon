@@ -1,4 +1,4 @@
-import type { SiteRow, StudyRange } from "@/components/study-overview/types";
+import type { StudyRange } from "@/components/study-overview/types";
 
 export interface StudyOverviewTopUnderperformingQuery {
   studyId: string;
@@ -6,12 +6,16 @@ export interface StudyOverviewTopUnderperformingQuery {
   topK: number;
   countryOrSite: string;
   absoluteOrPercentage: string;
-  fallbackSites: SiteRow[];
 }
 
 export interface StudyOverviewTopUnderperformingApiItem {
   rank?: unknown;
+  country?: unknown;
   site?: unknown;
+  totalEnrolled?: unknown;
+  totalTarget?: unknown;
+  enrollmentPercentage?: unknown;
+  absoluteShortfall?: unknown;
   shortfall?: unknown;
   "%BelowTarget"?: unknown;
 }
@@ -19,6 +23,7 @@ export interface StudyOverviewTopUnderperformingApiItem {
 export interface StudyOverviewTopUnderperformingApiResponse {
   timeHorizon?: unknown;
   studyId?: unknown;
+  underperforming?: unknown;
   largestAbsoluteShortfall?: unknown;
   highestPercentBelowTarget?: unknown;
 }
@@ -39,6 +44,6 @@ export interface StudyOverviewTopUnderperformingData {
 
 export interface StudyOverviewTopUnderperformingResult {
   data: StudyOverviewTopUnderperformingData;
-  source: "api" | "fallback";
+  source: "api";
   error: Error | null;
 }

@@ -2,7 +2,7 @@ import type { ProtocolResult } from "@/lib/data";
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 
 const PROTOCOL_RESULTS_API_PATH = "/protocol-results";
-const PROTOCOL_RESULTS_API_FALLBACK_URL = "/api/protocol-results";
+const PROTOCOL_RESULTS_API_FALLBACK_URL = "/api/v1/protocol-results";
 
 export async function fetchProtocolResultsFromApi(signal?: AbortSignal): Promise<ProtocolResult[] | null> {
   const response = await fetch(

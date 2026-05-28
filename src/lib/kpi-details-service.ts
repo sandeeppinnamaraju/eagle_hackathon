@@ -1,4 +1,3 @@
-import { fallbackScheduleAdherence, mockKpiData } from "@/lib/mockKpiData";
 import type {
   KpiDetailsApiResponse,
   KpiDetailsData,
@@ -8,64 +7,45 @@ import type {
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 import { buildKpiDetailsQueryParams } from "@/lib/query-param-builder";
 
-const KPI_DETAILS_API_PATH = "/api/study-protocol/kpi-details";
-const KPI_DETAILS_API_FALLBACK_URL = "/api/study-protocol/kpi-details";
+const KPI_DETAILS_API_PATH = "/api/v1/study-protocol/kpi-details";
+const KPI_DETAILS_API_FALLBACK_URL = "/api/v1/study-protocol/kpi-details";
 
 const isFiniteNumber = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
 
-const toNonNegativeNumber = (value: unknown, fallback: number): number => {
-  if (!isFiniteNumber(value)) return fallback;
-  return value >= 0 ? value : fallback;
+const toNonNegativeNumber = (value: unknown): number => {
+  if (!isFiniteNumber(value)) return 0;
+  return value >= 0 ? value : 0;
 };
 
 const toKpiDetailsData = (payload: KpiDetailsApiResponse): KpiDetailsData => ({
-  activeStudiesCount: toNonNegativeNumber(payload.active_studies?.count, mockKpiData.active_studies.count),
+  activeStudiesCount: toNonNegativeNumber(payload.active_studies?.count),
   onTrack: {
-    percentage: toNonNegativeNumber(payload.on_track?.percentage, mockKpiData.on_track.percentage),
-    count: toNonNegativeNumber(payload.on_track?.count, mockKpiData.on_track.count),
+    percentage: toNonNegativeNumber(payload.on_track?.percentage),
+    count: toNonNegativeNumber(payload.on_track?.count),
   },
   offTrackOrAtRisk: {
-    percentage: toNonNegativeNumber(
-      payload.off_track_or_at_risk?.percentage,
-      mockKpiData.off_track_or_at_risk.percentage,
-    ),
-    count: toNonNegativeNumber(payload.off_track_or_at_risk?.count, mockKpiData.off_track_or_at_risk.count),
+    percentage: toNonNegativeNumber(payload.off_track_or_at_risk?.percentage),
+    count: toNonNegativeNumber(payload.off_track_or_at_risk?.count),
   },
   enrollmentVsTarget: {
-    percentage: toNonNegativeNumber(
-      payload.enrollment_vs_target?.percentage,
-      mockKpiData.enrollment_vs_target.percentage,
-    ),
-    sumActual: toNonNegativeNumber(
-      payload.enrollment_vs_target?.sum_actual,
-      mockKpiData.enrollment_vs_target.sum_actual,
-    ),
-    sumTarget: toNonNegativeNumber(
-      payload.enrollment_vs_target?.sum_target,
-      mockKpiData.enrollment_vs_target.sum_target,
-    ),
+    percentage: toNonNegativeNumber(payload.enrollment_vs_target?.percentage),
+    sumActual: toNonNegativeNumber(payload.enrollment_vs_target?.sum_actual),
+    sumTarget: toNonNegativeNumber(payload.enrollment_vs_target?.sum_target),
   },
   scheduleAdherence: {
-    percentage: toNonNegativeNumber(
-      payload.schedule_adherence?.percentage,
-      fallbackScheduleAdherence.percentage,
-    ),
+    percentage: toNonNegativeNumber(payload.schedule_adherence?.percentage),
     completed: toNonNegativeNumber(
       payload.schedule_adherence?.actual_enrollment ?? payload.schedule_adherence?.completed,
-      fallbackScheduleAdherence.completed,
     ),
     planned: toNonNegativeNumber(
       payload.schedule_adherence?.planned_enrollment ?? payload.schedule_adherence?.planned,
-      fallbackScheduleAdherence.planned,
     ),
   },
   velocityVsPlan: {
-    average: toNonNegativeNumber(payload.velocity_vs_plan?.average, mockKpiData.velocity_vs_plan.average),
+    average: toNonNegativeNumber(payload.velocity_vs_plan?.average),
   },
 });
-
-const getMockData = (): KpiDetailsData => toKpiDetailsData(mockKpiData);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value != null;
@@ -121,8 +101,8 @@ export const kpiDetailsService = {
         error instanceof Error ? error : new Error("Failed to load KPI details from API");
 
       return {
-        data: getMockData(),
-        source: "mock",
+        data: null,
+        source: "api",
         error: normalizedError,
       };
     }

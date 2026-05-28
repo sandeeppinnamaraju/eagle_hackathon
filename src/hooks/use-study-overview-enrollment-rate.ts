@@ -5,7 +5,6 @@ import { studyOverviewEnrollmentRateService } from "@/lib/study-overview-enrollm
 interface UseStudyOverviewEnrollmentRateOptions {
   studyId?: string;
   timeHorizon: StudyRange;
-  fallbackRates: RatePoint[];
 }
 
 interface UseStudyOverviewEnrollmentRateResult {
@@ -15,11 +14,9 @@ interface UseStudyOverviewEnrollmentRateResult {
   isUsingFallback: boolean;
 }
 
-export function useStudyOverviewEnrollmentRate({
-  studyId,
-  timeHorizon,
-  fallbackRates,
-}: UseStudyOverviewEnrollmentRateOptions): UseStudyOverviewEnrollmentRateResult {
+export function useStudyOverviewEnrollmentRate(
+  { studyId, timeHorizon }: UseStudyOverviewEnrollmentRateOptions
+): UseStudyOverviewEnrollmentRateResult {
   const query = useQuery({
     queryKey: ["study-overview-enrollment-rate", studyId, timeHorizon],
     queryFn: ({ signal }) =>
@@ -27,7 +24,7 @@ export function useStudyOverviewEnrollmentRate({
         {
           studyId: studyId ?? "",
           timeHorizon,
-          fallback: fallbackRates,
+          fallback: [],
         },
         signal,
       ),
@@ -39,9 +36,9 @@ export function useStudyOverviewEnrollmentRate({
   const result = query.data;
 
   return {
-    rates: result?.data.rates ?? fallbackRates,
+    rates: result?.data.rates ?? [],
     isLoading: query.isLoading,
     error: result?.error ?? (query.error instanceof Error ? query.error : null),
-    isUsingFallback: result?.source === "fallback",
+    isUsingFallback: false,
   };
 }

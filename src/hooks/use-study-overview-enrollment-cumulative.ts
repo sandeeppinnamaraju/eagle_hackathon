@@ -5,7 +5,6 @@ import { studyOverviewEnrollmentCumulativeService } from "@/lib/study-overview-e
 interface UseStudyOverviewEnrollmentCumulativeOptions {
   studyId?: string;
   timeHorizon: StudyRange;
-  fallbackCumulative: CumulativePoint[];
 }
 
 interface UseStudyOverviewEnrollmentCumulativeResult {
@@ -15,11 +14,9 @@ interface UseStudyOverviewEnrollmentCumulativeResult {
   isUsingFallback: boolean;
 }
 
-export function useStudyOverviewEnrollmentCumulative({
-  studyId,
-  timeHorizon,
-  fallbackCumulative,
-}: UseStudyOverviewEnrollmentCumulativeOptions): UseStudyOverviewEnrollmentCumulativeResult {
+export function useStudyOverviewEnrollmentCumulative(
+  { studyId, timeHorizon }: UseStudyOverviewEnrollmentCumulativeOptions
+): UseStudyOverviewEnrollmentCumulativeResult {
   const query = useQuery({
     queryKey: ["study-overview-enrollment-cumulative", studyId, timeHorizon],
     queryFn: ({ signal }) =>
@@ -27,7 +24,7 @@ export function useStudyOverviewEnrollmentCumulative({
         {
           studyId: studyId ?? "",
           timeHorizon,
-          fallback: fallbackCumulative,
+          fallback: [],
         },
         signal,
       ),
@@ -39,9 +36,9 @@ export function useStudyOverviewEnrollmentCumulative({
   const result = query.data;
 
   return {
-    cumulative: result?.data.cumulative ?? fallbackCumulative,
+    cumulative: result?.data.cumulative ?? [],
     isLoading: query.isLoading,
     error: result?.error ?? (query.error instanceof Error ? query.error : null),
-    isUsingFallback: result?.source === "fallback",
+    isUsingFallback: false,
   };
 }

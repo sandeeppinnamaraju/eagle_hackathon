@@ -4,7 +4,6 @@ import type { StudyOverviewMilestoneRow } from "@/lib/study-overview-milestones-
 
 interface UseStudyOverviewMilestonesOptions {
   studyId?: string;
-  fallbackRows: StudyOverviewMilestoneRow[];
 }
 
 interface UseStudyOverviewMilestonesResult {
@@ -16,7 +15,6 @@ interface UseStudyOverviewMilestonesResult {
 
 export function useStudyOverviewMilestones({
   studyId,
-  fallbackRows,
 }: UseStudyOverviewMilestonesOptions): UseStudyOverviewMilestonesResult {
   const query = useQuery({
     queryKey: ["study-overview-milestones", studyId],
@@ -24,7 +22,6 @@ export function useStudyOverviewMilestones({
       studyOverviewMilestonesService.getMilestones(
         {
           studyId: studyId ?? "",
-          fallbackRows,
         },
         signal,
       ),
@@ -36,9 +33,9 @@ export function useStudyOverviewMilestones({
   const result = query.data;
 
   return {
-    milestones: result?.data.milestones ?? fallbackRows,
+    milestones: result?.data.milestones ?? [],
     isLoading: query.isLoading,
     error: result?.error ?? (query.error instanceof Error ? query.error : null),
-    isUsingFallback: result?.source === "fallback",
+    isUsingFallback: false,
   };
 }

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { SiteRow, StudyRange } from "@/components/study-overview/types";
+import type { StudyRange } from "@/components/study-overview/types";
 import type { StudyOverviewTopUnderperformingMetric } from "@/lib/study-overview-top-underperforming-types";
 import { studyOverviewTopUnderperformingService } from "@/lib/study-overview-top-underperforming-service";
 
@@ -9,7 +9,6 @@ interface UseStudyOverviewTopUnderperformingOptions {
   topK: number;
   countryOrSite: string;
   absoluteOrPercentage: string;
-  fallbackSites: SiteRow[];
 }
 
 interface UseStudyOverviewTopUnderperformingResult {
@@ -26,7 +25,6 @@ export function useStudyOverviewTopUnderperforming({
   topK,
   countryOrSite,
   absoluteOrPercentage,
-  fallbackSites,
 }: UseStudyOverviewTopUnderperformingOptions): UseStudyOverviewTopUnderperformingResult {
   const query = useQuery({
     queryKey: ["study-overview-top-underperforming", studyId, timeHorizon, topK, countryOrSite, absoluteOrPercentage],
@@ -38,7 +36,6 @@ export function useStudyOverviewTopUnderperforming({
           topK,
           countryOrSite,
           absoluteOrPercentage,
-          fallbackSites,
         },
         signal,
       ),
@@ -54,6 +51,6 @@ export function useStudyOverviewTopUnderperforming({
     highestPercentBelowTarget: result?.data.highestPercentBelowTarget ?? [],
     isLoading: query.isLoading,
     error: result?.error ?? (query.error instanceof Error ? query.error : null),
-    isUsingFallback: result?.source === "fallback",
+    isUsingFallback: false,
   };
 }

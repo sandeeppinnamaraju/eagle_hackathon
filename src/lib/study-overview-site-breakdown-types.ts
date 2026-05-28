@@ -3,7 +3,6 @@ import type { SiteRow, StudyRange } from "@/components/study-overview/types";
 export interface StudyOverviewSiteBreakdownQuery {
   studyId: string;
   timeHorizon: StudyRange;
-  fallbackSites: SiteRow[];
 }
 
 export interface StudyOverviewSiteBreakdownApiSite {
@@ -54,6 +53,6 @@ export interface StudyOverviewSiteBreakdownData {
 
 export interface StudyOverviewSiteBreakdownResult {
   data: StudyOverviewSiteBreakdownData;
-  source: "api" | "fallback";
+  source: "api";
   error: Error | null;
 }

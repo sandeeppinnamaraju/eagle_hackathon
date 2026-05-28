@@ -13,7 +13,6 @@ export function useKpiDetails(query: KpiDetailsQuery): UseKpiDetailsResult {
   const [data, setData] = useState<KpiDetailsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -26,7 +25,6 @@ export function useKpiDetails(query: KpiDetailsQuery): UseKpiDetailsResult {
 
       setData(result.data);
       setError(result.error);
-      setIsUsingFallback(result.source === "mock");
       setIsLoading(false);
     }
 
@@ -43,6 +41,6 @@ export function useKpiDetails(query: KpiDetailsQuery): UseKpiDetailsResult {
     data,
     isLoading,
     error,
-    isUsingFallback,
+    isUsingFallback: false,
   };
 }

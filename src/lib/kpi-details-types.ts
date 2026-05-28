@@ -60,7 +60,7 @@ export type KpiDetailsQuery = Pick<
 >;
 
 export interface KpiDetailsResult {
-  data: KpiDetailsData;
-  source: "api" | "mock";
+  data: KpiDetailsData | null;
+  source: "api";
   error: Error | null;
 }
