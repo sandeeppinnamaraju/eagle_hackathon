@@ -185,6 +185,14 @@ def _normalize_choice(raw_value: object, allowed: set[str], default: str) -> Opt
     return cleaned if cleaned in allowed else None
 
 
+def _compute_enrollment_percentage(actual_value: object, target_value: object) -> float:
+    actual = float(actual_value or 0)
+    target = float(target_value or 0)
+    if target <= 0:
+        return 0.0
+    return round((actual / target) * 100.0, 2)
+
+
 def _normalize_time_horizon(raw_value: object) -> Optional[str]:
     if raw_value is None:
         return "full study"
@@ -242,7 +250,7 @@ def get_site_overview(
 
                 site_columns = table_columns.get("site_breakdown", set())
 
-                required = {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment", "enrollment_percent", "site_status"}
+                required = {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment", "site_status"}
                 if not required.issubset(site_columns):
                     return JSONResponse(status_code=500, content={"message": "Site breakdown table/columns are not available."})
 
@@ -270,7 +278,6 @@ def get_site_overview(
                     "COALESCE(country, '') AS country",
                     "COALESCE(target_enrollment, 0) AS target_enrollment",
                     "COALESCE(actual_enrollment, 0) AS actual_enrollment",
-                    "COALESCE(enrollment_percent, 0)::float AS enrollment_percent",
                     "COALESCE(site_status, '') AS site_status",
                 ]
 
@@ -309,7 +316,7 @@ def get_site_overview(
                     site_id_val = row_map.get("site_id")
                     target = int(row_map.get("target_enrollment", 0) or 0)
                     actual = int(row_map.get("actual_enrollment", 0) or 0)
-                    percent = round(float(row_map.get("enrollment_percent", 0) or 0), 2)
+                    percent = _compute_enrollment_percentage(actual, target)
 
                     # Details block
                     details = {
@@ -490,12 +497,18 @@ def get_top_underperforming_sites(
                     for group_name, total_target, total_actual in rows:
                         if total_target is None or total_target == 0:
                             continue
-                        shortfall = int(total_target) - int(total_actual)
-                        pct_below = round((shortfall / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        shortfall = target_value - actual_value
+                        pct_below = round((shortfall / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
                         entities.append({
                             "name": group_name or "Unknown",
                             "shortfall": shortfall,
                             "pct_below": pct_below,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
                         })
                 else:
                     cursor.execute(
@@ -518,12 +531,18 @@ def get_top_underperforming_sites(
                     for sid, sname, country, total_target, total_actual in rows:
                         if total_target is None or total_target == 0:
                             continue
-                        shortfall = int(total_target) - int(total_actual)
-                        pct_below = round((shortfall / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        shortfall = target_value - actual_value
+                        pct_below = round((shortfall / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
                         entities.append({
                             "name": f"{sname} ({country})" if country else (sname or str(sid)),
                             "shortfall": shortfall,
                             "pct_below": pct_below,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
                         })
 
                 if normalized_metric == "absolute":
@@ -538,6 +557,9 @@ def get_top_underperforming_sites(
                     row = {
                         "rank": idx,
                         normalized_group_by: it["name"],
+                        "totalEnrolled": it["total_actual"],
+                        "totalTarget": it["total_target"],
+                        "enrollmentPercentage": it["enrollment_pct"],
                     }
                     row[metric_key] = it["shortfall"] if normalized_metric == "absolute" else it["pct_below"]
                     items.append(row)
@@ -630,14 +652,20 @@ def get_top_overperforming_sites(
                     for group_name, total_target, total_actual in rows:
                         if total_target is None or total_target == 0:
                             continue
-                        surplus = int(total_actual) - int(total_target)
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        surplus = actual_value - target_value
                         if surplus <= 0:
                             continue
-                        pct_above = round((surplus / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        pct_above = round((surplus / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
                         entities.append({
                             "name": group_name or "Unknown",
                             "surplus": surplus,
                             "pct_above": pct_above,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
                         })
                 else:
                     cursor.execute(
@@ -660,14 +688,20 @@ def get_top_overperforming_sites(
                     for sid, sname, country, total_target, total_actual in rows:
                         if total_target is None or total_target == 0:
                             continue
-                        surplus = int(total_actual) - int(total_target)
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        surplus = actual_value - target_value
                         if surplus <= 0:
                             continue
-                        pct_above = round((surplus / float(total_target)) * 100.0, 2) if total_target else 0.0
+                        pct_above = round((surplus / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
                         entities.append({
                             "name": f"{sname} ({country})" if country else (sname or str(sid)),
                             "surplus": surplus,
                             "pct_above": pct_above,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
                         })
 
                 if normalized_metric == "absolute":
@@ -682,6 +716,9 @@ def get_top_overperforming_sites(
                     row = {
                         "rank": idx,
                         normalized_group_by: it["name"],
+                        "totalEnrolled": it["total_actual"],
+                        "totalTarget": it["total_target"],
+                        "enrollmentPercentage": it["enrollment_pct"],
                     }
                     row[metric_key] = it["surplus"] if normalized_metric == "absolute" else it["pct_above"]
                     items.append(row)
@@ -1124,7 +1161,6 @@ def get_country_breakdown(
                     "country",
                     "target_enrollment",
                     "actual_enrollment",
-                    "enrollment_percent",
                     "sites_active",
                     "avg_enrollment_rate",
                 }
@@ -1138,7 +1174,6 @@ def get_country_breakdown(
                     "site_name",
                     "target_enrollment",
                     "actual_enrollment",
-                    "enrollment_percent",
                     "enrollment_rate",
                     "site_status",
                 }
@@ -1151,7 +1186,6 @@ def get_country_breakdown(
                         country,
                         COALESCE(target_enrollment, 0) AS target_enrollment,
                         COALESCE(actual_enrollment, 0) AS actual_enrollment,
-                        COALESCE(enrollment_percent, 0)::float AS enrollment_percent,
                         COALESCE(sites_active, 0) AS sites_active,
                         COALESCE(avg_enrollment_rate, 0)::float AS avg_enrollment_rate
                     FROM public.country_breakdown
@@ -1170,7 +1204,6 @@ def get_country_breakdown(
                         COALESCE(site_name, '') AS site_name,
                         COALESCE(target_enrollment, 0) AS target_enrollment,
                         COALESCE(actual_enrollment, 0) AS actual_enrollment,
-                        COALESCE(enrollment_percent, 0)::float AS enrollment_percent,
                         COALESCE(site_status, '') AS site_status
                     FROM public.site_breakdown
                     WHERE study_id::text = %s
@@ -1187,9 +1220,9 @@ def get_country_breakdown(
                     site_name,
                     target_enrollment,
                     actual_enrollment,
-                    enrollment_percent,
                     site_status,
                 ) in site_rows:
+                    percent_enrolled_value = _compute_enrollment_percentage(actual_enrollment, target_enrollment)
                     country_key = country or "Unknown"
                     sites_by_country.setdefault(country_key, []).append(
                         {
@@ -1197,7 +1230,7 @@ def get_country_breakdown(
                             "siteName": site_name,
                             "target": int(target_enrollment or 0),
                             "actual": int(actual_enrollment or 0),
-                            "percentEnrolled": round(float(enrollment_percent or 0), 2),
+                            "percentEnrolled": percent_enrolled_value,
                             "status": site_status,
                         }
                     )
@@ -1208,12 +1241,11 @@ def get_country_breakdown(
                     country,
                     target_enrollment,
                     actual_enrollment,
-                    enrollment_percent,
                     sites_active,
                     avg_enrollment_rate,
                 ) in country_rows:
                     country_key = country or "Unknown"
-                    percent_enrolled_value = round(float(enrollment_percent or 0), 2)
+                    percent_enrolled_value = _compute_enrollment_percentage(actual_enrollment, target_enrollment)
                     countries.append(
                         {
                             "country": country_key,

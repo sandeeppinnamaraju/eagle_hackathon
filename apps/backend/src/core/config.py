@@ -23,7 +23,12 @@ class Settings:
 
 def _parse_csv(raw_value: str, default: str) -> List[str]:
     value = raw_value or default
-    return [item.strip() for item in value.split(",") if item.strip()]
+    parsed: List[str] = []
+    for item in value.split(","):
+        cleaned = item.strip().strip("\"'")
+        if cleaned:
+            parsed.append(cleaned)
+    return parsed
 
 
 def get_settings() -> Settings:

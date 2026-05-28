@@ -3,6 +3,7 @@
 from eagle_hackathon.apps.backend.src.load_env import load_backend_env
 from eagle_hackathon.apps.backend.src.core.config import get_settings
 from eagle_hackathon.apps.backend.src.core.logging_config import configure_logging
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -10,6 +11,7 @@ import uvicorn
 load_backend_env()
 configure_logging()
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 from eagle_hackathon.apps.backend.src.routers.fd_study_protocol import router as study_protocol_router
 from eagle_hackathon.apps.backend.src.routers.fd_protocol_similarity import router as protocol_similarity_router
@@ -19,10 +21,15 @@ from eagle_hackathon.apps.backend.src.routers.fd_auth import router as auth_rout
 
 app = FastAPI(title=settings.app_name, version=settings.app_version)
 
+allow_all_origins = "*" in settings.allowed_origins
+cors_allow_credentials = not allow_all_origins
+if allow_all_origins:
+    logger.warning("ALLOWED_ORIGINS contains '*'; disabling CORS credentials for valid browser preflight handling")
+
 app.add_middleware(
 	CORSMiddleware,
 	allow_origins=settings.allowed_origins,
-	allow_credentials=True,
+	allow_credentials=cors_allow_credentials,
 	allow_methods=["*"],
 	allow_headers=["*"],
 )

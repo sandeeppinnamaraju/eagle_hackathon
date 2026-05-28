@@ -506,6 +506,7 @@ def get_studies(
     lpo_end_date_raw: Optional[str] = Query(None, alias="lpoEndDate", description="Apply on planned_lpo_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
     sort_by: Optional[str] = Query(SortBy.ID.value, alias="sortBy"),
     sort_order: Optional[str] = Query(SortOrder.ASC.value, alias="sortOrder"),
+    include_total: bool = Query(False, alias="includeTotal", description="When true, runs an exact COUNT(*) query. Keep false for faster lazy loading."),
 ):
     try:
         page = _clean_required_text(page)
@@ -594,11 +595,18 @@ def get_studies(
     try:
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
-                cursor.execute(count_query, params)
-                total = cursor.fetchone()[0]
-
-                cursor.execute(data_query, params + [parsed_limit, offset])
+                cursor.execute(data_query, params + [parsed_limit + 1, offset])
                 rows = cursor.fetchall()
+
+                has_more = len(rows) > parsed_limit
+                if has_more:
+                    rows = rows[:parsed_limit]
+
+                if include_total:
+                    cursor.execute(count_query, params)
+                    total = int(cursor.fetchone()[0])
+                else:
+                    total = offset + len(rows) + (1 if has_more else 0)
 
         items = []
         for row in rows:
@@ -645,7 +653,7 @@ def get_studies(
             page=parsed_page,
             limit=parsed_limit,
             total=total,
-            hasMore=(parsed_page * parsed_limit) < total,
+            hasMore=has_more,
         )
     except ValueError:
         return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
