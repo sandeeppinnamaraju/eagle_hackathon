@@ -25,6 +25,23 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      run_deploy:
+        description: 'Deploy to Azure App Service after build?'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'rdfinrpt-uat'
+        type: choice
+        options:
+          - 'rdfinrpt-uat'
 
 env:
   PYTHON_VERSION: '3.11'
@@ -89,7 +106,9 @@ jobs:
     name: Deploy to Azure App Service
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_deploy == 'true')
     environment: rdfinrpt-uat
     timeout-minutes: 180
     steps:
