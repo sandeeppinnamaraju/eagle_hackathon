@@ -7,6 +7,8 @@ interface UseStudyOverviewTopOverperformingOptions {
   studyId?: string;
   timeHorizon: StudyRange;
   topK: number;
+  countryOrSite: string;
+  absoluteOrPercentage: string;
   fallbackSites: SiteRow[];
 }
 
@@ -22,16 +24,27 @@ export function useStudyOverviewTopOverperforming({
   studyId,
   timeHorizon,
   topK,
+  countryOrSite,
+  absoluteOrPercentage,
   fallbackSites,
 }: UseStudyOverviewTopOverperformingOptions): UseStudyOverviewTopOverperformingResult {
   const query = useQuery({
-    queryKey: ["study-overview-top-overperforming", studyId, timeHorizon, topK],
+    queryKey: [
+      "study-overview-top-overperforming",
+      studyId,
+      timeHorizon,
+      topK,
+      countryOrSite,
+      absoluteOrPercentage,
+    ],
     queryFn: ({ signal }) =>
       studyOverviewTopOverperformingService.getTopOverperforming(
         {
           studyId: studyId ?? "",
           timeHorizon,
           topK,
+          countryOrSite,
+          absoluteOrPercentage,
           fallbackSites,
         },
         signal,

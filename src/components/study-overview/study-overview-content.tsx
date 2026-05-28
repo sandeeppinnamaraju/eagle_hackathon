@@ -929,13 +929,17 @@ function PerformancePanel({
   const topUnderperforming = useStudyOverviewTopUnderperforming({
     studyId,
     timeHorizon: range,
-    topK,
+    topK: 3,
+    countryOrSite: pView,
+    absoluteOrPercentage: pShow === "abs" ? "absolute" : "percentage",
     fallbackSites: sites,
   });
   const topOverperforming = useStudyOverviewTopOverperforming({
     studyId,
     timeHorizon: range,
-    topK,
+    topK: 3,
+    countryOrSite: pView,
+    absoluteOrPercentage: pShow === "abs" ? "absolute" : "percentage",
     fallbackSites: sites,
   });
 
