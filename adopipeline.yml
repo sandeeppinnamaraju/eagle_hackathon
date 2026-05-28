@@ -17,7 +17,7 @@
 #   (store sensitive values like PGPASSWORD in ADO Variable Group as secret)
 #
 # Service Connection (ADO Project Settings > Service Connections):
-#   fd_ado_sercon            - ARM service connection
+#   fd_ser_con               - ARM service connection
 # =============================================================================
 
 trigger:
@@ -138,7 +138,7 @@ stages:
                 - task: AzureKeyVault@2
                   displayName: 'Fetch secrets from Azure Key Vault (fd-eagle)'
                   inputs:
-                    azureSubscription: fd_ado_sercon
+                    azureSubscription: fd_ser_con
                     KeyVaultName: 'fd-eagle'
                     SecretsFilter: 'eagle-pg-port,eagle-pg-host,eagle-pg-db,eagle-pg-user,eagle-pg-pwd'
                     RunAsPreJob: false
@@ -146,7 +146,7 @@ stages:
                 - task: AzureWebApp@1
                   displayName: 'Deploy FastAPI app to Azure App Service'
                   inputs:
-                    azureSubscription: fd_ado_sercon
+                    azureSubscription: fd_ser_con
                     appType: 'webAppLinux'
                     appName: $(backend-app-name)
                     resourceGroupName: $(backend-resource-group)
