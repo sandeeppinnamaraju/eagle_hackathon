@@ -13,6 +13,11 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from eagle_hackathon.apps.backend.src.db.connection import get_conn_params
+from eagle_hackathon.apps.backend.src.core.performance_thresholds import (
+    PerformanceThresholds,
+    classify_performance,
+    get_performance_thresholds,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -242,12 +247,27 @@ def _normalize_performance(performance: Optional[str]) -> StudyPerformance:
 
 
 def _performance_from_percent(value: Optional[float]) -> StudyPerformance:
-    percent = float(value or 0)
-    if percent > 95:
+    status = classify_performance(value)
+    if status == "ON_TRACK":
         return StudyPerformance.ON_TRACK
-    if 80 <= percent <= 94:
+    if status == "OFF_TRACK":
         return StudyPerformance.OFF_TRACK
     return StudyPerformance.AT_RISK
+
+
+def _count_performance_groups(values: List[float], thresholds: PerformanceThresholds) -> tuple[int, int, int]:
+    on_track = 0
+    at_risk = 0
+    off_track = 0
+    for value in values:
+        status = classify_performance(value, thresholds)
+        if status == "ON_TRACK":
+            on_track += 1
+        elif status == "OFF_TRACK":
+            off_track += 1
+        else:
+            at_risk += 1
+    return on_track, at_risk, off_track
 
 
 def _build_trend(actual: Optional[float], target: Optional[float]) -> List[float]:
@@ -693,22 +713,20 @@ def get_active_studies_count():
 def get_on_track_percentage():
     conn_params = get_conn_params()
     try:
+        thresholds = get_performance_thresholds()
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     """
                     SELECT
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
-                        ) AS total_active_studies,
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
-                              AND COALESCE(enrollment_plan_percent, 0) > 95
-                        ) AS on_track_studies_count
+                        COALESCE(enrollment_plan_percent, 0)
                     FROM public.studies
+                    WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
                     """
                 )
-                total_active_studies, on_track_studies_count = cursor.fetchone()
+                percent_values = [float(row[0] or 0) for row in cursor.fetchall()]
+                total_active_studies = len(percent_values)
+                on_track_studies_count, _, _ = _count_performance_groups(percent_values, thresholds)
                 percentage = (
                     round((on_track_studies_count / total_active_studies) * 100, 2)
                     if total_active_studies
@@ -729,22 +747,21 @@ def get_on_track_percentage():
 def get_off_track_or_at_risk_percentage():
     conn_params = get_conn_params()
     try:
+        thresholds = get_performance_thresholds()
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     """
                     SELECT
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
-                        ) AS total_active_studies,
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
-                              AND COALESCE(enrollment_plan_percent, 0) <= 95
-                        ) AS off_track_or_at_risk_studies_count
+                        COALESCE(enrollment_plan_percent, 0)
                     FROM public.studies
+                    WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
                     """
                 )
-                total_active_studies, off_track_or_at_risk_studies_count = cursor.fetchone()
+                percent_values = [float(row[0] or 0) for row in cursor.fetchall()]
+                total_active_studies = len(percent_values)
+                _, at_risk_count, off_track_count = _count_performance_groups(percent_values, thresholds)
+                off_track_or_at_risk_studies_count = at_risk_count + off_track_count
                 percentage = (
                     round((off_track_or_at_risk_studies_count / total_active_studies) * 100, 2)
                     if total_active_studies
@@ -895,25 +912,12 @@ def get_kpi_details(
 
     conn_params = get_conn_params()
     try:
+        thresholds = get_performance_thresholds()
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
                     f"""
                     SELECT
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
-                        ) AS active_studies_count,
-
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
-                              AND COALESCE(enrollment_plan_percent, 0) > 95
-                        ) AS on_track_count,
-
-                        COUNT(*) FILTER (
-                            WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
-                              AND COALESCE(enrollment_plan_percent, 0) <= 95
-                        ) AS off_track_or_at_risk_count,
-
                         COALESCE(
                             SUM(actual_enrollment) FILTER (
                                 WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
@@ -938,13 +942,24 @@ def get_kpi_details(
                 )
 
                 (
-                    active_studies_count,
-                    on_track_count,
-                    off_track_or_at_risk_count,
                     total_actual_enrollment,
                     total_target_enrollment,
                     average_velocity_vs_plan,
                 ) = cursor.fetchone()
+
+                active_where_sql = f"{where_sql} AND UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')" if where_sql else "WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')"
+                cursor.execute(
+                    f"""
+                    SELECT COALESCE(enrollment_plan_percent, 0)
+                    FROM public.studies
+                    {active_where_sql}
+                    """,
+                    params,
+                )
+                percent_values = [float(row[0] or 0) for row in cursor.fetchall()]
+                active_studies_count = len(percent_values)
+                on_track_count, at_risk_count, off_track_count = _count_performance_groups(percent_values, thresholds)
+                off_track_or_at_risk_count = at_risk_count + off_track_count
 
                 on_track_percentage = (
                     round((on_track_count / active_studies_count) * 100, 2)

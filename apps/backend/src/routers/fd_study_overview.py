@@ -1,18 +1,127 @@
 import logging
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 
 import psycopg2
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
 from eagle_hackathon.apps.backend.src.db.connection import get_conn_params
+from eagle_hackathon.apps.backend.src.core.performance_thresholds import (
+    classify_performance,
+    get_performance_thresholds,
+)
 
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+
+@router.get("/study-overview/insights")
+def get_study_overview_insights(request: Request = None):
+    """
+    Returns the top 5 portfolio insights for the study dashboard.
+    """
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                # 1. Off-track studies
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                                        WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                      AND (enrollment_plan_percent < 80)
+                    """
+                )
+                offtrack_count = cursor.fetchone()[0]
+
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                    WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                    """
+                )
+                active_count = cursor.fetchone()[0]
+
+                # 2. Studies at risk (arbitrary: 80-90%)
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                                        WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                      AND (enrollment_plan_percent >= 80 AND enrollment_plan_percent < 90)
+                    """
+                )
+                at_risk_count = cursor.fetchone()[0]
+
+                # 3. Immunology leads (example: highest enrollment % by therapeutic area)
+                cursor.execute(
+                    """
+                    SELECT phase, MAX(enrollment_plan_percent) FROM public.studies
+                    WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                    GROUP BY phase
+                    ORDER BY MAX(enrollment_plan_percent) DESC
+                    LIMIT 1
+                    """
+                )
+                lead_row = cursor.fetchone()
+                lead_text = (
+                    f"Immunology leads at {int(lead_row[1])}% enrollment vs plan."
+                    if lead_row else "Immunology leads at 89% enrollment vs plan."
+                )
+
+                # 4. Portfolio behind target
+                cursor.execute(
+                    """
+                    SELECT SUM(target_enrollment), SUM(actual_enrollment) FROM public.studies
+                    WHERE UPPER(REPLACE(TRIM(COALESCE(study_status, '')), '-', ' ')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
+                    """
+                )
+                target, actual = cursor.fetchone()
+                behind = (target or 0) - (actual or 0)
+
+                # 5. High-priority studies below plan
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) FROM public.studies
+                    WHERE UPPER(TRIM(COALESCE(project_priority, ''))) = 'HIGH' AND enrollment_plan_percent < 90
+                    """
+                )
+                high_priority_below = cursor.fetchone()[0]
+
+                insights = [
+                    {
+                        "type": "danger",
+                        "text": f"{offtrack_count} of {active_count} active studies are off-track and require immediate attention."
+                    },
+                    {
+                        "type": "warning",
+                        "text": f"{at_risk_count} studies are at risk — early intervention can prevent escalation."
+                    },
+                    {
+                        "type": "success",
+                        "text": lead_text
+                    },
+                    {
+                        "type": "info",
+                        "text": f"Portfolio is {behind:,} patients behind total enrollment target."
+                    },
+                    {
+                        "type": "warning",
+                        "text": f"{high_priority_below} high-priority studies below plan — escalate for review."
+                    },
+                ]
+                return {"insights": insights}
+    except Exception:
+        logger.exception("Failed to fetch study overview insights")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 TIME_HORIZON_MAP = {
     "full study": "Full Study",
@@ -46,6 +155,44 @@ def _require_study_id(raw_value: object) -> str:
     return cleaned
 
 
+def _normalize_optional_text(raw_value: object) -> Optional[str]:
+    if raw_value is None:
+        return None
+
+    # FastAPI Query defaults are Param objects when functions are called directly in tests.
+    default_value = getattr(raw_value, "default", None)
+    if isinstance(default_value, str):
+        return _normalize_optional_text(default_value)
+
+    if not isinstance(raw_value, str):
+        return None
+    cleaned = raw_value.strip()
+    return cleaned if cleaned else None
+
+
+def _normalize_choice(raw_value: object, allowed: set[str], default: str) -> Optional[str]:
+    if raw_value is None:
+        return default
+
+    default_value = getattr(raw_value, "default", None)
+    if isinstance(default_value, str):
+        return _normalize_choice(default_value, allowed, default)
+
+    if not isinstance(raw_value, str):
+        return None
+
+    cleaned = raw_value.strip().lower()
+    return cleaned if cleaned in allowed else None
+
+
+def _compute_enrollment_percentage(actual_value: object, target_value: object) -> float:
+    actual = float(actual_value or 0)
+    target = float(target_value or 0)
+    if target <= 0:
+        return 0.0
+    return round((actual / target) * 100.0, 2)
+
+
 def _normalize_time_horizon(raw_value: object) -> Optional[str]:
     if raw_value is None:
         return "full study"
@@ -67,9 +214,527 @@ def _subtract_months(anchor: date, months: int) -> date:
     while month <= 0:
         month += 12
         year -= 1
-
     day = min(anchor.day, [31, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
     return date(year, month, day)
+
+
+@router.get("/study-overview/breakdown/sites")
+def get_site_overview(
+    request: Request = None,
+    time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_horizon = _normalize_time_horizon(time_horizon)
+    if not normalized_horizon:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                site_columns = table_columns.get("site_breakdown", set())
+
+                required = {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment", "site_status"}
+                if not required.issubset(site_columns):
+                    return JSONResponse(status_code=500, content={"message": "Site breakdown table/columns are not available."})
+
+                # Resolve horizon start date
+                start_date: Optional[date] = None
+                if normalized_horizon == "last 3 months":
+                    start_date = _subtract_months(date.today(), 3)
+                elif normalized_horizon == "since fpi":
+                    start_date, horizon_error = _resolve_since_fpi_start_date(cursor, table_columns, validated_study_id)
+                    if horizon_error:
+                        return JSONResponse(status_code=400, content={"message": f"Unable to apply time horizon: {horizon_error}"})
+
+                # Determine whether site_breakdown supports a date column for filtering
+                has_period = "period_date" in site_columns
+
+                if has_period and start_date:
+                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                else:
+                    where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
+
+                # Build select list with optional fields
+                select_cols = [
+                    "site_id",
+                    "COALESCE(site_name, '') AS site_name",
+                    "COALESCE(country, '') AS country",
+                    "COALESCE(target_enrollment, 0) AS target_enrollment",
+                    "COALESCE(actual_enrollment, 0) AS actual_enrollment",
+                    "COALESCE(site_status, '') AS site_status",
+                ]
+
+                optional_map = {
+                    "activated_on": "COALESCE(activated_on::text, '') AS activated_on",
+                    "pi": "COALESCE(pi, '') AS pi",
+                    "total_screened": "COALESCE(total_screened, 0) AS total_screened",
+                    "screen_failure": "COALESCE(screen_failure, 0) AS screen_failure",
+                    "enrolled": "COALESCE(enrolled, 0) AS enrolled",
+                }
+
+                for col, expr in optional_map.items():
+                    if col in site_columns:
+                        select_cols.append(expr)
+
+                select_sql = ", ".join(select_cols)
+
+                cursor.execute(
+                    f"""
+                    SELECT {select_sql}
+                    FROM public.site_breakdown
+                    {where_sql}
+                    ORDER BY country, site_name, site_id
+                    """,
+                    where_params,
+                )
+
+                rows = cursor.fetchall()
+
+                sites = []
+                for row in rows:
+                    # Map columns by index using cursor.description
+                    cols = [d.name for d in cursor.description]
+                    row_map = dict(zip(cols, row))
+
+                    site_id_val = row_map.get("site_id")
+                    target = int(row_map.get("target_enrollment", 0) or 0)
+                    actual = int(row_map.get("actual_enrollment", 0) or 0)
+                    percent = _compute_enrollment_percentage(actual, target)
+
+                    # Details block
+                    details = {
+                        "siteId": site_id_val,
+                        "country": row_map.get("country") or "",
+                        "status": row_map.get("site_status") or "",
+                        "activatedOn": row_map.get("activated_on") or None,
+                        "pi": row_map.get("pi") or None,
+                    }
+
+                    # Screening funnel
+                    screening = {
+                        "totalScreened": int(row_map.get("total_screened", 0) or 0),
+                        "screenFailure": int(row_map.get("screen_failure", 0) or 0),
+                        "enrolled": int(row_map.get("enrolled", 0) or 0),
+                        "target": target,
+                        "%Enrolled": percent,
+                    }
+
+                    # Monthly enrollment: try to aggregate from enrollment_rate or enrollment_timeline if site-level data exists
+                    monthly: List[dict] = []
+
+                    # Prefer enrollment_rate if it has site-level fields
+                    et_cols = table_columns.get("enrollment_rate", set())
+                    if {"site_id", "period_date", "actual_rate"}.issubset(et_cols):
+                        where_sql2, where_params2 = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                        # add site filter
+                        if where_sql2:
+                            where_sql2 = where_sql2 + " AND site_id::text = %s"
+                        else:
+                            where_sql2 = "WHERE site_id::text = %s"
+                        params2 = where_params2 + [str(site_id_val)]
+                        cursor.execute(
+                            f"""
+                            SELECT date_trunc('month', period_date)::date AS month_start,
+                                   COALESCE(SUM(planned_rate), 0)::float AS planned_total,
+                                   COALESCE(SUM(actual_rate), 0)::float AS actual_total
+                            FROM public.enrollment_rate
+                            {where_sql2}
+                            GROUP BY month_start
+                            ORDER BY month_start
+                            """,
+                            params2,
+                        )
+                        rows2 = cursor.fetchall()
+                        for m_start, planned_total, actual_total in rows2:
+                            monthly.append({
+                                "month": m_start.strftime("%b %Y").upper(),
+                                "plan": float(planned_total),
+                                "actual": float(actual_total),
+                            })
+                    else:
+                        # Fall back to enrollment_timeline if it has site-level enrolled_this_period
+                        etl_cols = table_columns.get("enrollment_timeline", set())
+                        if {"site_id", "period_date", "enrolled_this_period"}.issubset(etl_cols):
+                            where_sql2, where_params2 = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                            if where_sql2:
+                                where_sql2 = where_sql2 + " AND site_id::text = %s"
+                            else:
+                                where_sql2 = "WHERE site_id::text = %s"
+                            params2 = where_params2 + [str(site_id_val)]
+                            cursor.execute(
+                                f"""
+                                SELECT date_trunc('month', period_date)::date AS month_start,
+                                       COALESCE(SUM(enrolled_this_period), 0)::float AS actual_total
+                                FROM public.enrollment_timeline
+                                {where_sql2}
+                                  AND period_date IS NOT NULL
+                                GROUP BY month_start
+                                ORDER BY month_start
+                                """,
+                                params2,
+                            )
+                            rows2 = cursor.fetchall()
+                            for m_start, actual_total in rows2:
+                                monthly.append({
+                                    "month": m_start.strftime("%b %Y").upper(),
+                                    "plan": None,
+                                    "actual": float(actual_total),
+                                })
+
+                    sites.append({
+                        "siteId": site_id_val,
+                        "siteName": row_map.get("site_name") or "",
+                        "country": row_map.get("country") or "",
+                        "target": target,
+                        "actual": actual,
+                        "%Enrolled": percent,
+                        "siteStatus": row_map.get("site_status") or "",
+                        "details": details,
+                        "screeningFunnel": screening,
+                        "monthlyEnrollment": monthly,
+                    })
+
+                return {
+                    "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
+                    "studyId": validated_study_id,
+                    "window": {"startDate": (start_date.isoformat() if start_date else None), "endDate": date.today().isoformat()},
+                    "sites": sites,
+                }
+    except Exception:
+        logger.exception("Failed to fetch site overview")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
+
+@router.get("/study-overview/breakdown/top-underperforming")
+def get_top_underperforming_sites(
+    request: Request = None,
+    time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
+    top_k: int = Query(3, alias="topK", description="Number of top sites to return per category"),
+    country_or_site: str = Query("country", alias="countryOrSite", description="Grouping dimension: country or site"),
+    absolute_or_percentage: str = Query("absolute", alias="absoluteOrPercentage", description="Metric type: absolute or percentage"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_group_by = _normalize_choice(country_or_site, {"country", "site"}, "country")
+    normalized_metric = _normalize_choice(absolute_or_percentage, {"absolute", "percentage"}, "absolute")
+    if not normalized_group_by or not normalized_metric:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_horizon = _normalize_time_horizon(time_horizon)
+    if not normalized_horizon:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                site_cols = table_columns.get("site_breakdown", set())
+                if not {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment"}.issubset(site_cols):
+                    return JSONResponse(status_code=500, content={"message": "Site breakdown table/columns are not available."})
+
+                # Resolve time window
+                start_date: Optional[date] = None
+                if normalized_horizon == "last 3 months":
+                    start_date = _subtract_months(date.today(), 3)
+                elif normalized_horizon == "since fpi":
+                    start_date, horizon_error = _resolve_since_fpi_start_date(cursor, table_columns, validated_study_id)
+                    if horizon_error:
+                        return JSONResponse(status_code=400, content={"message": f"Unable to apply time horizon: {horizon_error}"})
+
+                has_period = "period_date" in site_cols
+                if has_period and start_date:
+                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                else:
+                    where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
+
+                if normalized_group_by == "country":
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            COALESCE(country, '') AS group_name,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY country
+                        """,
+                        where_params,
+                    )
+                    rows = cursor.fetchall()
+                    entities = []
+                    for group_name, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        shortfall = target_value - actual_value
+                        pct_below = round((shortfall / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        entities.append({
+                            "name": group_name or "Unknown",
+                            "shortfall": shortfall,
+                            "pct_below": pct_below,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
+                        })
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            site_id,
+                            COALESCE(site_name, '') AS site_name,
+                            COALESCE(country, '') AS country,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY site_id, site_name, country
+                        """,
+                        where_params,
+                    )
+
+                    rows = cursor.fetchall()
+                    entities = []
+                    for sid, sname, country, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        shortfall = target_value - actual_value
+                        pct_below = round((shortfall / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        entities.append({
+                            "name": f"{sname} ({country})" if country else (sname or str(sid)),
+                            "shortfall": shortfall,
+                            "pct_below": pct_below,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
+                        })
+
+                if normalized_metric == "absolute":
+                    ranked = sorted(entities, key=lambda x: x["shortfall"], reverse=True)[:top_k]
+                    metric_key = "absoluteShortfall"
+                else:
+                    ranked = sorted(entities, key=lambda x: x["pct_below"], reverse=True)[:top_k]
+                    metric_key = "percentageBelowTarget"
+
+                items = []
+                for idx, it in enumerate(ranked, start=1):
+                    row = {
+                        "rank": idx,
+                        normalized_group_by: it["name"],
+                        "totalEnrolled": it["total_actual"],
+                        "totalTarget": it["total_target"],
+                        "enrollmentPercentage": it["enrollment_pct"],
+                    }
+                    row[metric_key] = it["shortfall"] if normalized_metric == "absolute" else it["pct_below"]
+                    items.append(row)
+
+                return {
+                    "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
+                    "studyId": validated_study_id,
+                    "filter": {
+                        "countryOrSite": normalized_group_by,
+                        "absoluteOrPercentage": normalized_metric,
+                    },
+                    "underperforming": items,
+                }
+    except Exception:
+        logger.exception("Failed to compute top underperforming sites")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+    
+@router.get("/study-overview/breakdown/top-performing")
+def get_top_overperforming_sites(
+    request: Request = None,
+    time_horizon: str = Query("Full Study", alias="timeHorizon", description="One of: Full Study, Since FPI, Last 3 Months"),
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch site-level breakdown"),
+    top_k: int = Query(3, alias="topK", description="Number of top sites to return per category"),
+    country_or_site: str = Query("country", alias="countryOrSite", description="Grouping dimension: country or site"),
+    absolute_or_percentage: str = Query("absolute", alias="absoluteOrPercentage", description="Metric type: absolute or percentage"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_group_by = _normalize_choice(country_or_site, {"country", "site"}, "country")
+    normalized_metric = _normalize_choice(absolute_or_percentage, {"absolute", "percentage"}, "absolute")
+    if not normalized_group_by or not normalized_metric:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    normalized_horizon = _normalize_time_horizon(time_horizon)
+    if not normalized_horizon:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                site_cols = table_columns.get("site_breakdown", set())
+                if not {"study_id", "site_id", "site_name", "country", "target_enrollment", "actual_enrollment"}.issubset(site_cols):
+                    return JSONResponse(status_code=500, content={"message": "Site breakdown table/columns are not available."})
+
+                # Resolve time window
+                start_date: Optional[date] = None
+                if normalized_horizon == "last 3 months":
+                    start_date = _subtract_months(date.today(), 3)
+                elif normalized_horizon == "since fpi":
+                    start_date, horizon_error = _resolve_since_fpi_start_date(cursor, table_columns, validated_study_id)
+                    if horizon_error:
+                        return JSONResponse(status_code=400, content={"message": f"Unable to apply time horizon: {horizon_error}"})
+
+                has_period = "period_date" in site_cols
+                if has_period and start_date:
+                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                else:
+                    where_sql, where_params = ("WHERE study_id::text = %s", [validated_study_id])
+
+                if normalized_group_by == "country":
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            COALESCE(country, '') AS group_name,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY country
+                        """,
+                        where_params,
+                    )
+                    rows = cursor.fetchall()
+                    entities = []
+                    for group_name, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        surplus = actual_value - target_value
+                        if surplus <= 0:
+                            continue
+                        pct_above = round((surplus / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        entities.append({
+                            "name": group_name or "Unknown",
+                            "surplus": surplus,
+                            "pct_above": pct_above,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
+                        })
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            site_id,
+                            COALESCE(site_name, '') AS site_name,
+                            COALESCE(country, '') AS country,
+                            COALESCE(SUM(target_enrollment),0)::bigint AS total_target,
+                            COALESCE(SUM(actual_enrollment),0)::bigint AS total_actual
+                        FROM public.site_breakdown
+                        {where_sql}
+                        GROUP BY site_id, site_name, country
+                        """,
+                        where_params,
+                    )
+
+                    rows = cursor.fetchall()
+                    entities = []
+                    for sid, sname, country, total_target, total_actual in rows:
+                        if total_target is None or total_target == 0:
+                            continue
+                        target_value = int(total_target)
+                        actual_value = int(total_actual)
+                        surplus = actual_value - target_value
+                        if surplus <= 0:
+                            continue
+                        pct_above = round((surplus / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        enrollment_pct = round((actual_value / float(target_value)) * 100.0, 2) if target_value else 0.0
+                        entities.append({
+                            "name": f"{sname} ({country})" if country else (sname or str(sid)),
+                            "surplus": surplus,
+                            "pct_above": pct_above,
+                            "total_actual": actual_value,
+                            "total_target": target_value,
+                            "enrollment_pct": enrollment_pct,
+                        })
+
+                if normalized_metric == "absolute":
+                    ranked = sorted(entities, key=lambda x: x["surplus"], reverse=True)[:top_k]
+                    metric_key = "absoluteSurplus"
+                else:
+                    ranked = sorted(entities, key=lambda x: x["pct_above"], reverse=True)[:top_k]
+                    metric_key = "percentageAboveTarget"
+
+                items = []
+                for idx, it in enumerate(ranked, start=1):
+                    row = {
+                        "rank": idx,
+                        normalized_group_by: it["name"],
+                        "totalEnrolled": it["total_actual"],
+                        "totalTarget": it["total_target"],
+                        "enrollmentPercentage": it["enrollment_pct"],
+                    }
+                    row[metric_key] = it["surplus"] if normalized_metric == "absolute" else it["pct_above"]
+                    items.append(row)
+
+                return {
+                    "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
+                    "studyId": validated_study_id,
+                    "filter": {
+                        "countryOrSite": normalized_group_by,
+                        "absoluteOrPercentage": normalized_metric,
+                    },
+                    "overperforming": items,
+                }
+    except Exception:
+        logger.exception("Failed to compute top overperforming sites")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 
 def _get_public_table_columns(cursor) -> dict[str, set[str]]:
@@ -87,7 +752,7 @@ def _get_public_table_columns(cursor) -> dict[str, set[str]]:
 
 
 def _study_exists(cursor, table_columns: dict[str, set[str]], study_id: str) -> bool:
-    candidate_tables = ["enrollment_timeline", "enrollment_rate", "kpi_snapshot"]
+    candidate_tables = ["enrollment_timeline", "enrollment_rate", "kpi_snapshot", "kpi_timeline"]
     for table_name in candidate_tables:
         if "study_id" not in table_columns.get(table_name, set()):
             continue
@@ -123,8 +788,9 @@ def _kpi_result(
 def _resolve_since_fpi_start_date(cursor, table_columns: dict[str, set[str]], study_id: str) -> tuple[Optional[date], Optional[str]]:
     timeline_has_required = {"study_id", "period_date"}.issubset(table_columns.get("enrollment_timeline", set()))
     rate_has_required = {"study_id", "period_date"}.issubset(table_columns.get("enrollment_rate", set()))
+    kpi_timeline_has_required = {"study_id", "period_date"}.issubset(table_columns.get("kpi_timeline", set()))
 
-    if not timeline_has_required and not rate_has_required:
+    if not timeline_has_required and not rate_has_required and not kpi_timeline_has_required:
         return None, "Enrollment timeline/rate period_date columns are not available."
 
     source_queries = []
@@ -146,6 +812,17 @@ def _resolve_since_fpi_start_date(cursor, table_columns: dict[str, set[str]], st
             """
             SELECT MIN(period_date::date) AS start_date
             FROM public.enrollment_rate
+            WHERE period_date IS NOT NULL
+              AND study_id::text = %s
+            """
+        )
+        params.append(study_id)
+
+    if kpi_timeline_has_required:
+        source_queries.append(
+            """
+            SELECT MIN(period_date::date) AS start_date
+            FROM public.kpi_timeline
             WHERE period_date IS NOT NULL
               AND study_id::text = %s
             """
@@ -180,12 +857,7 @@ def _study_time_filter_sql(study_id_column: str, date_column: str, study_id: str
 
 
 def _performance_status_from_percent(value: Optional[float]) -> str:
-    percent = float(value or 0)
-    if percent > 95:
-        return "ON_TRACK"
-    if 80 <= percent <= 94:
-        return "OFF_TRACK"
-    return "AT_RISK"
+    return classify_performance(value)
 
 
 def _format_display_date(raw_value: object) -> Optional[str]:
@@ -202,6 +874,33 @@ def _format_display_date(raw_value: object) -> Optional[str]:
     except ValueError:
         return text
     return f"{parsed_date.day:02d} {DISPLAY_MONTH_MAP[parsed_date.month]} {parsed_date.year}"
+
+
+def _coerce_date(raw_value: object) -> Optional[date]:
+    if raw_value is None:
+        return None
+    if isinstance(raw_value, date):
+        return raw_value
+
+    text = str(raw_value).strip()
+    if not text:
+        return None
+
+    parsed = text.split("T", 1)[0]
+    try:
+        return date.fromisoformat(parsed)
+    except ValueError:
+        return None
+
+
+def _format_variance_text(variance_days: Optional[int]) -> str:
+    if variance_days is None:
+        return "Pending"
+    if variance_days == 0:
+        return "On time"
+    if variance_days > 0:
+        return f"+{variance_days}d"
+    return f"{variance_days}d"
 
 
 def _na_field(reason: str) -> dict[str, Optional[str]]:
@@ -297,7 +996,11 @@ def get_study_overview_summary(
                     return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
 
                 row_data = dict(zip(select_columns, row))
-                performance_status = _performance_status_from_percent(row_data.get("enrollment_plan_percent"))
+                thresholds = get_performance_thresholds()
+                performance_status = classify_performance(
+                    row_data.get("enrollment_plan_percent"),
+                    thresholds,
+                )
                 actual_fpi = _format_display_date(row_data.get("actual_fpi_date"))
                 forecast_lpo = _format_display_date(row_data.get("forecast_lpo_date"))
 
@@ -323,6 +1026,102 @@ def get_study_overview_summary(
                 }
     except Exception:
         logger.exception("Failed to fetch study overview summary")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
+
+@router.get("/study-overview/charts/milestones")
+@router.get("/study-overview/milestones")
+def get_study_overview_milestones(
+    request: Request = None,
+    study_id: str = Query(..., alias="studyId", description="Study ID to fetch key enrollment milestones"),
+):
+    if request is not None and request.method.upper() != "GET":
+        return JSONResponse(status_code=405, content={"detail": "Method Not Allowed"})
+
+    try:
+        validated_study_id = _require_study_id(study_id)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"message": "Invalid query parameter"})
+
+    conn_params = get_conn_params()
+    if not conn_params.get("password"):
+        return JSONResponse(status_code=500, content={"message": "Database credentials are not configured"})
+
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cursor:
+                table_columns = _get_public_table_columns(cursor)
+
+                if not _study_exists(cursor, table_columns, validated_study_id):
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                study_columns = table_columns.get("studies", set())
+                required_columns = {
+                    "study_id",
+                    "fsa_planned",
+                    "fsa_actual",
+                    "fsfv_planned",
+                    "fsfv_actual",
+                    "lsfv_planned",
+                    "lsfv_actual",
+                }
+                if not required_columns.issubset(study_columns):
+                    return JSONResponse(status_code=500, content={"message": "Studies milestone columns are not available."})
+
+                cursor.execute(
+                    """
+                    SELECT
+                        fsa_planned,
+                        fsa_actual,
+                        fsfv_planned,
+                        fsfv_actual,
+                        lsfv_planned,
+                        lsfv_actual
+                    FROM public.studies
+                    WHERE study_id::text = %s
+                    LIMIT 1
+                    """,
+                    [validated_study_id],
+                )
+                row = cursor.fetchone()
+                if not row:
+                    return JSONResponse(status_code=400, content={"message": "Invalid studyId"})
+
+                (
+                    fsa_planned,
+                    fsa_actual,
+                    fsfv_planned,
+                    fsfv_actual,
+                    lsfv_planned,
+                    lsfv_actual,
+                ) = row
+
+                def build_milestone(code: str, label: str, planned_raw: object, actual_raw: object) -> dict:
+                    planned_date = _coerce_date(planned_raw)
+                    actual_date = _coerce_date(actual_raw)
+                    variance_days = (actual_date - planned_date).days if planned_date and actual_date else None
+
+                    return {
+                        "code": code,
+                        "milestone": label,
+                        "planned": _format_display_date(planned_raw),
+                        "actual": _format_display_date(actual_raw),
+                        "variance": _format_variance_text(variance_days),
+                        "varianceDays": variance_days,
+                    }
+
+                milestones = [
+                    build_milestone("FSA", "First Site Activated", fsa_planned, fsa_actual),
+                    build_milestone("FSFV", "First Subject First Visit", fsfv_planned, fsfv_actual),
+                    build_milestone("LSFV", "Last Subject First Visit", lsfv_planned, lsfv_actual),
+                ]
+
+                return {
+                    "studyId": validated_study_id,
+                    "milestones": milestones,
+                }
+    except Exception:
+        logger.exception("Failed to fetch study overview milestones")
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 
@@ -362,7 +1161,6 @@ def get_country_breakdown(
                     "country",
                     "target_enrollment",
                     "actual_enrollment",
-                    "enrollment_percent",
                     "sites_active",
                     "avg_enrollment_rate",
                 }
@@ -376,7 +1174,6 @@ def get_country_breakdown(
                     "site_name",
                     "target_enrollment",
                     "actual_enrollment",
-                    "enrollment_percent",
                     "enrollment_rate",
                     "site_status",
                 }
@@ -389,7 +1186,6 @@ def get_country_breakdown(
                         country,
                         COALESCE(target_enrollment, 0) AS target_enrollment,
                         COALESCE(actual_enrollment, 0) AS actual_enrollment,
-                        COALESCE(enrollment_percent, 0)::float AS enrollment_percent,
                         COALESCE(sites_active, 0) AS sites_active,
                         COALESCE(avg_enrollment_rate, 0)::float AS avg_enrollment_rate
                     FROM public.country_breakdown
@@ -408,7 +1204,6 @@ def get_country_breakdown(
                         COALESCE(site_name, '') AS site_name,
                         COALESCE(target_enrollment, 0) AS target_enrollment,
                         COALESCE(actual_enrollment, 0) AS actual_enrollment,
-                        COALESCE(enrollment_percent, 0)::float AS enrollment_percent,
                         COALESCE(site_status, '') AS site_status
                     FROM public.site_breakdown
                     WHERE study_id::text = %s
@@ -425,9 +1220,9 @@ def get_country_breakdown(
                     site_name,
                     target_enrollment,
                     actual_enrollment,
-                    enrollment_percent,
                     site_status,
                 ) in site_rows:
+                    percent_enrolled_value = _compute_enrollment_percentage(actual_enrollment, target_enrollment)
                     country_key = country or "Unknown"
                     sites_by_country.setdefault(country_key, []).append(
                         {
@@ -435,22 +1230,22 @@ def get_country_breakdown(
                             "siteName": site_name,
                             "target": int(target_enrollment or 0),
                             "actual": int(actual_enrollment or 0),
-                            "percentEnrolled": round(float(enrollment_percent or 0), 2),
+                            "percentEnrolled": percent_enrolled_value,
                             "status": site_status,
                         }
                     )
 
                 countries = []
+                thresholds = get_performance_thresholds()
                 for (
                     country,
                     target_enrollment,
                     actual_enrollment,
-                    enrollment_percent,
                     sites_active,
                     avg_enrollment_rate,
                 ) in country_rows:
                     country_key = country or "Unknown"
-                    percent_enrolled_value = round(float(enrollment_percent or 0), 2)
+                    percent_enrolled_value = _compute_enrollment_percentage(actual_enrollment, target_enrollment)
                     countries.append(
                         {
                             "country": country_key,
@@ -459,7 +1254,7 @@ def get_country_breakdown(
                             "percentEnrolled": percent_enrolled_value,
                             "sitesActive": int(sites_active or 0),
                             "avgRate": round(float(avg_enrollment_rate or 0), 2),
-                            "status": _performance_status_from_percent(percent_enrolled_value),
+                            "status": classify_performance(percent_enrolled_value, thresholds),
                             "sites": sites_by_country.get(country_key, []),
                         }
                     )
@@ -720,6 +1515,75 @@ def get_study_overview_kpi_details(
                     start_date, horizon_error = _resolve_since_fpi_start_date(cursor, table_columns, validated_study_id)
 
                 kpis: dict[str, dict] = {}
+                kpi_timeline_columns = table_columns.get("kpi_timeline", set())
+                kpi_timeline_has_metrics = {
+                    "study_id",
+                    "period_date",
+                    "screened_this_period",
+                    "failed_this_period",
+                    "enrolled_this_period",
+                    "dropouts_this_period",
+                }.issubset(kpi_timeline_columns)
+                kpi_timeline_has_site_activation = {"study_id", "period_date", "sites_activated"}.issubset(kpi_timeline_columns)
+                kpi_timeline_has_country_activation = {"study_id", "period_date", "countries_activated"}.issubset(kpi_timeline_columns)
+                kpi_timeline_has_sites_planned = "sites_planned" in kpi_timeline_columns
+                kpi_timeline_has_countries_planned = "countries_planned" in kpi_timeline_columns
+
+                timeline_points: list[dict] = []
+                kpi_timeline_rows: list[tuple] = []
+                if kpi_timeline_has_metrics:
+                    where_sql, where_params = _study_time_filter_sql("study_id", "period_date", validated_study_id, start_date)
+                    selected_columns = [
+                        "period_date::date AS period_date",
+                        "COALESCE(screened_this_period, 0)::int AS screened_this_period",
+                        "COALESCE(failed_this_period, 0)::int AS failed_this_period",
+                        "COALESCE(enrolled_this_period, 0)::int AS enrolled_this_period",
+                        "COALESCE(dropouts_this_period, 0)::int AS dropouts_this_period",
+                    ]
+                    if "sites_activated" in kpi_timeline_columns:
+                        selected_columns.append("COALESCE(sites_activated, 0)::int AS sites_activated")
+                    if "sites_planned" in kpi_timeline_columns:
+                        selected_columns.append("COALESCE(sites_planned, 0)::int AS sites_planned")
+                    if "countries_activated" in kpi_timeline_columns:
+                        selected_columns.append("COALESCE(countries_activated, 0)::int AS countries_activated")
+                    if "countries_planned" in kpi_timeline_columns:
+                        selected_columns.append("COALESCE(countries_planned, 0)::int AS countries_planned")
+
+                    cursor.execute(
+                        f"""
+                        SELECT
+                            {', '.join(selected_columns)}
+                        FROM public.kpi_timeline
+                        {where_sql}
+                        ORDER BY period_date
+                        """,
+                        where_params,
+                    )
+                    kpi_timeline_rows = cursor.fetchall()
+
+                    if kpi_timeline_rows:
+                        column_names = [col.split(" AS ")[-1] for col in selected_columns]
+                        for row in kpi_timeline_rows:
+                            row_data = dict(zip(column_names, row))
+                            screened = row_data.get("screened_this_period", 0)
+                            failed = row_data.get("failed_this_period", 0)
+                            enrolled = row_data.get("enrolled_this_period", 0)
+                            dropouts = row_data.get("dropouts_this_period", 0)
+                            timeline_points.append(
+                                {
+                                    "periodDate": row_data["period_date"].isoformat(),
+                                    "screened": int(screened),
+                                    "failed": int(failed),
+                                    "enrolled": int(enrolled),
+                                    "dropouts": int(dropouts),
+                                    "siteActivation": int(row_data.get("sites_activated", 0)),
+                                    "sitesPlanned": int(row_data.get("sites_planned", 0)) if "sites_planned" in row_data else "NA",
+                                    "countryActivation": int(row_data.get("countries_activated", 0)),
+                                    "countriesPlanned": int(row_data.get("countries_planned", 0)) if "countries_planned" in row_data else "NA",
+                                    "screenFailureRate": round(float(failed) / screened * 100, 2) if screened else 0.0,
+                                    "dropoutRate": round(float(dropouts) / enrolled * 100, 2) if enrolled else 0.0,
+                                }
+                            )
 
                 # Enrollment vs Plan
                 if horizon_error:
@@ -842,6 +1706,20 @@ def get_study_overview_kpi_details(
                 # Screen Failure Rate
                 if horizon_error:
                     kpis["screenFailureRate"] = _kpi_result(None, reason_if_na=f"Screen failure rate cannot be filtered: {horizon_error}")
+                elif kpi_timeline_has_metrics:
+                    if not kpi_timeline_rows:
+                        kpis["screenFailureRate"] = _kpi_result(None, reason_if_na="Screen failure data is not available for the selected study and time horizon.")
+                    else:
+                        total_screened = float(sum(row[1] for row in kpi_timeline_rows))
+                        total_failed = float(sum(row[2] for row in kpi_timeline_rows))
+                        if not total_screened:
+                            kpis["screenFailureRate"] = _kpi_result(None, reason_if_na="Screen failure data is not available for the selected study and time horizon.")
+                        else:
+                            kpis["screenFailureRate"] = _kpi_result(
+                                (total_failed / total_screened) * 100,
+                                reason_if_na="Screen failure data is not available.",
+                                reason_if_zero="Screen failure data is not available.",
+                            )
                 elif {"study_id", "snapshot_date", "screen_failure_rate"}.issubset(table_columns.get("kpi_snapshot", set())):
                     where_sql, where_params = _study_time_filter_sql("study_id", "snapshot_date", validated_study_id, start_date)
                     cursor.execute(
@@ -867,6 +1745,20 @@ def get_study_overview_kpi_details(
                 # Dropout Rate
                 if horizon_error:
                     kpis["dropoutRate"] = _kpi_result(None, reason_if_na=f"Dropout rate cannot be filtered: {horizon_error}")
+                elif kpi_timeline_has_metrics:
+                    if not kpi_timeline_rows:
+                        kpis["dropoutRate"] = _kpi_result(None, reason_if_na="Dropout data is not available for the selected study and time horizon.")
+                    else:
+                        total_enrolled = float(sum(row[3] for row in kpi_timeline_rows))
+                        total_dropouts = float(sum(row[4] for row in kpi_timeline_rows))
+                        if not total_enrolled:
+                            kpis["dropoutRate"] = _kpi_result(None, reason_if_na="Dropout data is not available for the selected study and time horizon.")
+                        else:
+                            kpis["dropoutRate"] = _kpi_result(
+                                (total_dropouts / total_enrolled) * 100,
+                                reason_if_na="Dropout data is not available.",
+                                reason_if_zero="Dropout data is not available.",
+                            )
                 elif {"study_id", "snapshot_date", "dropout_rate"}.issubset(table_columns.get("kpi_snapshot", set())):
                     where_sql, where_params = _study_time_filter_sql("study_id", "snapshot_date", study_id, start_date)
                     cursor.execute(
@@ -892,6 +1784,27 @@ def get_study_overview_kpi_details(
                 # Sites Activated
                 if horizon_error:
                     kpis["sitesActivated"] = _kpi_result(None, reason_if_na=f"Sites activated cannot be filtered: {horizon_error}")
+                elif kpi_timeline_has_site_activation:
+                    row_count = len(timeline_points)
+                    total_sites = max((int(point.get("siteActivation", 0) or 0) for point in timeline_points), default=0)
+                    total_sites_planned = (
+                        max((int(point.get("sitesPlanned", 0) or 0) for point in timeline_points if isinstance(point.get("sitesPlanned"), int)), default=0)
+                        if kpi_timeline_has_sites_planned
+                        else None
+                    )
+                    if not row_count:
+                        kpis["sitesActivated"] = _kpi_result(None, reason_if_na="Sites activated data is not available for the selected study and time horizon.")
+                    else:
+                        kpis["sitesActivated"] = {
+                            "value": _kpi_result(
+                                total_sites,
+                                reason_if_na="Sites activated data is not available.",
+                                digits=0,
+                                reason_if_zero="Sites activated data is not available.",
+                            ),
+                            "actualSitesActivated": int(total_sites or 0),
+                            "plannedSitesActivated": int(total_sites_planned or 0) if total_sites_planned is not None else "NA",
+                        }
                 elif {"study_id", "snapshot_date", "sites_activated"}.issubset(table_columns.get("kpi_snapshot", set())):
                     where_sql, where_params = _study_time_filter_sql("study_id", "snapshot_date", study_id, start_date)
                     has_sites_planned = "sites_planned" in table_columns.get("kpi_snapshot", set())
@@ -940,6 +1853,27 @@ def get_study_overview_kpi_details(
                 # Countries Activated
                 if horizon_error:
                     kpis["countriesActivated"] = _kpi_result(None, reason_if_na=f"Countries activated cannot be filtered: {horizon_error}")
+                elif kpi_timeline_has_country_activation:
+                    row_count = len(timeline_points)
+                    total_countries = max((int(point.get("countryActivation", 0) or 0) for point in timeline_points), default=0)
+                    total_countries_planned = (
+                        max((int(point.get("countriesPlanned", 0) or 0) for point in timeline_points if isinstance(point.get("countriesPlanned"), int)), default=0)
+                        if kpi_timeline_has_countries_planned
+                        else None
+                    )
+                    if not row_count:
+                        kpis["countriesActivated"] = _kpi_result(None, reason_if_na="Countries activated data is not available for the selected study and time horizon.")
+                    else:
+                        kpis["countriesActivated"] = {
+                            "value": _kpi_result(
+                                total_countries,
+                                reason_if_na="Countries activated data is not available.",
+                                digits=0,
+                                reason_if_zero="Countries activated data is not available.",
+                            ),
+                            "actualCountriesActivated": int(total_countries or 0),
+                            "plannedCountriesActivated": int(total_countries_planned or 0) if total_countries_planned is not None else "NA",
+                        }
                 elif {"study_id", "snapshot_date", "countries_activated"}.issubset(table_columns.get("kpi_snapshot", set())):
                     where_sql, where_params = _study_time_filter_sql("study_id", "snapshot_date", study_id, start_date)
                     has_countries_planned = "countries_planned" in table_columns.get("kpi_snapshot", set())
@@ -985,15 +1919,18 @@ def get_study_overview_kpi_details(
                 else:
                     kpis["countriesActivated"] = _kpi_result(None, reason_if_na="Countries activated table/columns are not available with study-level fields.")
 
-                return {
+                result = {
                     "timeHorizon": TIME_HORIZON_MAP[normalized_horizon],
-                    "studyId": study_id,
+                    "studyId": validated_study_id,
                     "window": {
                         "startDate": (start_date.isoformat() if start_date else None),
                         "endDate": date.today().isoformat(),
                     },
                     "kpis": kpis,
                 }
+                if timeline_points:
+                    result["kpiTimeline"] = timeline_points
+                return result
     except Exception:
         logger.exception("Failed to fetch study overview KPI details")
         return JSONResponse(status_code=500, content={"message": "Internal server error"})

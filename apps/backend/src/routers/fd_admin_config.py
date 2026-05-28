@@ -9,6 +9,10 @@ from pydantic import BaseModel, Field
 from psycopg2 import sql
 
 from eagle_hackathon.apps.backend.src.db.connection import get_conn_params
+from eagle_hackathon.apps.backend.src.core.performance_thresholds import (
+    get_performance_thresholds,
+    upsert_global_thresholds,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -24,12 +28,10 @@ class LoginDetailsUpdateRequest(BaseModel):
 
 
 class PerformanceThresholdUpdateRequest(BaseModel):
-    key_column: str = Field(default="metric_name", alias="keyColumn")
-    key_value: Any = Field(alias="keyValue")
-    on_track_min: Optional[float] = Field(default=None, alias="onTrackMin")
-    off_track_min: Optional[float] = Field(default=None, alias="offTrackMin")
-    off_track_max: Optional[float] = Field(default=None, alias="offTrackMax")
-    updates: Dict[str, Any] = Field(default_factory=dict)
+    on_track: float = Field(alias="onTrack")
+    at_risk_start: float = Field(alias="atRiskStart")
+    at_risk_end: float = Field(alias="atRiskEnd")
+    off_track: float = Field(alias="offTrack")
 
 
 def _is_valid_identifier(value: str) -> bool:
@@ -126,17 +128,39 @@ def update_login_details(payload: LoginDetailsUpdateRequest):
 
 @router.put("/admin/performance-threshold")
 def update_performance_threshold(payload: PerformanceThresholdUpdateRequest):
-    threshold_updates = dict(payload.updates)
-    if payload.on_track_min is not None:
-        threshold_updates["on_track_min"] = payload.on_track_min
-    if payload.off_track_min is not None:
-        threshold_updates["off_track_min"] = payload.off_track_min
-    if payload.off_track_max is not None:
-        threshold_updates["off_track_max"] = payload.off_track_max
+    if payload.at_risk_start > payload.at_risk_end:
+        return JSONResponse(
+            status_code=400,
+            content={"message": "Invalid threshold range: atRiskStart cannot be greater than atRiskEnd"},
+        )
 
-    return _update_single_row(
-        table_name="performance_threshold",
-        key_column=payload.key_column,
-        key_value=payload.key_value,
-        updates=threshold_updates,
-    )
+    try:
+        upsert_global_thresholds(
+            on_track=payload.on_track,
+            at_risk_start=payload.at_risk_start,
+            at_risk_end=payload.at_risk_end,
+            off_track=payload.off_track,
+        )
+        return {
+            "message": "Update successful",
+            "table": "performance_threshold",
+            "updatedRows": 1,
+        }
+    except Exception:
+        logger.exception("Failed updating global performance thresholds")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
+
+@router.get("/admin/performance-threshold")
+def get_performance_threshold():
+    try:
+        thresholds = get_performance_thresholds()
+        return {
+            "onTrack": thresholds.on_track,
+            "atRiskStart": thresholds.at_risk_start,
+            "atRiskEnd": thresholds.at_risk_end,
+            "offTrack": thresholds.off_track,
+        }
+    except Exception:
+        logger.exception("Failed to fetch global performance thresholds")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
