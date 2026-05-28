@@ -1,0 +1,447 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "kpi-details.spec.js",
+      "file": "kpi-details.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "KPI details API",
+          "file": "kpi-details.spec.js",
+          "line": 71,
+          "column": 6,
+          "specs": [
+            {
+              "title": "@smoke scenario 17: KPI details happy path",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1118,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:49:56.501Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-72fa36c2e23e3cb395f9",
+              "file": "kpi-details.spec.js",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "scenario 18: KPI numeric shape checks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 842,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:49:57.780Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-0791838ca31d95fc70ec",
+              "file": "kpi-details.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "scenario 21: KPI method not allowed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 94,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:49:58.723Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-bb7f89eaba9ee9a95f2a",
+              "file": "kpi-details.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "@smoke scenario 17: KPI details happy path",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1069,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:50:00.611Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-94d2b3c8d8b548e06fad",
+              "file": "kpi-details.spec.js",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "scenario 18: KPI numeric shape checks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 913,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:50:01.829Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-b68559e5d14c154d1619",
+              "file": "kpi-details.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "scenario 21: KPI method not allowed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 163,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:50:02.875Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-fb217c71e5946eeaf64e",
+              "file": "kpi-details.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "@smoke scenario 17: KPI details happy path",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1004,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:50:04.923Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-62bd53863e5ce7994d83",
+              "file": "kpi-details.spec.js",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "scenario 18: KPI numeric shape checks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 797,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:50:06.079Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-bac55b414b7834733d64",
+              "file": "kpi-details.spec.js",
+              "line": 77,
+              "column": 3
+            },
+            {
+              "title": "scenario 21: KPI method not allowed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 260,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T06:50:06.907Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2dd6833cac20a80875-dc359a0f633ec4d54f3c",
+              "file": "kpi-details.spec.js",
+              "line": 88,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-28T06:49:54.874Z",
+    "duration": 15897.899999999998,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

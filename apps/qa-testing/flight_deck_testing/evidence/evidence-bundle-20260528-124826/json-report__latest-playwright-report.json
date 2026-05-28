@@ -1,0 +1,1432 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "dashboard.spec.js",
+      "file": "dashboard.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Study Portfolio Dashboard",
+          "file": "dashboard.spec.js",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "table toggle shows table with all required columns",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11077,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table, [role=\"table\"]').first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('table, [role=\"table\"]').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table, [role=\"table\"]').first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('table, [role=\"table\"]').first()\u001b[22m\n\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:46:25",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                          "column": 25,
+                          "line": 46
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 44 |\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mconst\u001b[39m table \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m expect(table)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m\n \u001b[90m 48 |\u001b[39m     \u001b[36mconst\u001b[39m tableHeaders \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table thead th'\u001b[39m)\u001b[33m.\u001b[39mallInnerTexts()\u001b[33m;\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m normalizedHeaders \u001b[33m=\u001b[39m tableHeaders\u001b[33m.\u001b[39mmap((header) \u001b[33m=>\u001b[39m header\u001b[33m.\u001b[39mreplace(\u001b[35m/\\s+/g\u001b[39m\u001b[33m,\u001b[39m \u001b[32m' '\u001b[39m)\u001b[33m.\u001b[39mtrim()\u001b[33m.\u001b[39mtoLowerCase())\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                            "column": 25,
+                            "line": 46
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table, [role=\"table\"]').first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('table, [role=\"table\"]').first()\u001b[22m\n\n\n\u001b[0m \u001b[90m 44 |\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mconst\u001b[39m table \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m expect(table)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m\n \u001b[90m 48 |\u001b[39m     \u001b[36mconst\u001b[39m tableHeaders \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table thead th'\u001b[39m)\u001b[33m.\u001b[39mallInnerTexts()\u001b[33m;\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m normalizedHeaders \u001b[33m=\u001b[39m tableHeaders\u001b[33m.\u001b[39mmap((header) \u001b[33m=>\u001b[39m header\u001b[33m.\u001b[39mreplace(\u001b[35m/\\s+/g\u001b[39m\u001b[33m,\u001b[39m \u001b[32m' '\u001b[39m)\u001b[33m.\u001b[39mtrim()\u001b[33m.\u001b[39mtoLowerCase())\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:46:25\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:23.177Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                        "column": 25,
+                        "line": 46
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10993,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table, [role=\"table\"]').first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('table, [role=\"table\"]').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table, [role=\"table\"]').first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('table, [role=\"table\"]').first()\u001b[22m\n\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:46:25",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                          "column": 25,
+                          "line": 46
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 44 |\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mconst\u001b[39m table \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m expect(table)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m\n \u001b[90m 48 |\u001b[39m     \u001b[36mconst\u001b[39m tableHeaders \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table thead th'\u001b[39m)\u001b[33m.\u001b[39mallInnerTexts()\u001b[33m;\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m normalizedHeaders \u001b[33m=\u001b[39m tableHeaders\u001b[33m.\u001b[39mmap((header) \u001b[33m=>\u001b[39m header\u001b[33m.\u001b[39mreplace(\u001b[35m/\\s+/g\u001b[39m\u001b[33m,\u001b[39m \u001b[32m' '\u001b[39m)\u001b[33m.\u001b[39mtrim()\u001b[33m.\u001b[39mtoLowerCase())\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                            "column": 25,
+                            "line": 46
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('table, [role=\"table\"]').first()\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('table, [role=\"table\"]').first()\u001b[22m\n\n\n\u001b[0m \u001b[90m 44 |\u001b[39m\n \u001b[90m 45 |\u001b[39m     \u001b[36mconst\u001b[39m table \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table, [role=\"table\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 46 |\u001b[39m     \u001b[36mawait\u001b[39m expect(table)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                         \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 47 |\u001b[39m\n \u001b[90m 48 |\u001b[39m     \u001b[36mconst\u001b[39m tableHeaders \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'table thead th'\u001b[39m)\u001b[33m.\u001b[39mallInnerTexts()\u001b[33m;\u001b[39m\n \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m normalizedHeaders \u001b[33m=\u001b[39m tableHeaders\u001b[33m.\u001b[39mmap((header) \u001b[33m=>\u001b[39m header\u001b[33m.\u001b[39mreplace(\u001b[35m/\\s+/g\u001b[39m\u001b[33m,\u001b[39m \u001b[32m' '\u001b[39m)\u001b[33m.\u001b[39mtrim()\u001b[33m.\u001b[39mtoLowerCase())\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:46:25\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:43:53.033Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\test-finished-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                        "column": 25,
+                        "line": 46
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-dc91d2e9ab0a22a2dc76",
+              "file": "dashboard.spec.js",
+              "line": 42,
+              "column": 3
+            },
+            {
+              "title": "search works without breaking",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:49.784Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.173Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-680c83ff074fe48d1d98",
+              "file": "dashboard.spec.js",
+              "line": 63,
+              "column": 3
+            },
+            {
+              "title": "filters basic interaction does not break",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:49.816Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.207Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-c3ac03c6886406f2590f",
+              "file": "dashboard.spec.js",
+              "line": 81,
+              "column": 3
+            },
+            {
+              "title": "sorting click works when header exists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:49.853Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.246Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-b463a3c2a99be1bbac87",
+              "file": "dashboard.spec.js",
+              "line": 98,
+              "column": 3
+            },
+            {
+              "title": "empty state handled safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:49.903Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.269Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-0cc115082f3192929dde",
+              "file": "dashboard.spec.js",
+              "line": 114,
+              "column": 3
+            },
+            {
+              "title": "table view is visible and handles rows or empty state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:49.949Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.332Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-d00defc7add6ef8b1678",
+              "file": "dashboard.spec.js",
+              "line": 131,
+              "column": 3
+            },
+            {
+              "title": "valid search shows a matching study or safe empty state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.044Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.366Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-fecbed6201206bf845f9",
+              "file": "dashboard.spec.js",
+              "line": 151,
+              "column": 3
+            },
+            {
+              "title": "partial search behaves safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.152Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.403Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-76b5973b5f0d6e4e42e2",
+              "file": "dashboard.spec.js",
+              "line": 167,
+              "column": 3
+            },
+            {
+              "title": "additional invalid search shows empty state safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.236Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.425Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-3a993a684c434fa251ab",
+              "file": "dashboard.spec.js",
+              "line": 185,
+              "column": 3
+            },
+            {
+              "title": "each available filter dropdown opens and closes safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.268Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.455Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-1c016c9b8b9b2b04c636",
+              "file": "dashboard.spec.js",
+              "line": 196,
+              "column": 3
+            },
+            {
+              "title": "reset filters works when reset affordance is available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.407Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.504Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-d2d957dd8fd71b385406",
+              "file": "dashboard.spec.js",
+              "line": 223,
+              "column": 3
+            },
+            {
+              "title": "sorting toggle reacts when a sortable column is available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.440Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.532Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-4af8f10ef8aa5c06b72e",
+              "file": "dashboard.spec.js",
+              "line": 233,
+              "column": 3
+            },
+            {
+              "title": "kpi cards are visible when present",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.500Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:17.785Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-ccf60a9b7cd80639e05c",
+              "file": "dashboard.spec.js",
+              "line": 260,
+              "column": 3
+            },
+            {
+              "title": "clicking a study entry updates the URL safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:43:50.532Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:44:18.144Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-05239c6a9c9b378ee2ce",
+              "file": "dashboard.spec.js",
+              "line": 275,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "login-page.spec.js",
+      "file": "login-page.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Login page validation",
+          "file": "login-page.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "login page renders expected UI shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4210,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:44:20.072Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-f064e-e-renders-expected-UI-shell-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-52567533392d34267ef6",
+              "file": "login-page.spec.js",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "empty submit is handled safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3114,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:44:28.265Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a6f57-ty-submit-is-handled-safely-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-65cfd7f7560e304cc928",
+              "file": "login-page.spec.js",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "invalid credentials do not navigate to app shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3649,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:44:31.521Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a64ee-o-not-navigate-to-app-shell-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-3990adaf78da3e381dba",
+              "file": "login-page.spec.js",
+              "line": 80,
+              "column": 3
+            },
+            {
+              "title": "valid credentials sign in successfully when provided",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5305,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:44:35.424Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-f54ed88365a2d54ee4ae",
+              "file": "login-page.spec.js",
+              "line": 99,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "protocal-search.spec.js",
+      "file": "protocal-search.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Story 3 - Protocol Similarity Search",
+          "file": "protocal-search.spec.js",
+          "line": 86,
+          "column": 6,
+          "specs": [
+            {
+              "title": "protocol search flow stays stable and handles data variations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 21042,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:44:41.551Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-001-page-goto-24b769d6ac562b96a3b741ff9d1b0ae99769fe67.png"
+                        },
+                        {
+                          "name": "step-002: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-002-locator-fill-f6103031cad63aad4772297af13899d9c094b694.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-003-locator-fill-2e3a06b09dd9e9facde9f3f5df49f59f8ac88b28.png"
+                        },
+                        {
+                          "name": "step-004: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-004-locator-click-24b54ae004b3d62b8c47c640e340ca656d9ffa7e.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-005-locator-click-1b53a0118b854ab3edf6a5a2020d7f6cef14d62a.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-006-locator-click-26d84b1ef16883fc48413a55ee45f1a22211fb33.png"
+                        },
+                        {
+                          "name": "step-007: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-007-locator-fill-c369211b16a497b012d195ef5220d9dd519849ac.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-008-locator-click-4b052dd822f2e1a6043029a6063e3cfec9c61ddc.png"
+                        },
+                        {
+                          "name": "step-009: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-009-locator-click-1cf0d97535fec6f81b5a4ec99126799608d8c6d2.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-f3a461934de31e6965a4",
+              "file": "protocal-search.spec.js",
+              "line": 91,
+              "column": 3
+            },
+            {
+              "title": "clicking first result can navigate to details safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18953,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:45:02.765Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-001-page-goto-54f5936709d64f6cf772fcc620f66a22ad71c552.png"
+                        },
+                        {
+                          "name": "step-002: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-002-locator-fill-bff82ee53964f160abdb482669fdde07b65b8a97.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-003-locator-fill-453b30dc5d0bfab27d1efe925b717c6d926dd8b6.png"
+                        },
+                        {
+                          "name": "step-004: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-004-locator-click-77d2c16c41e08814eed612d5ade034ddcb97d2cf.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-005-locator-click-1f99b71bde82b643bee75d32633820d3cd9c9abe.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-006-locator-click-dff6ff26059fb9036d85c43a14f33bce4772194f.png"
+                        },
+                        {
+                          "name": "step-007: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-007-locator-fill-80c04e268d79b5124f9659478cb5d34ec93404ba.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-008-locator-click-39d59e9c383d98a7d48baf3f9e8db2d5b268bcc6.png"
+                        },
+                        {
+                          "name": "step-009: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-009-locator-click-2161a982b7a7afa23448c5b99a4a034da194b506.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-6ed05b8e46108247ec01",
+              "file": "protocal-search.spec.js",
+              "line": 125,
+              "column": 3
+            },
+            {
+              "title": "details page basic content validation remains safe",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17369,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:45:22.009Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-001-page-goto-1ff4dfa149aabe7b17139c4ba7e3856914b3552b.png"
+                        },
+                        {
+                          "name": "step-002: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-002-locator-fill-adaa8aef28f250e161cc4c5f352bbb3a6d990aae.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-003-locator-fill-5e3a4f1767af94c95bf01b961e559f4cd28c4e39.png"
+                        },
+                        {
+                          "name": "step-004: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-004-locator-click-2d9ab7d69b30333ec2f69e4ee48499aa145dd0cd.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-005-locator-click-d9563c9b288162d94ed03a2973d5443380d84b20.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-006-locator-click-f814d0a866effb29abaab7087b3e9c575a0ae2f2.png"
+                        },
+                        {
+                          "name": "step-007: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-007-locator-fill-1b9daef6934809777873424336b499d7e1375012.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-008-locator-click-24ebd8b399249a3bc153e3f354614974485d88fd.png"
+                        },
+                        {
+                          "name": "step-009: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-009-locator-click-83cf61b2a527a7ba2497f595e08d0a3df92a0756.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-b2644f668a651281bdb0",
+              "file": "protocal-search.spec.js",
+              "line": 131,
+              "column": 3
+            },
+            {
+              "title": "search works when dropdown is not selected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 16694,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:45:39.724Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-001-page-goto-33f2f1d718f9d6840552b0037981b4f818cf802f.png"
+                        },
+                        {
+                          "name": "step-002: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-002-locator-fill-fb05586e6f569c68d463aeee28fe744287593c56.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-003-locator-fill-a94fa636b8990b7180f71660ed7e4c10e35d1314.png"
+                        },
+                        {
+                          "name": "step-004: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-004-locator-click-382f0b54fd427d1b6372fe0e538a503e17898311.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-005-locator-click-2a1f79c63bd06d01e083239bbab68391fb9840c6.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-006-locator-click-e49ea18654eb8dbfc69b5890e0986a2e6718e7df.png"
+                        },
+                        {
+                          "name": "step-007: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-007-locator-fill-074119895672d02e7846451694c065db0b5b097b.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-008-locator-click-24578c7dbfbfde9dc398d7498d32b583a17337b8.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-006f44719e1873318cd7",
+              "file": "protocal-search.spec.js",
+              "line": 137,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-28T16:43:21.195Z",
+    "duration": 168468.02500000002,
+    "expected": 8,
+    "skipped": 13,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

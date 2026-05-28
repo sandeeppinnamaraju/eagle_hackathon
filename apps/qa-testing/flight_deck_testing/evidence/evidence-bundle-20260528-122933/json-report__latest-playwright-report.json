@@ -1,0 +1,921 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "dashboard.spec.js",
+      "file": "dashboard.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Study Portfolio Dashboard",
+          "file": "dashboard.spec.js",
+          "line": 59,
+          "column": 6,
+          "specs": [
+            {
+              "title": "table toggle shows table with all required columns",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1,
+                      "error": {
+                        "message": "Error: Login failed: Dashboard not visible after login.",
+                        "stack": "Error: Login failed: Dashboard not visible after login.\n    at loginUser (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:55:11)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:72:5",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                          "column": 11,
+                          "line": 55
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 53 |\u001b[39m     \u001b[36mconst\u001b[39m body \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'body'\u001b[39m)\u001b[33m.\u001b[39minnerText()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[32m''\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 54 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'[LOGIN FAILURE] Not redirected to dashboard. URL:'\u001b[39m\u001b[33m,\u001b[39m url\u001b[33m,\u001b[39m \u001b[32m'\\nBody:'\u001b[39m\u001b[33m,\u001b[39m body\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m500\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 55 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login failed: Dashboard not visible after login.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 56 |\u001b[39m   }\n \u001b[90m 57 |\u001b[39m }\n \u001b[90m 58 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                            "column": 11,
+                            "line": 55
+                          },
+                          "message": "Error: Login failed: Dashboard not visible after login.\n\n\u001b[0m \u001b[90m 53 |\u001b[39m     \u001b[36mconst\u001b[39m body \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'body'\u001b[39m)\u001b[33m.\u001b[39minnerText()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[32m''\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 54 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'[LOGIN FAILURE] Not redirected to dashboard. URL:'\u001b[39m\u001b[33m,\u001b[39m url\u001b[33m,\u001b[39m \u001b[32m'\\nBody:'\u001b[39m\u001b[33m,\u001b[39m body\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m500\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 55 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login failed: Dashboard not visible after login.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 56 |\u001b[39m   }\n \u001b[90m 57 |\u001b[39m }\n \u001b[90m 58 |\u001b[39m\u001b[0m\n\u001b[2m    at loginUser (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:55:11)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:72:5\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[LOGIN FAILURE] Not redirected to dashboard. URL: https://spend-mhz-bufing-characteristics.trycloudflare.com/login? \nBody: Flight Deck\nClinical Trials Intelligence\nPilot every protocol\nwith precision\n\nFlight Deck is the operating cockpit for clinical operations teams. Turn enrollment signals, site performance, and protocol risk into the decisions that move medicine forward — from first patient in to final readout.\n\nUnified portfolio\n\nTrack every study, site, and milestone across regions in one live workspace.\n\nReal-time signals\n\nEnrollment velocity, screen-fail rates, and risk scores updated as data arrives.\n\nProtoc\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:33.320Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\test-failed-2.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                        "column": 11,
+                        "line": 55
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1,
+                      "error": {
+                        "message": "Error: Login failed: Dashboard not visible after login.",
+                        "stack": "Error: Login failed: Dashboard not visible after login.\n    at loginUser (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:55:11)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:72:5",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                          "column": 11,
+                          "line": 55
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 53 |\u001b[39m     \u001b[36mconst\u001b[39m body \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'body'\u001b[39m)\u001b[33m.\u001b[39minnerText()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[32m''\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 54 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'[LOGIN FAILURE] Not redirected to dashboard. URL:'\u001b[39m\u001b[33m,\u001b[39m url\u001b[33m,\u001b[39m \u001b[32m'\\nBody:'\u001b[39m\u001b[33m,\u001b[39m body\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m500\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 55 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login failed: Dashboard not visible after login.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 56 |\u001b[39m   }\n \u001b[90m 57 |\u001b[39m }\n \u001b[90m 58 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                            "column": 11,
+                            "line": 55
+                          },
+                          "message": "Error: Login failed: Dashboard not visible after login.\n\n\u001b[0m \u001b[90m 53 |\u001b[39m     \u001b[36mconst\u001b[39m body \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'body'\u001b[39m)\u001b[33m.\u001b[39minnerText()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[32m''\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 54 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'[LOGIN FAILURE] Not redirected to dashboard. URL:'\u001b[39m\u001b[33m,\u001b[39m url\u001b[33m,\u001b[39m \u001b[32m'\\nBody:'\u001b[39m\u001b[33m,\u001b[39m body\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m500\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 55 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login failed: Dashboard not visible after login.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 56 |\u001b[39m   }\n \u001b[90m 57 |\u001b[39m }\n \u001b[90m 58 |\u001b[39m\u001b[0m\n\u001b[2m    at loginUser (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:55:11)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js:72:5\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "[LOGIN FAILURE] Not redirected to dashboard. URL: https://spend-mhz-bufing-characteristics.trycloudflare.com/login? \nBody: Flight Deck\nClinical Trials Intelligence\nPilot every protocol\nwith precision\n\nFlight Deck is the operating cockpit for clinical operations teams. Turn enrollment signals, site performance, and protocol risk into the decisions that move medicine forward — from first patient in to final readout.\n\nUnified portfolio\n\nTrack every study, site, and milestone across regions in one live workspace.\n\nReal-time signals\n\nEnrollment velocity, screen-fail rates, and risk scores updated as data arrives.\n\nProtoc\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:49.913Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\test-failed-2.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\dashboard-Study-Portfolio--fdf48-e-with-all-required-columns-chromium-retry1\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\dashboard.spec.js",
+                        "column": 11,
+                        "line": 55
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-dc91d2e9ab0a22a2dc76",
+              "file": "dashboard.spec.js",
+              "line": 148,
+              "column": 3
+            },
+            {
+              "title": "search works without breaking",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.580Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.315Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-680c83ff074fe48d1d98",
+              "file": "dashboard.spec.js",
+              "line": 167,
+              "column": 3
+            },
+            {
+              "title": "filters basic interaction does not break",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.605Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.330Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-c3ac03c6886406f2590f",
+              "file": "dashboard.spec.js",
+              "line": 189,
+              "column": 3
+            },
+            {
+              "title": "sorting click works when header exists",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.659Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.370Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-b463a3c2a99be1bbac87",
+              "file": "dashboard.spec.js",
+              "line": 208,
+              "column": 3
+            },
+            {
+              "title": "empty state handled safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.713Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.398Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-0cc115082f3192929dde",
+              "file": "dashboard.spec.js",
+              "line": 237,
+              "column": 3
+            },
+            {
+              "title": "table view is visible and handles rows or empty state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.774Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.429Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-d00defc7add6ef8b1678",
+              "file": "dashboard.spec.js",
+              "line": 264,
+              "column": 3
+            },
+            {
+              "title": "valid search shows a matching study or safe empty state",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.815Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.476Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-fecbed6201206bf845f9",
+              "file": "dashboard.spec.js",
+              "line": 289,
+              "column": 3
+            },
+            {
+              "title": "partial search behaves safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.865Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.525Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-76b5973b5f0d6e4e42e2",
+              "file": "dashboard.spec.js",
+              "line": 309,
+              "column": 3
+            },
+            {
+              "title": "additional invalid search shows empty state safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.914Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.560Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-3a993a684c434fa251ab",
+              "file": "dashboard.spec.js",
+              "line": 331,
+              "column": 3
+            },
+            {
+              "title": "each available filter dropdown opens and closes safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:47.964Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.596Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-1c016c9b8b9b2b04c636",
+              "file": "dashboard.spec.js",
+              "line": 346,
+              "column": 3
+            },
+            {
+              "title": "reset filters works when reset affordance is available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:48.039Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.686Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-d2d957dd8fd71b385406",
+              "file": "dashboard.spec.js",
+              "line": 381,
+              "column": 3
+            },
+            {
+              "title": "sorting toggle reacts when a sortable column is available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:48.093Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.721Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-4af8f10ef8aa5c06b72e",
+              "file": "dashboard.spec.js",
+              "line": 396,
+              "column": 3
+            },
+            {
+              "title": "kpi cards are visible when present",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:48.146Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.785Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-ccf60a9b7cd80639e05c",
+              "file": "dashboard.spec.js",
+              "line": 429,
+              "column": 3
+            },
+            {
+              "title": "clicking a study entry updates the URL safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:22:48.172Z",
+                      "annotations": [],
+                      "attachments": []
+                    },
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:22:58.835Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "a1bb41a2bd6df77ed2f7-05239c6a9c9b378ee2ce",
+              "file": "dashboard.spec.js",
+              "line": 455,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-28T16:22:31.454Z",
+    "duration": 33396.994,
+    "expected": 0,
+    "skipped": 13,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

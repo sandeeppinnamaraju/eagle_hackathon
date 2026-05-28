@@ -1,0 +1,595 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "protocal-search.spec.js",
+      "file": "protocal-search.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Story 3 - Protocol Similarity Search",
+          "file": "protocal-search.spec.js",
+          "line": 116,
+          "column": 6,
+          "specs": [
+            {
+              "title": "protocol search flow stays stable and handles data variations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Protocol search UI unavailable in current environment",
+                      "location": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                        "line": 120,
+                        "column": 14
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 13843,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:33:45.506Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Protocol search UI unavailable in current environment",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "line": 120,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\attachments\\step-001-page-goto-24b769d6ac562b96a3b741ff9d1b0ae99769fe67.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium\\video.webm"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 11193,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:34:45.954Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Protocol search UI unavailable in current environment",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "line": 120,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium-retry1\\attachments\\step-001-page-goto-78ddd5cb41d5ebdb81ac37c1d6c85807466f6e7f.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium-retry1\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a2ecb-and-handles-data-variations-chromium-retry1\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-f3a461934de31e6965a4",
+              "file": "protocal-search.spec.js",
+              "line": 117,
+              "column": 5
+            },
+            {
+              "title": "clicking first result can navigate to details safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Protocol search UI unavailable in current environment",
+                      "location": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                        "line": 168,
+                        "column": 14
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 8279,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:34:00.591Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Protocol search UI unavailable in current environment",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "line": 168,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\attachments\\step-001-page-goto-54f5936709d64f6cf772fcc620f66a22ad71c552.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium\\video.webm"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 10569,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:34:58.385Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Protocol search UI unavailable in current environment",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "line": 168,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium-retry1\\attachments\\step-001-page-goto-eb16ed793e9bc3efad9b147737ac0b16602d3439.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium-retry1\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----e1ca0--navigate-to-details-safely-chromium-retry1\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-6ed05b8e46108247ec01",
+              "file": "protocal-search.spec.js",
+              "line": 166,
+              "column": 5
+            },
+            {
+              "title": "details page basic content validation remains safe",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Protocol search UI unavailable in current environment",
+                      "location": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                        "line": 178,
+                        "column": 14
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 9745,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:34:09.284Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Protocol search UI unavailable in current environment",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "line": 178,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\attachments\\step-001-page-goto-1ff4dfa149aabe7b17139c4ba7e3856914b3552b.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium\\video.webm"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 9568,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:35:09.438Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "Protocol search UI unavailable in current environment",
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "line": 178,
+                            "column": 14
+                          }
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium-retry1\\attachments\\step-001-page-goto-5ad884a9f454570974b372060bdab2e2f508d844.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium-retry1\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----a5a63-ent-validation-remains-safe-chromium-retry1\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-b2644f668a651281bdb0",
+              "file": "protocal-search.spec.js",
+              "line": 176,
+              "column": 5
+            },
+            {
+              "title": "search works when dropdown is not selected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 23386,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/protocol-search(\\?mode=input)?$/i\u001b[39m\nReceived string:  \u001b[31m\"https://spend-mhz-bufing-characteristics.trycloudflare.com/login\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    23 × unexpected value \"https://spend-mhz-bufing-characteristics.trycloudflare.com/login\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/protocol-search(\\?mode=input)?$/i\u001b[39m\nReceived string:  \u001b[31m\"https://spend-mhz-bufing-characteristics.trycloudflare.com/login\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    23 × unexpected value \"https://spend-mhz-bufing-characteristics.trycloudflare.com/login\"\u001b[22m\n\n    at gotoSearch (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js:42:24)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js:189:9",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                          "column": 24,
+                          "line": 42
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 40 |\u001b[39m     \u001b[36mawait\u001b[39m expect(protocolSearchLink)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 41 |\u001b[39m     \u001b[36mawait\u001b[39m protocolSearchLink\u001b[33m.\u001b[39mclick({ force\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 42 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveURL(\u001b[35m/\\/protocol-search(\\?mode=input)?$/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Protocol Similarity Search/i\u001b[39m)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 44 |\u001b[39m }\n \u001b[90m 45 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                            "column": 24,
+                            "line": 42
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/protocol-search(\\?mode=input)?$/i\u001b[39m\nReceived string:  \u001b[31m\"https://spend-mhz-bufing-characteristics.trycloudflare.com/login\"\u001b[39m\nTimeout: 10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    23 × unexpected value \"https://spend-mhz-bufing-characteristics.trycloudflare.com/login\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 40 |\u001b[39m     \u001b[36mawait\u001b[39m expect(protocolSearchLink)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 41 |\u001b[39m     \u001b[36mawait\u001b[39m protocolSearchLink\u001b[33m.\u001b[39mclick({ force\u001b[33m:\u001b[39m \u001b[36mtrue\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 42 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveURL(\u001b[35m/\\/protocol-search(\\?mode=input)?$/i\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Protocol Similarity Search/i\u001b[39m)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 44 |\u001b[39m }\n \u001b[90m 45 |\u001b[39m\u001b[0m\n\u001b[2m    at gotoSearch (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js:42:24)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js:189:9\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-28T16:34:19.286Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-001-page-goto-33f2f1d718f9d6840552b0037981b4f818cf802f.png"
+                        },
+                        {
+                          "name": "step-002: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\attachments\\step-002-locator-click-89ccdabcc9b54ac006266edb5a3d474d1d5b60d0.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\protocal-search.spec.js",
+                        "column": 24,
+                        "line": 42
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15126,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-28T16:35:19.110Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium-retry1\\attachments\\step-001-page-goto-7ba3c1dfe5e32542729ef99409f24058d1ae2453.png"
+                        },
+                        {
+                          "name": "step-002: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium-retry1\\attachments\\step-002-locator-click-5c32b9b8b43f8181fa1f46112f24fdd23b138f63.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium-retry1\\attachments\\step-003-locator-fill-f43a77091b9d84a3cb10361215d505a4f0f29f6a.png"
+                        },
+                        {
+                          "name": "step-004: locator-press",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium-retry1\\attachments\\step-004-locator-press-b7e4e5aa45145247a75f8ff414bb79293c31e565.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium-retry1\\test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\protocal-search-Story-3----d8eef-en-dropdown-is-not-selected-chromium-retry1\\video.webm"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "flaky"
+                }
+              ],
+              "id": "b39b039ca212a31c7649-006f44719e1873318cd7",
+              "file": "protocal-search.spec.js",
+              "line": 188,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-28T16:33:43.326Z",
+    "duration": 118957.38,
+    "expected": 0,
+    "skipped": 3,
+    "unexpected": 0,
+    "flaky": 1
+  }
+}

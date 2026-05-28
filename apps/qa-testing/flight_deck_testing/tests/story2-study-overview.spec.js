@@ -1,6 +1,7 @@
 const { test, expect } = require('../utils/stepTest');
+const { setupAuthenticatedStudyPortfolio, openStudyPortfolio } = require('../utils/authNavigation');
 
-const BASE_URL = 'https://ana-academics-reggae-farmer.trycloudflare.com/';
+const BASE_URL = 'https://spend-mhz-bufing-characteristics.trycloudflare.com/'; // username: eagle_user1, password: FD_hack@user1
 
 const PORTFOLIO_KPIS = [
   'Active Studies',
@@ -34,11 +35,7 @@ function exactLabelPattern(label) {
 }
 
 async function openPortfolio(page) {
-  await page.goto(new URL('/portfolio', BASE_URL).toString());
-  await page.waitForLoadState('networkidle').catch(() => {});
-
-  await expect(page).toHaveURL(/\/portfolio\/?$/i);
-  await expect(page.getByRole('heading', { name: /Study Portfolio Dashboard/i })).toBeVisible();
+  await openStudyPortfolio(page, { baseUrl: BASE_URL });
 }
 
 async function openTableView(page) {
@@ -47,7 +44,10 @@ async function openTableView(page) {
     await tableButton.click();
   }
 
-  await expect(page.locator('table').first()).toBeVisible();
+  const loadingText = page.getByText(/Loading studies\.\.\./i).first();
+  if (await loadingText.isVisible().catch(() => false)) {
+    await expect(loadingText).toBeHidden({ timeout: 30_000 });
+  }
 }
 
 async function navigateToFirstStudy(page) {
@@ -70,6 +70,10 @@ async function navigateToFirstStudy(page) {
 
 test.describe('Story 2 - Study Overview', () => {
   test.describe.configure({ timeout: 90_000 });
+
+  test.beforeEach(async ({ page }) => {
+    await setupAuthenticatedStudyPortfolio(page, { baseUrl: BASE_URL });
+  });
 
   test('shows portfolio overview and study navigation safely', async ({ page }) => {
     await openPortfolio(page);

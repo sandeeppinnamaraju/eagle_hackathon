@@ -1,10 +1,10 @@
-# Flight Deck Automation Testing – Playwright
+# Flight Deck Automation Testing - Playwright
 
 ## Project Description
 
-This repository contains Playwright-based automation scripts for the Flight Deck application. The purpose is to automate UI and API validation for dashboard features, protocol similarity search, KPI, and study-related workflows.  
-**Project is currently under development.**  
-Test coverage and scripts are actively evolving; more test cases may be added and existing scripts may change.
+This repository contains Playwright-based automation scripts for the Flight Deck application.
+It validates both UI and API workflows, including login, Study Portfolio dashboard, Study Overview,
+Protocol Similarity Search, and study/KPI API contracts.
 
 ## Tech Stack
 
@@ -14,13 +14,13 @@ Test coverage and scripts are actively evolving; more test cases may be added an
 
 ## Project Structure
 
-- `tests/` → Automation test files  
-- `pages/` → Page objects for UI abstraction  
-- `fixtures/` → Reusable test data  
-- `utils/` → Helper utilities and shared functions  
-- `evidence/` → Test run evidence, HTML/JSON reports, zipped bundles  
+- `tests/` -> UI and API automation specs
+- `pages/` -> Page object models
+- `fixtures/` -> Shared test data
+- `utils/` -> Shared helpers and setup utilities
+- `evidence/` -> Reports, screenshots, traces, zipped evidence bundles
 
-## Setup Instructions
+## Setup
 
 ```sh
 git clone <repo-url>
@@ -29,7 +29,19 @@ npm install
 npx playwright install
 ```
 
-## How to Run Tests
+## Environment Configuration
+
+- `playwright.config.js` reads `TEST_BASE_URL` when set.
+- For API runs with ngrok URL management, use `run-api-tests-ngrok.ps1`.
+- Login credentials are handled via shared auth helpers and can be overridden with env vars where applicable.
+
+Example:
+
+```sh
+TEST_BASE_URL=https://your-environment-url npx playwright test
+```
+
+## Run Commands
 
 ### Run All Tests
 
@@ -37,27 +49,31 @@ npx playwright install
 npx playwright test
 ```
 
-### Run Individual UI Tests
+### Run All UI Tests In One Go
 
-Dashboard:
 ```sh
-npx playwright test tests/dashboard.spec.js --headed --project=chromium --workers=1
+npx playwright test tests/login-page.spec.js tests/dashboard.spec.js tests/story2-study-overview.spec.js tests/protocal-search.spec.js --project=chromium --headed --workers=1
 ```
 
-Protocol Search:
+### Run All API Tests In One Go
+
 ```sh
-npx playwright test tests/protocal-search.spec.js --headed --project=chromium --workers=1
+npx playwright test tests/study-overview-api.spec.js tests/kpi-details.spec.js tests/studies-validation.spec.js tests/studies-happy.spec.js
 ```
 
-Story 2 (Study Overview):
-```sh
-npx playwright test tests/story2-study-overview.spec.js --headed --project=chromium --workers=1
-```
-
-### Run API Tests (with PowerShell script)
+### Run API Tests via PowerShell Helper
 
 ```sh
 ./run-api-tests-ngrok.ps1
+```
+
+### Run Individual UI Specs
+
+```sh
+npx playwright test tests/login-page.spec.js --project=chromium --headed --workers=1
+npx playwright test tests/dashboard.spec.js --project=chromium --headed --workers=1
+npx playwright test tests/story2-study-overview.spec.js --project=chromium --headed --workers=1
+npx playwright test tests/protocal-search.spec.js --project=chromium --headed --workers=1
 ```
 
 ### Debug Mode
@@ -66,61 +82,57 @@ npx playwright test tests/story2-study-overview.spec.js --headed --project=chrom
 npx playwright test --debug
 ```
 
+## Current Coverage
 
-**API Tests:**
-- The PowerShell script `run-api-tests-ngrok.ps1` sets the `TEST_BASE_URL` environment variable. Edit the script to update the URL.
+### UI Coverage
 
-**Global Playwright Config:**
-- The Playwright config (`playwright.config.js`) uses `process.env.TEST_BASE_URL` for `baseURL` if set. You can also run tests with:
-  ```sh
-  TEST_BASE_URL=https://your-backend-url npx playwright test
-  ```
+- Login page validation: shell rendering, empty submit handling, invalid/valid credential behavior
+- Study Portfolio dashboard (Story 1): table and card behaviors, required columns, search, filters, sorting, KPI visibility, empty states, navigation to study details
+- Study Overview (Story 2): portfolio-to-study navigation, overview widgets, KPI and chart sections, safe optional interactions
+- Protocol Similarity Search (Story 3): search flow stability, result/empty states, details navigation
 
-## Current Test Coverage
+### API Coverage
 
-- Dashboard testing (Story 1)
-	Validates core dashboard behavior such as page load, table/card visibility, columns, search, filters, sorting, empty-state.
+- Study Overview API validations (summary/charts/breakdown paths, invalid and missing parameters, response-time checks)
+- KPI details API contract and numeric shape checks
+- Studies API happy paths (pagination, filtering, sorting)
+- Studies API validation and hardening scenarios (invalid values and method checks)
 
-- Story 2 Study Overview flow
-	Covers a smooth end-to-end journey from dashboard to study detail and validates: navigation, studies list/table load, required columns, study header attributes, KPI tiles, chart section presence, time-filter interactions, country/site toggle behavior, row expansion details, optional popovers, and safe error-state handling.
-
-- Protocol similarity search (Story 3)
-	Validates protocol-search stability for input and search execution, result/empty-state rendering, and safe navigation to details where available.
-
-- KPI and study-related validations (API)
-	Covers backend contract checks for study and KPI endpoints, including happy-path responses, schema/shape validation, pagination/filter/sort behavior, and negative/validation scenarios (invalid parameters and method-not-allowed checks).
-
-## Evidence & Reporting
-
-- After each run, evidence (screenshots, traces, JSON, HTML report) is saved in the `evidence/` folder.
-- To view the latest HTML report:
-  ```sh
-  npx playwright show-report
-  ```
-- Evidence bundles and summaries are auto-generated for each run.
-
-## Notes
-
-- Run with `--workers=1` for stability
-- Use `--headed` for debugging
-- Avoid parallel execution during development
-
-## Future Work
-
-- Additional test cases will be added
-- Coverage will be expanded
-- Enhancements planned
+## Test Files
 
 ### UI Test Files
-- `tests/dashboard.spec.js` – Dashboard (Story 1): page load, table/card visibility, columns, search, filters, sorting, empty-state
-- `tests/protocal-search.spec.js` – Protocol Similarity Search (Story 3): input/search, result/empty-state, navigation
-- `tests/story2-study-overview.spec.js` – Story 2: dashboard to study detail, navigation, table, header, KPIs, charts, toggles, error handling
+
+- `tests/login-page.spec.js` - Login page and authentication flow validation
+- `tests/dashboard.spec.js` - Study Portfolio dashboard (Story 1)
+- `tests/story2-study-overview.spec.js` - Study Overview journey (Story 2)
+- `tests/protocal-search.spec.js` - Protocol Similarity Search (Story 3)
 
 ### API Test Files
-- `tests/kpi-details.spec.js` – KPI endpoint contract, schema, values
-- `tests/studies-validation.spec.js` – Study endpoint validation, error/negative scenarios
-- `tests/studies-happy.spec.js` – Study endpoint happy path, schema, pagination, sorting
- - `tests/study-overview-api.spec.js` – Study Overview API: summary endpoint happy path, invalid/missing studyId, response time checks
+
+- `tests/study-overview-api.spec.js` - Study Overview API endpoint validations
+- `tests/kpi-details.spec.js` - KPI details API validations
+- `tests/studies-happy.spec.js` - Studies API happy path validations
+- `tests/studies-validation.spec.js` - Studies API negative/validation scenarios
+
+## Evidence and Reporting
+
+- Test artifacts are saved under `evidence/` after each run.
+- Latest outputs include:
+  - `evidence/latest-evidence-summary.md`
+  - `evidence/latest-playwright-report.json`
+  - time-stamped evidence bundle folder and zip
+
+Open HTML report:
+
+```sh
+npx playwright show-report
+```
+
+## Stability Recommendations
+
+- Use `--workers=1` for deterministic execution in shared environments
+- Use `--headed` while debugging UI behavior
+- Prefer running smoke checks first when switching to a new deployment URL
 
 
 
