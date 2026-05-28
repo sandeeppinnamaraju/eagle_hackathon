@@ -124,6 +124,17 @@ stages:
                 '.svg': 'image/svg+xml', '.ico': 'image/x-icon',
                 '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf'
               };
+              console.log('__dirname:', __dirname);
+              console.log('root:', root);
+              console.log('root exists:', fs.existsSync(root));
+              if (fs.existsSync(root)) {
+                console.log('root contents:', fs.readdirSync(root));
+              } else {
+                const distPath = path.join(__dirname, 'dist');
+                console.log('dist exists:', fs.existsSync(distPath));
+                if (fs.existsSync(distPath)) console.log('dist contents:', fs.readdirSync(distPath));
+              }
+              console.log('index.html exists:', fs.existsSync(path.join(root, 'index.html')));
               http.createServer((req, res) => {
                 const url = req.url.split('?')[0];
                 let file = path.join(root, url === '/' ? 'index.html' : url);
