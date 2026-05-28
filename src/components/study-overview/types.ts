@@ -103,6 +103,7 @@ export interface StudyOverviewContentProps {
   onViewChange: (view: BreakdownView) => void;
   expanded: Record<string, boolean>;
   onToggle: (key: string) => void;
+  onSelectPerformanceTarget: (kind: "country" | "site", id: string) => void;
   onSelectSiteFromCountry: (siteId: string) => void;
   cumulative: CumulativePoint[];
   rates: RatePoint[];

@@ -135,8 +135,6 @@ async function fetchTopUnderperforming(
     timeHorizon: toTimeHorizonLabel(query.timeHorizon),
     studyId: query.studyId,
     topK: String(query.topK),
-    countryOrSite: query.countryOrSite,
-    absoluteOrPercentage: query.absoluteOrPercentage,
   });
 
   const path = `/api/study-overview/breakdown/top-underperforming?${params.toString()}`;
