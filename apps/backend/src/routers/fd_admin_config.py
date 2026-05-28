@@ -9,7 +9,10 @@ from pydantic import BaseModel, Field
 from psycopg2 import sql
 
 from eagle_hackathon.apps.backend.src.db.connection import get_conn_params
-from eagle_hackathon.apps.backend.src.core.performance_thresholds import upsert_global_thresholds
+from eagle_hackathon.apps.backend.src.core.performance_thresholds import (
+    get_performance_thresholds,
+    upsert_global_thresholds,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -145,4 +148,19 @@ def update_performance_threshold(payload: PerformanceThresholdUpdateRequest):
         }
     except Exception:
         logger.exception("Failed updating global performance thresholds")
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
+
+
+@router.get("/admin/performance-threshold")
+def get_performance_threshold():
+    try:
+        thresholds = get_performance_thresholds()
+        return {
+            "onTrack": thresholds.on_track,
+            "atRiskStart": thresholds.at_risk_start,
+            "atRiskEnd": thresholds.at_risk_end,
+            "offTrack": thresholds.off_track,
+        }
+    except Exception:
+        logger.exception("Failed to fetch global performance thresholds")
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
