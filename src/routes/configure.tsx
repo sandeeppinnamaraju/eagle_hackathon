@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   performanceThresholdService,
-  type PerformanceThresholdConfig,
   type PerformanceThresholdRequest,
 } from "@/lib/performance-threshold-service";
 import {
@@ -91,36 +90,11 @@ function ConfigurePage() {
   const [onTrack, setOnTrack] = useState<number>(DEFAULTS.onTrack);
   const [atRiskFrom, setAtRiskFrom] = useState<number>(DEFAULTS.atRiskFrom);
   const [saving, setSaving] = useState(false);
-  const [loadingConfig, setLoadingConfig] = useState(true);
-  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    const local = loadThresholds();
-    const apiFallback: PerformanceThresholdConfig = {
-      onTrack: local.onTrack,
-      atRiskStart: local.atRiskFrom,
-      atRiskEnd: Math.max(1, local.onTrack - 1),
-      offTrack: local.atRiskFrom,
-    };
-
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    void performanceThresholdService
-      .getThresholds(apiFallback, controller.signal)
-      .then((result) => {
-        if (controller.signal.aborted) return;
-        setOnTrack(result.data.onTrack);
-        setAtRiskFrom(result.data.atRiskStart);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoadingConfig(false);
-      });
-
-    return () => {
-      controller.abort();
-    };
+    const t = loadThresholds();
+    setOnTrack(t.onTrack);
+    setAtRiskFrom(t.atRiskFrom);
   }, []);
 
   const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
@@ -189,11 +163,7 @@ function ConfigurePage() {
 
       <ConfigureInfoBanner />
 
-      {loadingConfig && (
-        <p className="mt-4 text-sm text-muted-foreground">Loading current configuration…</p>
-      )}
-
-      <div className={`mt-6 grid gap-5 md:grid-cols-3 ${loadingConfig ? "pointer-events-none opacity-50" : ""}`}>
+      <div className="mt-6 grid gap-5 md:grid-cols-3">
         <OnTrackThresholdSection onTrack={onTrack} safeOnTrack={safeOnTrack} onTrackChanged={setOnTrack} />
         <AtRiskThresholdSection
           atRiskFrom={atRiskFrom}
