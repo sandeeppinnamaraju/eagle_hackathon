@@ -1,5 +1,16 @@
+import type { AuthUser } from "@/config/auth-users";
 import { withApiBaseUrl, withApiRequestConfig } from "@/lib/api-config";
 import type { SessionUser } from "@/lib/auth";
+
+export interface LoginFormData {
+  username: string;
+  password: string;
+}
+
+export interface LoginAuthResult {
+  user: AuthUser | null;
+  error: string | null;
+}
 
 export interface LoginApiRequest {
   username: string;
@@ -53,6 +64,30 @@ const normalizeRole = (value: unknown): SessionUser["role"] | null => {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
+
+export function authenticateLogin(
+  formData: LoginFormData,
+  users: AuthUser[],
+): LoginAuthResult {
+  const normalizedUsername = normalizeLoginUsername(formData.username);
+
+  const match = users.find(
+    (candidate) =>
+      candidate.username === normalizedUsername && candidate.password === formData.password,
+  );
+
+  if (!match) {
+    return {
+      user: null,
+      error: INVALID_LOGIN_ERROR,
+    };
+  }
+
+  return {
+    user: match,
+    error: null,
+  };
+}
 
 export async function authenticateLoginApi({
   username,
