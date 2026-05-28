@@ -16,6 +16,9 @@ export function TopNav() {
   const [session, setSession] = useState<SessionUser | null>(null);
   useEffect(() => { setSession(getSession()); }, [pathname]);
 
+  const visibleTabs =
+    session?.role === "ADMIN" ? tabs : tabs.filter((tab) => tab.to !== "/configure");
+
   function handleSignOut() {
     clearSession();
     navigate({ to: "/login" });
@@ -28,7 +31,7 @@ export function TopNav() {
           Flight Deck
         </Link>
         <nav className="flex items-center gap-1">
-          {tabs.map((t) => {
+          {visibleTabs.map((t) => {
             const active = pathname === t.to || pathname.startsWith(t.to + "/");
             const Icon = t.icon;
             return (
