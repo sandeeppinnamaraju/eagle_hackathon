@@ -94,11 +94,18 @@ stages:
           # -------------------------------------------------------------------
           # Wrap repo contents inside eagle_hackathon/ so absolute imports
           # (eagle_hackathon.apps.backend...) resolve correctly on App Service
+          # Also creates any missing __init__.py files needed for package imports
           # -------------------------------------------------------------------
           - script: |
               mkdir -p $(Build.BinariesDirectory)/package/eagle_hackathon
               cp -r $(Build.SourcesDirectory)/. $(Build.BinariesDirectory)/package/eagle_hackathon/
               touch $(Build.BinariesDirectory)/package/eagle_hackathon/__init__.py
+              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/__init__.py
+              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/__init__.py
+              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/__init__.py
+              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/core/__init__.py
+              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/db/__init__.py
+              touch $(Build.BinariesDirectory)/package/eagle_hackathon/apps/backend/src/routers/__init__.py
             displayName: 'Prepare deployment package structure'
 
           # -------------------------------------------------------------------
@@ -162,5 +169,5 @@ stages:
                     package: '$(Pipeline.Workspace)/fd-poc-backend/backend.zip'
                     # Startup command: run uvicorn pointing to the FastAPI app
                     # The module path matches the import structure in main.py
-                    startUpCommand: 'pip install -r eagle_hackathon/apps/backend/requirements.txt && PYTHONPATH=/home/site/wwwroot uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000'
-                    appSettings: -APP_NAME "FlightDeck APIs" -APP_VERSION "1.0.0" -API_PREFIX "/api" -API_VERSION_PREFIX "/api/v1" -ALLOWED_ORIGINS "*" -PGPORT "$(eagle-pg-port)" -PGSSLMODE "require" -PGHOST "$(eagle-pg-host)" -PGUSER "$(eagle-pg-user)" -PGDATABASE "$(eagle-pg-db)" -PGPASSWORD "$(eagle-pg-pwd)"
+                    startUpCommand: 'pip install -r eagle_hackathon/apps/backend/requirements.txt && uvicorn eagle_hackathon.apps.backend.src.main:app --host 0.0.0.0 --port 8000'
+                    appSettings: -APP_NAME "FlightDeck APIs" -APP_VERSION "1.0.0" -API_PREFIX "/api" -API_VERSION_PREFIX "/api/v1" -ALLOWED_ORIGINS "*" -PGPORT "$(eagle-pg-port)" -PGSSLMODE "require" -PGHOST "$(eagle-pg-host)" -PGUSER "$(eagle-pg-user)" -PGDATABASE "$(eagle-pg-db)" -PGPASSWORD "$(eagle-pg-pwd)" -PYTHONPATH "/home/site/wwwroot"
