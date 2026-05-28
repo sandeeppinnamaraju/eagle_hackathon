@@ -153,6 +153,6 @@ stages:
                     appName: $(frontend-app-name)
                     resourceGroupName: $(frontend-resource-group)
                     package: '$(Pipeline.Workspace)/fd-poc-frontend/frontend.zip'
-                    # Serve static build output using npx serve (no bun needed at runtime)
-                    startUpCommand: 'npx serve dist/client -l 8080 --single'
-                    appSettings: '-VITE_API_BASE_URL "$(eagle-backend-url)" -PORT "8080"'
+                    # Pre-install serve globally then serve the static client build as SPA
+                    startUpCommand: 'npm install -g serve && serve -s dist/client -l $PORT'
+                    appSettings: '-VITE_API_BASE_URL "$(eagle-backend-url)"'
