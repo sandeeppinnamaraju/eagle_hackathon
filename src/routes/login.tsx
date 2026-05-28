@@ -1,9 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { AUTH_USERS } from "@/config/auth-users";
 import { setSession } from "@/lib/auth";
 import {
-  authenticateLogin,
   authenticateLoginApi,
   INVALID_LOGIN_ERROR,
   normalizeLoginUsername,
@@ -33,7 +31,7 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-function LoginPage() {
+export function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -74,21 +72,7 @@ function LoginPage() {
       navigate({ to: "/home" });
       return;
     } catch {
-      const result = authenticateLogin(
-        {
-          username: trimmedUsername,
-          password,
-        },
-        AUTH_USERS,
-      );
-
-      if (!result.user) {
-        setError("Unable to sign in right now. Please check your credentials and try again.");
-        return;
-      }
-
-      setSession({ username: result.user.username, role: result.user.role });
-      navigate({ to: "/home" });
+      setError("Unable to sign in right now. Please try again shortly.");
     } finally {
       setIsSubmitting(false);
     }
