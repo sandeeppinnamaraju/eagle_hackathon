@@ -736,3 +736,90 @@ def test_get_study_overview_summary_rejects_unknown_study_id(monkeypatch) -> Non
 
     assert response.status_code == 400
     assert response.body == b'{"message":"Invalid studyId"}'
+
+
+def test_get_study_overview_milestones_returns_enrollment_milestones_only(monkeypatch) -> None:
+    cursor = _FakeCursor(
+        fetchone_values=[
+            (1,),
+            (
+                date(2024, 4, 25),
+                date(2024, 5, 3),
+                date(2024, 7, 25),
+                date(2024, 7, 25),
+                date(2029, 2, 1),
+                None,
+            ),
+        ]
+    )
+    table_columns = {
+        "enrollment_timeline": {"study_id"},
+        "enrollment_rate": {"study_id"},
+        "kpi_snapshot": {"study_id"},
+        "studies": {
+            "study_id",
+            "fsa_planned",
+            "fsa_actual",
+            "fsfv_planned",
+            "fsfv_actual",
+            "lsfv_planned",
+            "lsfv_actual",
+            "dbl_planned",
+            "dbl_actual",
+            "rc_planned",
+            "rc_actual",
+        },
+    }
+
+    monkeypatch.setattr(overview_router, "get_conn_params", lambda: {"password": "test"})
+    monkeypatch.setattr(overview_router, "_get_public_table_columns", lambda _: table_columns)
+    monkeypatch.setattr(overview_router.psycopg2, "connect", lambda **_: _FakeConnection(cursor))
+
+    response = overview_router.get_study_overview_milestones(study_id="S-100")
+
+    assert response["studyId"] == "S-100"
+    assert response["milestones"] == [
+        {
+            "code": "FSA",
+            "milestone": "First Site Activated",
+            "planned": "25 Apr 2024",
+            "actual": "03 May 2024",
+            "variance": "+8d",
+            "varianceDays": 8,
+        },
+        {
+            "code": "FSFV",
+            "milestone": "First Subject First Visit",
+            "planned": "25 Jul 2024",
+            "actual": "25 Jul 2024",
+            "variance": "On time",
+            "varianceDays": 0,
+        },
+        {
+            "code": "LSFV",
+            "milestone": "Last Subject First Visit",
+            "planned": "01 Feb 2029",
+            "actual": None,
+            "variance": "Pending",
+            "varianceDays": None,
+        },
+    ]
+
+
+def test_get_study_overview_milestones_rejects_unknown_study_id(monkeypatch) -> None:
+    cursor = _FakeCursor(fetchone_values=[None, None, None])
+    table_columns = {
+        "enrollment_timeline": {"study_id"},
+        "enrollment_rate": {"study_id"},
+        "kpi_snapshot": {"study_id"},
+        "studies": {"study_id"},
+    }
+
+    monkeypatch.setattr(overview_router, "get_conn_params", lambda: {"password": "test"})
+    monkeypatch.setattr(overview_router, "_get_public_table_columns", lambda _: table_columns)
+    monkeypatch.setattr(overview_router.psycopg2, "connect", lambda **_: _FakeConnection(cursor))
+
+    response = overview_router.get_study_overview_milestones(study_id="ST-404")
+
+    assert response.status_code == 400
+    assert response.body == b'{"message":"Invalid studyId"}'

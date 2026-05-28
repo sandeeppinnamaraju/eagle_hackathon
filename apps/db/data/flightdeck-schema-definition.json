@@ -148,7 +148,10 @@
       "sites_planned": "int",
       "countries_activated": "int",
       "countries_planned": "int"
-    }
+    },
+    "primary_keys": [
+      "id"
+    ]
   },
   "Country Breakdown": {
     "columns": {

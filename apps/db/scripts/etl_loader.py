@@ -220,6 +220,23 @@ def load_table(engine, sheet_name, schema, df):
     table_name = normalize_table_name(sheet_name)
     pk_cols = schema.get("primary_keys", [])
     upserted, failed = 0, 0
+
+    # Tables without a primary key cannot be upserted reliably.
+    # For these tables, perform plain inserts.
+    if not pk_cols:
+        tbl = Table(table_name, metadata, autoload_with=engine)
+        for _, row in df.iterrows():
+            row_dict = row.where(pd.notna(row), None).to_dict()
+            try:
+                with engine.begin() as conn:
+                    conn.execute(tbl.insert().values(**row_dict))
+                upserted += 1
+            except SQLAlchemyError as e:
+                log_and_print(f"Failed to insert row in {table_name}: {e}", level="error")
+                failed += 1
+        log_and_print(f"{table_name}: Inserted {upserted}, Failed {failed} (no primary key configured)")
+        return
+
     for _, row in df.iterrows():
         row_dict = row.where(pd.notna(row), None).to_dict()
         if pk_cols and all(row_dict.get(pk) is not None for pk in pk_cols):
