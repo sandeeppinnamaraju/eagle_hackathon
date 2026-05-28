@@ -4,7 +4,7 @@ from eagle_hackathon.apps.backend.src.load_env import load_backend_env
 from eagle_hackathon.apps.backend.src.core.config import get_settings
 from eagle_hackathon.apps.backend.src.core.logging_config import configure_logging
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -23,6 +23,36 @@ app = FastAPI(title=settings.app_name, version=settings.app_version)
 
 allow_all_origins = "*" in settings.allowed_origins
 explicit_origins = [origin for origin in settings.allowed_origins if origin != "*"]
+
+
+def _cors_origin_for_request(request_origin: str) -> str:
+	if allow_all_origins and request_origin:
+		return request_origin
+	if request_origin in explicit_origins:
+		return request_origin
+	return ""
+
+
+@app.middleware("http")
+async def preflight_no_redirect_middleware(request: Request, call_next):
+	# Some upstream paths or slash normalization can cause non-2xx/redirect on OPTIONS.
+	# Handle preflight explicitly so browsers always receive a successful response.
+	if request.method == "OPTIONS":
+		request_origin = request.headers.get("origin", "")
+		allowed_origin = _cors_origin_for_request(request_origin)
+		response = Response(status_code=204)
+		if allowed_origin:
+			response.headers["Access-Control-Allow-Origin"] = allowed_origin
+			response.headers["Vary"] = "Origin"
+			response.headers["Access-Control-Allow-Credentials"] = "true"
+			response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+			requested_headers = request.headers.get("access-control-request-headers")
+			response.headers["Access-Control-Allow-Headers"] = requested_headers or "*"
+		return response
+
+	return await call_next(request)
+
+
 cors_options = {
 	"allow_methods": ["*"],
 	"allow_headers": ["*"],
