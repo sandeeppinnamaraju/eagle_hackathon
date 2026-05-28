@@ -155,6 +155,4 @@ stages:
                     package: '$(Pipeline.Workspace)/fd-poc-frontend/frontend.zip'
                     # Install bun, install production deps, then start vite preview server
                     startUpCommand: 'curl -fsSL https://bun.sh/install | bash && export PATH="$HOME/.bun/bin:$PATH" && bun install --production && bun run preview --host 0.0.0.0 --port 8080'
-                    appSettings: |
-                      -VITE_API_BASE_URL "$(eagle-backend-url)"
-                      -PORT "8080"
+                    appSettings: '-VITE_API_BASE_URL "$(eagle-backend-url)" -PORT "8080"'
