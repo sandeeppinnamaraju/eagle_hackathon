@@ -154,15 +154,4 @@ stages:
                     # Startup command: run uvicorn pointing to the FastAPI app
                     # The module path matches the import structure in main.py
                     startUpCommand: 'pip install -r requirements.txt && uvicorn src.main:app --host 0.0.0.0 --port 8000'
-                    appSettings: |
-                      -APP_NAME "FlightDeck APIs"
-                      -APP_VERSION "1.0.0"
-                      -API_PREFIX "/api"
-                      -API_VERSION_PREFIX "/api/v1"
-                      -ALLOWED_ORIGINS "*"
-                      -PGPORT "$(eagle-pg-port)"
-                      -PGSSLMODE "require"
-                      -PGHOST "$(eagle-pg-host)"
-                      -PGUSER "$(eagle-pg-user)"
-                      -PGDATABASE "$(eagle-pg-db)"
-                      -PGPASSWORD "$(eagle-pg-pwd)"
+                    appSettings: -APP_NAME "FlightDeck APIs" -APP_VERSION "1.0.0" -API_PREFIX "/api" -API_VERSION_PREFIX "/api/v1" -ALLOWED_ORIGINS "*" -PGPORT "$(eagle-pg-port)" -PGSSLMODE "require" -PGHOST "$(eagle-pg-host)" -PGUSER "$(eagle-pg-user)" -PGDATABASE "$(eagle-pg-db)" -PGPASSWORD "$(eagle-pg-pwd)"
