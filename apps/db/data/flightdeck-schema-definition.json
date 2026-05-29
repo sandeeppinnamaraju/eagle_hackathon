@@ -1,4 +1,11 @@
 {
+  "users": {
+    "columns": {
+      "username": "str",
+      "password": "str",
+      "role": "str"
+    }
+  },
   "Studies": {
     "columns": {
       "study_id": "str",
@@ -79,10 +86,7 @@
       "rc_actual": "str",
       "epe_forecast_future_gbp": "int",
       "epe_forecast_this_year_gbp": "int"
-    },
-    "primary_keys": [
-      "study_id"
-    ]
+    }
   },
   "Enrollment Timeline": {
     "columns": {
@@ -94,10 +98,7 @@
       "forecast_cumulative": "int",
       "enrolled_this_period": "float",
       "below_plan_flag": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Enrollment Rate": {
     "columns": {
@@ -107,10 +108,7 @@
       "planned_rate": "int",
       "actual_rate": "int",
       "below_plan_flag": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "KPI Snapshot": {
     "columns": {
@@ -126,10 +124,7 @@
       "countries_activated": "int",
       "countries_planned": "int",
       "snapshot_date": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "KPI Timeline": {
     "columns": {
@@ -148,10 +143,7 @@
       "sites_planned": "int",
       "countries_activated": "int",
       "countries_planned": "int"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Country Breakdown": {
     "columns": {
@@ -190,10 +182,7 @@
       "screened": "int",
       "failed_screening": "int",
       "dropouts": "int"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Site Breakdown": {
     "columns": {
@@ -236,10 +225,7 @@
       "screened": "int",
       "failed_screening": "int",
       "dropouts": "int"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Performance Drivers": {
     "columns": {
@@ -252,10 +238,7 @@
       "gap_to_target": "int",
       "percent_above_target": "float",
       "rank": "int"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Site Detail": {
     "columns": {
@@ -273,10 +256,7 @@
       "screened": "int",
       "failed_screening": "int",
       "dropouts": "int"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Protocols": {
     "columns": {
@@ -295,10 +275,7 @@
       "planned_duration_months": "int",
       "actual_duration_months": "int",
       "lessons_learned": "str"
-    },
-    "primary_keys": [
-      "protocol_id"
-    ]
+    }
   },
   "Protocol Sites": {
     "columns": {
@@ -310,10 +287,7 @@
       "target_enrollment": "float",
       "actual_enrollment": "float",
       "performance_tier": "float"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   },
   "Lessons Learned": {
     "columns": {
@@ -321,21 +295,6 @@
       "protocol_id": "str",
       "category": "str",
       "description": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
-  },
-  "Login Details": {
-    "columns": {
-      "id": "int",
-      "username": "str",
-      "password": "str",
-      "role": "str",
-      "created_at": "str"
-    },
-    "primary_keys": [
-      "id"
-    ]
+    }
   }
 }

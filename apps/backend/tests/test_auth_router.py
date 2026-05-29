@@ -38,6 +38,38 @@ def test_login_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert body["role"] == "user"
 
 
+def test_login_success_with_bytes_hash(monkeypatch: pytest.MonkeyPatch) -> None:
+    import bcrypt
+
+    hashed = bcrypt.hashpw(b"FD_hack@user1", bcrypt.gensalt())
+    monkeypatch.setattr(auth_router, "_fetch_user", lambda u: ("eagle_user1", hashed, "user"))
+
+    client = _make_client()
+    resp = client.post("/api/auth/login", json={"username": "eagle_user1", "password": "FD_hack@user1"})
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["success"] is True
+    assert body["username"] == "eagle_user1"
+    assert body["role"] == "user"
+
+
+def test_login_success_with_memoryview_hash(monkeypatch: pytest.MonkeyPatch) -> None:
+    import bcrypt
+
+    hashed = memoryview(bcrypt.hashpw(b"FD_hack@user1", bcrypt.gensalt()))
+    monkeypatch.setattr(auth_router, "_fetch_user", lambda u: ("eagle_user1", hashed, "user"))
+
+    client = _make_client()
+    resp = client.post("/api/auth/login", json={"username": "eagle_user1", "password": "FD_hack@user1"})
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["success"] is True
+    assert body["username"] == "eagle_user1"
+    assert body["role"] == "user"
+
+
 def test_login_wrong_password(monkeypatch: pytest.MonkeyPatch) -> None:
     import bcrypt
 

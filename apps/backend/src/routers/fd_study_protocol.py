@@ -103,6 +103,15 @@ class StudiesPage(BaseModel):
     hasMore: bool
 
 
+PERCENT_VS_PLAN_SQL = (
+    "CASE "
+    "WHEN COALESCE(target_enrollment, 0) > 0 "
+    "THEN ((COALESCE(actual_enrollment, 0)::numeric / NULLIF(target_enrollment::numeric, 0)) * 100) "
+    "ELSE 0 "
+    "END"
+)
+
+
 SORT_COLUMN_MAP = {
     SortBy.ID.value: "study_id",
     SortBy.PHASE.value: "phase",
@@ -113,10 +122,10 @@ SORT_COLUMN_MAP = {
     SortBy.PRIORITY.value: "project_priority",
     SortBy.TARGET.value: "target_enrollment",
     SortBy.ACTUAL.value: "actual_enrollment",
-    SortBy.PERCENT_VS_PLAN.value: "enrollment_plan_percent",
+    SortBy.PERCENT_VS_PLAN.value: PERCENT_VS_PLAN_SQL,
     SortBy.COUNTRIES.value: "countries_count",
     SortBy.SITES.value: "sites_count",
-    SortBy.PERFORMANCE.value: "CASE WHEN COALESCE(enrollment_plan_percent, 0) > 95 THEN 3 WHEN COALESCE(enrollment_plan_percent, 0) >= 80 AND COALESCE(enrollment_plan_percent, 0) <= 94 THEN 2 ELSE 1 END",
+    SortBy.PERFORMANCE.value: f"CASE WHEN ({PERCENT_VS_PLAN_SQL}) > 95 THEN 3 WHEN ({PERCENT_VS_PLAN_SQL}) >= 80 AND ({PERCENT_VS_PLAN_SQL}) <= 94 THEN 2 ELSE 1 END",
 }
 
 
@@ -246,8 +255,11 @@ def _normalize_performance(performance: Optional[str]) -> StudyPerformance:
     return StudyPerformance.UNSET
 
 
-def _performance_from_percent(value: Optional[float]) -> StudyPerformance:
-    status = classify_performance(value)
+def _performance_from_percent(
+    value: Optional[float],
+    thresholds: Optional[PerformanceThresholds] = None,
+) -> StudyPerformance:
+    status = classify_performance(value, thresholds)
     if status == "ON_TRACK":
         return StudyPerformance.ON_TRACK
     if status == "OFF_TRACK":
@@ -506,7 +518,7 @@ def get_studies(
     lpo_end_date_raw: Optional[str] = Query(None, alias="lpoEndDate", description="Apply on planned_lpo_date <= value. Supports YYYY-MM-DD, DDMMYY, MMYYYY, YYYY"),
     sort_by: Optional[str] = Query(SortBy.ID.value, alias="sortBy"),
     sort_order: Optional[str] = Query(SortOrder.ASC.value, alias="sortOrder"),
-    include_total: bool = Query(False, alias="includeTotal", description="When true, runs an exact COUNT(*) query. Keep false for faster lazy loading."),
+    include_total: bool = Query(True, alias="includeTotal", description="When true (default), runs an exact COUNT(*) query so the UI shows the correct total. Pass false to skip the count query for faster lazy-loading pages where the total is already known."),
 ):
     try:
         page = _clean_required_text(page)
@@ -584,7 +596,8 @@ def get_studies(
         SELECT
             study_id, phase, therapeutic_area, indication, title, portfolio, program,
             study_status, project_priority, target_enrollment, actual_enrollment,
-            enrollment_plan_percent, countries_count, sites_count
+            {PERCENT_VS_PLAN_SQL} AS enrollment_plan_percent,
+            countries_count, sites_count
         FROM public.studies
         {where_sql}
         ORDER BY {order_by_clause}
@@ -608,6 +621,7 @@ def get_studies(
                 else:
                     total = offset + len(rows) + (1 if has_more else 0)
 
+        thresholds = get_performance_thresholds()
         items = []
         for row in rows:
             (
@@ -643,7 +657,7 @@ def get_studies(
                     percentVsPlan=(float(db_percent_vs_plan) if db_percent_vs_plan is not None else None),
                     countries=int(db_countries or 0),
                     sites=int(db_sites or 0),
-                    performance=_performance_from_percent(db_percent_vs_plan),
+                    performance=_performance_from_percent(db_percent_vs_plan, thresholds),
                     trend=_build_trend(db_actual, db_target),
                 )
             )
@@ -717,9 +731,9 @@ def get_on_track_percentage():
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    """
+                    f"""
                     SELECT
-                        COALESCE(enrollment_plan_percent, 0)
+                        {PERCENT_VS_PLAN_SQL}
                     FROM public.studies
                     WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
                     """
@@ -751,9 +765,9 @@ def get_off_track_or_at_risk_percentage():
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    """
+                    f"""
                     SELECT
-                        COALESCE(enrollment_plan_percent, 0)
+                        {PERCENT_VS_PLAN_SQL}
                     FROM public.studies
                     WHERE UPPER(COALESCE(study_status, '')) IN ('RECRUITING', 'FOLLOW UP')
                     """
@@ -827,10 +841,10 @@ def get_average_velocity_vs_plan():
         with psycopg2.connect(**conn_params) as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    """
+                    f"""
                     SELECT
                         COALESCE(
-                            AVG(enrollment_plan_percent) FILTER (
+                            AVG({PERCENT_VS_PLAN_SQL}) FILTER (
                                 WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
                             ),
                             0
@@ -930,7 +944,7 @@ def get_kpi_details(
                         ) AS total_target_enrollment,
 
                         COALESCE(
-                            AVG(enrollment_plan_percent) FILTER (
+                            AVG({PERCENT_VS_PLAN_SQL}) FILTER (
                                 WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')
                             ), 0
                         ) AS average_velocity_vs_plan
@@ -950,7 +964,8 @@ def get_kpi_details(
                 active_where_sql = f"{where_sql} AND UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')" if where_sql else "WHERE UPPER(COALESCE(study_status, '')) IN ('ACTIVE', 'RECRUITING', 'FOLLOW UP')"
                 cursor.execute(
                     f"""
-                    SELECT COALESCE(enrollment_plan_percent, 0)
+                    SELECT
+                        {PERCENT_VS_PLAN_SQL}
                     FROM public.studies
                     {active_where_sql}
                     """,

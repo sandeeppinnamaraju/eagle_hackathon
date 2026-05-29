@@ -104,6 +104,66 @@ def test_get_studies_returns_500_on_unexpected_db_error(monkeypatch: pytest.Monk
     assert response.status_code == 500
 
 
+def test_get_studies_fetches_thresholds_once_per_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    rows = [[
+        (
+            "ST-2024-002",
+            "PHASE_II",
+            "Oncology",
+            "Breast Cancer",
+            "Study title",
+            "Oncology Portfolio",
+            "ZNV-741",
+            "RECRUITING",
+            "Medium",
+            216,
+            170,
+            78.7,
+            5,
+            22,
+        )
+    ]]
+    cursor = FakeCursor(fetchall_values=rows)
+    threshold_calls = 0
+
+    def fake_get_performance_thresholds():
+        nonlocal threshold_calls
+        threshold_calls += 1
+        return study_router.PerformanceThresholds(
+            on_track=95.0,
+            at_risk_start=0.0,
+            at_risk_end=79.0,
+            off_track=80.0,
+        )
+
+    monkeypatch.setattr(study_router, "get_conn_params", lambda: {"password": "x"})
+    monkeypatch.setattr(study_router, "get_performance_thresholds", fake_get_performance_thresholds)
+    monkeypatch.setattr(study_router.psycopg2, "connect", lambda **_: FakeConnection(cursor))
+
+    result = study_router.get_studies(
+        page="1",
+        limit="10",
+        search=None,
+        therapeutic_area=None,
+        phase=None,
+        status=None,
+        portfolio=None,
+        program=None,
+        region=None,
+        fpi_start_date_raw=None,
+        fpi_end_date_raw=None,
+        lpo_start_date_raw=None,
+        lpo_end_date_raw=None,
+        sort_by="id",
+        sort_order="asc",
+        include_total=False,
+    )
+
+    assert result.total == 1
+    assert len(result.items) == 1
+    assert threshold_calls == 1
+
+
 def test_health_raises_when_password_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(study_router, "get_conn_params", lambda: {"password": ""})
 

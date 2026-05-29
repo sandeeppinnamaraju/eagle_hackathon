@@ -17,6 +17,16 @@ class LoginRequest(BaseModel):
 	password: str
 
 
+def _normalize_password_hash(password_hash: object) -> bytes:
+	if isinstance(password_hash, str):
+		return password_hash.encode("utf-8")
+	if isinstance(password_hash, (bytes, bytearray)):
+		return bytes(password_hash)
+	if isinstance(password_hash, memoryview):
+		return password_hash.tobytes()
+	raise TypeError("Unsupported password hash type")
+
+
 def _fetch_user(username: str) -> Optional[Tuple[str, str, str]]:
 	try:
 		with get_db_connection() as conn:
@@ -48,11 +58,12 @@ def login(payload: LoginRequest):
 
 	username, password_hash, role = record
 	try:
+		hash_bytes = _normalize_password_hash(password_hash)
 		is_valid = bcrypt.checkpw(
 			payload.password.encode("utf-8"),
-			password_hash.encode("utf-8"),
+			hash_bytes,
 		)
-	except ValueError:
+	except (ValueError, TypeError):
 		is_valid = False
 
 	if not is_valid:
