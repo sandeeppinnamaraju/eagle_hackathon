@@ -1,0 +1,13 @@
+flowchart LR
+    A[protocol_id]
+    B[get_protocol_details]
+    C[(public.protocols)]
+    D[(public.protocol_sites)]
+    E[protocol + kpis + sites + criteria + insights]
+
+    A --> B
+    B --> C
+    B --> D
+    C --> B
+    D --> B
+    B --> E

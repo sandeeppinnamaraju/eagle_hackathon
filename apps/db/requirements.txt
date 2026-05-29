@@ -1,0 +1,7 @@
+# Database Requirements
+pandas
+sqlalchemy
+python-dotenv
+psycopg2-binary
+bcrypt
+openpyxl

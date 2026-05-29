@@ -1,0 +1,10 @@
+# Backend Requirements
+fastapi
+uvicorn
+pydantic
+python-dotenv
+psycopg2-binary
+sqlalchemy
+scikit-learn
+pytest
+bcrypt

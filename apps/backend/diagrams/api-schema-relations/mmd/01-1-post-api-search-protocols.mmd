@@ -1,0 +1,10 @@
+flowchart LR
+    A[ProtocolSearchRequest\nsummary\ninclusion_criteria\nexclusion_criteria\ntherapeutic_areas\ntop_k]
+    B[similarity_engine.search_similar_protocols]
+    C[(public.protocols)]
+    D[Ranked protocol matches]
+
+    A --> B
+    B --> C
+    C --> B
+    B --> D
