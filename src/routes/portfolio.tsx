@@ -9,7 +9,7 @@ import { InsightsButton } from "@/components/insights-button";
 import { ViewToggle } from "@/components/view-toggle";
 import { StudyTable } from "@/components/study-table";
 import { StudyCardGrid } from "@/components/study-card-grid";
-import { filterStudies } from "@/lib/filter-studies";
+import type { Study } from "@/lib/data";
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/portfolio")({
 function PortfolioPage() {
   const [view, setView] = useState<"table" | "cards">("cards");
   const [filters, setFilters] = useState<FilterState>(emptyFilters);
+  const [filterOptionSourceStudies, setFilterOptionSourceStudies] = useState<Study[]>([]);
   const {
     studies: loadedStudies,
     total: studiesTotal,
@@ -97,32 +98,25 @@ function PortfolioPage() {
     setApiFilters,
   ]);
 
-  const { data: kpiData } = useKpiDetails(kpiQuery);
+  useEffect(() => {
+    setFilterOptionSourceStudies((previous) => {
+      const uniqueById = new Map<string, Study>();
 
-  const filterOptionSourceStudies = useMemo(() => {
-    const uniqueById = new Map<string, (typeof loadedStudies)[number]>();
-
-    for (const study of loadedStudies) {
-      if (!uniqueById.has(study.id)) {
+      for (const study of previous) {
         uniqueById.set(study.id, study);
       }
-    }
 
-    return Array.from(uniqueById.values());
+      for (const study of loadedStudies) {
+        uniqueById.set(study.id, study);
+      }
+
+      return Array.from(uniqueById.values());
+    });
   }, [loadedStudies]);
 
-  const clientFilters = useMemo(() => {
-    // API results are already filtered by date query params.
-    // Re-applying date logic on the client can hide valid API rows.
-    return {
-      ...filters,
-      fpiFrom: null,
-      fpiTo: null,
-      lpoFrom: null,
-      lpoTo: null,
-    };
-  }, [filters]);
-  const filtered = useMemo(() => filterStudies(loadedStudies, clientFilters), [loadedStudies, clientFilters]);
+  const { data: kpiData } = useKpiDetails(kpiQuery);
+
+  const filtered = loadedStudies;
   const totalStudies = studiesTotal;
   const hasDateFilters = Boolean(filters.fpiFrom || filters.fpiTo || filters.lpoFrom || filters.lpoTo);
   const cardsResetKey = JSON.stringify({
