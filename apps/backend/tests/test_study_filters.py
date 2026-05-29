@@ -16,6 +16,27 @@ def test_parse_flexible_date_mmyyyy_start_and_end() -> None:
     assert parsed_end == date(2026, 1, 31)
 
 
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        ("2026-01-15T00:00:00.000Z", date(2026, 1, 15)),
+        ("2026/01/15", date(2026, 1, 15)),
+        ("15/01/2026", date(2026, 1, 15)),
+        ("01/15/2026", date(2026, 1, 15)),
+        ("20260115", date(2026, 1, 15)),
+    ],
+)
+def test_parse_flexible_date_common_picker_formats(raw_value: str, expected: date) -> None:
+    assert study_router._parse_flexible_date(raw_value, is_end=False) == expected
+
+
+def test_parse_flexible_date_month_year_with_separator() -> None:
+    parsed_start = study_router._parse_flexible_date("01/2026", is_end=False)
+    parsed_end = study_router._parse_flexible_date("01/2026", is_end=True)
+    assert parsed_start == date(2026, 1, 1)
+    assert parsed_end == date(2026, 1, 31)
+
+
 def test_parse_flexible_date_yyyy_start_and_end() -> None:
     parsed_start = study_router._parse_flexible_date("2026", is_end=False)
     parsed_end = study_router._parse_flexible_date("2026", is_end=True)
