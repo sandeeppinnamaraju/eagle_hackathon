@@ -324,6 +324,14 @@ def _apply_fpi_lpo_date_filters(
         params.append(lpo_end_date)
 
 
+def _parse_month_year(year: int, month: int, *, is_end: bool) -> date:
+    if not (1900 <= year <= 2100 and 1 <= month <= 12):
+        raise ValueError("Invalid date format")
+    if is_end:
+        return date(year, month, calendar.monthrange(year, month)[1])
+    return date(year, month, 1)
+
+
 def _parse_flexible_date(raw_value: object, *, is_end: bool) -> Optional[date]:
     if raw_value is None:
         return None
@@ -335,25 +343,62 @@ def _parse_flexible_date(raw_value: object, *, is_end: bool) -> Optional[date]:
     if not raw:
         return None
 
+    normalized = raw.split("T", 1)[0].split(" ", 1)[0].strip()
+    if not normalized:
+        return None
+
     # Keep ISO format support for existing clients.
-    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw):
-        return date.fromisoformat(raw)
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", normalized):
+        return date.fromisoformat(normalized)
+
+    if re.fullmatch(r"\d{4}[/.]\d{1,2}[/.]\d{1,2}", normalized):
+        year_text, month_text, day_text = re.split(r"[/.]", normalized)
+        return date(int(year_text), int(month_text), int(day_text))
+
+    delimited_parts = re.split(r"[-/.]", normalized)
+    if len(delimited_parts) == 2 and all(part.isdigit() for part in delimited_parts):
+        first, second = delimited_parts
+        if len(first) == 4:
+            return _parse_month_year(int(first), int(second), is_end=is_end)
+        if len(second) == 4:
+            return _parse_month_year(int(second), int(first), is_end=is_end)
+
+    if len(delimited_parts) == 3 and all(part.isdigit() for part in delimited_parts):
+        first, second, third = [int(part) for part in delimited_parts]
+        if len(delimited_parts[0]) == 4:
+            return date(first, second, third)
+        if len(delimited_parts[2]) == 4:
+            # When ambiguous, prefer day-first to match the historical UI behavior.
+            if first > 12:
+                day, month = first, second
+            elif second > 12:
+                month, day = first, second
+            else:
+                day, month = first, second
+            return date(third, month, day)
 
     # YYYY -> first or last day of year
-    if re.fullmatch(r"\d{4}", raw):
-        year = int(raw)
+    if re.fullmatch(r"\d{4}", normalized):
+        year = int(normalized)
         return date(year, 12, 31) if is_end else date(year, 1, 1)
 
-    compact = raw.replace("-", "").replace("/", "")
+    compact = re.sub(r"[-/.]", "", normalized)
+
+    # YYYYMMDD -> exact day
+    if re.fullmatch(r"\d{8}", compact):
+        leading_year = int(compact[:4])
+        trailing_year = int(compact[4:])
+        if 1900 <= leading_year <= 2100:
+            return date(leading_year, int(compact[4:6]), int(compact[6:8]))
+        if 1900 <= trailing_year <= 2100:
+            return date(trailing_year, int(compact[2:4]), int(compact[:2]))
 
     # MMYYYY -> first or last day of month
     if re.fullmatch(r"\d{2}\d{4}", compact):
         month = int(compact[:2])
         year = int(compact[2:])
         if 1 <= month <= 12 and 1900 <= year <= 2100:
-            if is_end:
-                return date(year, month, calendar.monthrange(year, month)[1])
-            return date(year, month, 1)
+            return _parse_month_year(year, month, is_end=is_end)
 
     # DDMMYY -> exact day, year interpreted as 20YY
     if re.fullmatch(r"\d{6}", compact):
