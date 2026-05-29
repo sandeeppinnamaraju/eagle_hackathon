@@ -1,0 +1,597 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "login-page.spec.js",
+      "file": "login-page.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Login page validation",
+          "file": "login-page.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "login page renders expected UI shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1823,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-29T06:55:12.711Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-f064e-e-renders-expected-UI-shell-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1598,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-29T06:55:38.708Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-f064e-e-renders-expected-UI-shell-chromium-retry1\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2049,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 2,
+                      "startTime": "2026-05-29T06:56:04.328Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-f064e-e-renders-expected-UI-shell-chromium-retry2\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-52567533392d34267ef6",
+              "file": "login-page.spec.js",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "empty submit is handled safely",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1852,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-29T06:55:18.297Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a6f57-ty-submit-is-handled-safely-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2057,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-29T06:55:43.894Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a6f57-ty-submit-is-handled-safely-chromium-retry1\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1564,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 2,
+                      "startTime": "2026-05-29T06:56:10.437Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a6f57-ty-submit-is-handled-safely-chromium-retry2\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-65cfd7f7560e304cc928",
+              "file": "login-page.spec.js",
+              "line": 64,
+              "column": 3
+            },
+            {
+              "title": "invalid credentials do not navigate to app shell",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2962,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-29T06:55:20.279Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a64ee-o-not-navigate-to-app-shell-chromium\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2790,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-29T06:55:46.349Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a64ee-o-not-navigate-to-app-shell-chromium-retry1\\test-finished-1.png"
+                        }
+                      ]
+                    },
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3531,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 2,
+                      "startTime": "2026-05-29T06:56:12.129Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-a64ee-o-not-navigate-to-app-shell-chromium-retry2\\test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-3990adaf78da3e381dba",
+              "file": "login-page.spec.js",
+              "line": 82,
+              "column": 3
+            },
+            {
+              "title": "valid credentials sign in successfully when provided",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 9759,
+                      "error": {
+                        "message": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.",
+                        "stack": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js:155:13",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                          "column": 13,
+                          "line": 155
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 153 |\u001b[39m       \u001b[36mconst\u001b[39m pageContent \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mcontent()\u001b[33m;\u001b[39m\n \u001b[90m 154 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Login did not navigate away from login page.\\nCurrent URL:'\u001b[39m\u001b[33m,\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m,\u001b[39m \u001b[32m'\\nPage content:'\u001b[39m\u001b[33m,\u001b[39m pageContent\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1000\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 155 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login did not navigate away from login page. Check credentials, backend, and UI for issues.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 156 |\u001b[39m     }\n \u001b[90m 157 |\u001b[39m\n \u001b[90m 158 |\u001b[39m     \u001b[90m// If redirected to /home, consider login successful\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                            "column": 13,
+                            "line": 155
+                          },
+                          "message": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.\n\n\u001b[0m \u001b[90m 153 |\u001b[39m       \u001b[36mconst\u001b[39m pageContent \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mcontent()\u001b[33m;\u001b[39m\n \u001b[90m 154 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Login did not navigate away from login page.\\nCurrent URL:'\u001b[39m\u001b[33m,\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m,\u001b[39m \u001b[32m'\\nPage content:'\u001b[39m\u001b[33m,\u001b[39m pageContent\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1000\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 155 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login did not navigate away from login page. Check credentials, backend, and UI for issues.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 156 |\u001b[39m     }\n \u001b[90m 157 |\u001b[39m\n \u001b[90m 158 |\u001b[39m     \u001b[90m// If redirected to /home, consider login successful\u001b[39m\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js:155:13\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Typed username: eagle_user1\n"
+                        },
+                        {
+                          "text": "Typed password length: \u001b[33m13\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "Login did not navigate away from login page.\nCurrent URL: https://eagle-frontend01-hpe9hhhngdc9addx.centralus-01.azurewebsites.net//login \nPage content: <!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/assets/styles-BBHpecyM.css\" data-precedence=\"default\"><title>Sign in — Flight Deck</title><meta name=\"description\" content=\"Sign in to Flight Deck.\"><link rel=\"modulepreload\" href=\"/assets/index-BtdbXVk8.js\"><style type=\"text/css\">[data-sonner-toaster][dir=ltr],html[dir=ltr]{--toast-icon-margin-start:-3px;--toast-icon-margin-end:4px;--toast-svg-margin-start:-1px;--toast-svg-margin-end:0px;--toast-button-margin-start:auto;--toast-button-margin-end:0;--toast-close-button-start:0;--toast-close-button-end:unset;--toast-close-button-transform:translate(-35%, -35%)}[data-sonner-toaster][dir=rtl],html[dir=rtl]{--toast-icon-margin-start:4px;--toast-icon-margin-end:-3px;--toast-svg-margin-start:0px;--toast-svg-margin-end:-1px;--toast-button-margin-start:0;--toast-button-margin-end:auto;--toast-close-button-start:unset;--toast-close-button-e\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-05-29T06:55:23.901Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                        "column": 13,
+                        "line": 155
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10596,
+                      "error": {
+                        "message": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.",
+                        "stack": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js:155:13",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                          "column": 13,
+                          "line": 155
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 153 |\u001b[39m       \u001b[36mconst\u001b[39m pageContent \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mcontent()\u001b[33m;\u001b[39m\n \u001b[90m 154 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Login did not navigate away from login page.\\nCurrent URL:'\u001b[39m\u001b[33m,\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m,\u001b[39m \u001b[32m'\\nPage content:'\u001b[39m\u001b[33m,\u001b[39m pageContent\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1000\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 155 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login did not navigate away from login page. Check credentials, backend, and UI for issues.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 156 |\u001b[39m     }\n \u001b[90m 157 |\u001b[39m\n \u001b[90m 158 |\u001b[39m     \u001b[90m// If redirected to /home, consider login successful\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                            "column": 13,
+                            "line": 155
+                          },
+                          "message": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.\n\n\u001b[0m \u001b[90m 153 |\u001b[39m       \u001b[36mconst\u001b[39m pageContent \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mcontent()\u001b[33m;\u001b[39m\n \u001b[90m 154 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Login did not navigate away from login page.\\nCurrent URL:'\u001b[39m\u001b[33m,\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m,\u001b[39m \u001b[32m'\\nPage content:'\u001b[39m\u001b[33m,\u001b[39m pageContent\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1000\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 155 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login did not navigate away from login page. Check credentials, backend, and UI for issues.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 156 |\u001b[39m     }\n \u001b[90m 157 |\u001b[39m\n \u001b[90m 158 |\u001b[39m     \u001b[90m// If redirected to /home, consider login successful\u001b[39m\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js:155:13\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Typed username: eagle_user1\n"
+                        },
+                        {
+                          "text": "Typed password length: \u001b[33m13\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "Login did not navigate away from login page.\nCurrent URL: https://eagle-frontend01-hpe9hhhngdc9addx.centralus-01.azurewebsites.net//login \nPage content: <!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/assets/styles-BBHpecyM.css\" data-precedence=\"default\"><title>Sign in — Flight Deck</title><meta name=\"description\" content=\"Sign in to Flight Deck.\"><link rel=\"modulepreload\" href=\"/assets/index-BtdbXVk8.js\"><style type=\"text/css\">[data-sonner-toaster][dir=ltr],html[dir=ltr]{--toast-icon-margin-start:-3px;--toast-icon-margin-end:4px;--toast-svg-margin-start:-1px;--toast-svg-margin-end:0px;--toast-button-margin-start:auto;--toast-button-margin-end:0;--toast-close-button-start:0;--toast-close-button-end:unset;--toast-close-button-transform:translate(-35%, -35%)}[data-sonner-toaster][dir=rtl],html[dir=rtl]{--toast-icon-margin-start:4px;--toast-icon-margin-end:-3px;--toast-svg-margin-start:0px;--toast-svg-margin-end:-1px;--toast-button-margin-start:0;--toast-button-margin-end:auto;--toast-close-button-start:unset;--toast-close-button-e\n"
+                        }
+                      ],
+                      "retry": 1,
+                      "startTime": "2026-05-29T06:55:49.548Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry1\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry1\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                        "column": 13,
+                        "line": 155
+                      }
+                    },
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 9481,
+                      "error": {
+                        "message": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.",
+                        "stack": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js:155:13",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                          "column": 13,
+                          "line": 155
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 153 |\u001b[39m       \u001b[36mconst\u001b[39m pageContent \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mcontent()\u001b[33m;\u001b[39m\n \u001b[90m 154 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Login did not navigate away from login page.\\nCurrent URL:'\u001b[39m\u001b[33m,\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m,\u001b[39m \u001b[32m'\\nPage content:'\u001b[39m\u001b[33m,\u001b[39m pageContent\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1000\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 155 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login did not navigate away from login page. Check credentials, backend, and UI for issues.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 156 |\u001b[39m     }\n \u001b[90m 157 |\u001b[39m\n \u001b[90m 158 |\u001b[39m     \u001b[90m// If redirected to /home, consider login successful\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                            "column": 13,
+                            "line": 155
+                          },
+                          "message": "Error: Login did not navigate away from login page. Check credentials, backend, and UI for issues.\n\n\u001b[0m \u001b[90m 153 |\u001b[39m       \u001b[36mconst\u001b[39m pageContent \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mcontent()\u001b[33m;\u001b[39m\n \u001b[90m 154 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Login did not navigate away from login page.\\nCurrent URL:'\u001b[39m\u001b[33m,\u001b[39m page\u001b[33m.\u001b[39murl()\u001b[33m,\u001b[39m \u001b[32m'\\nPage content:'\u001b[39m\u001b[33m,\u001b[39m pageContent\u001b[33m.\u001b[39mslice(\u001b[35m0\u001b[39m\u001b[33m,\u001b[39m \u001b[35m1000\u001b[39m))\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 155 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m'Login did not navigate away from login page. Check credentials, backend, and UI for issues.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 156 |\u001b[39m     }\n \u001b[90m 157 |\u001b[39m\n \u001b[90m 158 |\u001b[39m     \u001b[90m// If redirected to /home, consider login successful\u001b[39m\u001b[0m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js:155:13\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "Typed username: eagle_user1\n"
+                        },
+                        {
+                          "text": "Typed password length: \u001b[33m13\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "Login did not navigate away from login page.\nCurrent URL: https://eagle-frontend01-hpe9hhhngdc9addx.centralus-01.azurewebsites.net//login \nPage content: <!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"/assets/styles-BBHpecyM.css\" data-precedence=\"default\"><title>Sign in — Flight Deck</title><meta name=\"description\" content=\"Sign in to Flight Deck.\"><link rel=\"modulepreload\" href=\"/assets/index-BtdbXVk8.js\"><style type=\"text/css\">[data-sonner-toaster][dir=ltr],html[dir=ltr]{--toast-icon-margin-start:-3px;--toast-icon-margin-end:4px;--toast-svg-margin-start:-1px;--toast-svg-margin-end:0px;--toast-button-margin-start:auto;--toast-button-margin-end:0;--toast-close-button-start:0;--toast-close-button-end:unset;--toast-close-button-transform:translate(-35%, -35%)}[data-sonner-toaster][dir=rtl],html[dir=rtl]{--toast-icon-margin-start:4px;--toast-icon-margin-end:-3px;--toast-svg-margin-start:0px;--toast-svg-margin-end:-1px;--toast-button-margin-start:0;--toast-button-margin-end:auto;--toast-close-button-start:unset;--toast-close-button-e\n"
+                        }
+                      ],
+                      "retry": 2,
+                      "startTime": "2026-05-29T06:56:15.874Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry2\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry2\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry2\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\login-page-Login-page-vali-597b4--successfully-when-provided-chromium-retry2\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\login-page.spec.js",
+                        "column": 13,
+                        "line": 155
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "5dc2b53fd48efdd499bf-f54ed88365a2d54ee4ae",
+              "file": "login-page.spec.js",
+              "line": 101,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-29T06:55:10.859Z",
+    "duration": 84938.493,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

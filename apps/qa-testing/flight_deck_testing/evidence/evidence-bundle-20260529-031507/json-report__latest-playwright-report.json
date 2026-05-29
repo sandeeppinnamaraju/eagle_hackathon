@@ -1,0 +1,569 @@
+{
+  "config": {
+    "configFile": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\playwright.config.js",
+    "rootDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\utils\\globalTeardown.js",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/git/eagle_hackathon/apps/qa-testing/flight_deck_testing/tests",
+        "testIgnore": [
+          "**/node_modules/**",
+          "**/evidence/**"
+        ],
+        "testMatch": [
+          "**/*.spec.js"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "evidence/latest-playwright-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "story2-study-overview.spec.js",
+      "file": "story2-study-overview.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Story 2 - Study Overview",
+          "file": "story2-study-overview.spec.js",
+          "line": 71,
+          "column": 6,
+          "specs": [
+            {
+              "title": "shows portfolio overview and study navigation safely",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 50952,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:86:5",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                          "column": 31,
+                          "line": 49
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                            "column": 31,
+                            "line": 49
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m\n\u001b[2m    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:86:5\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-29T07:05:38.685Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-001-page-goto-a9629841b376bdbd79b7ca33690aa129d8a3995f.png"
+                        },
+                        {
+                          "name": "step-002: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-002-page-goto-a9a25df145e80d6a9244660a7af70967c96b7f99.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-003-locator-fill-9211a2ed74a94058204dbd1a1c4b0cfdeecc98c1.png"
+                        },
+                        {
+                          "name": "step-004: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-004-locator-fill-d7681ba5027a4dacebd47347edbeb572d42ad2fc.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-005-locator-click-693c8f8be325fb45feeb51b87ff4521f89939f0d.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-006-locator-click-6e1e11a424afbae65e590c9fbcbdb3eff8721de3.png"
+                        },
+                        {
+                          "name": "step-007: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-007-locator-click-8a64a62c48954acca38719b7275b2e8810e33bbb.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\attachments\\step-008-locator-click-54882ff3f620a5b0a61ee20dcc3915ed5d2d4106.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                        "column": 31,
+                        "line": 49
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 51473,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:86:5",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                          "column": 31,
+                          "line": 49
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                            "column": 31,
+                            "line": 49
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m\n\u001b[2m    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:86:5\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-29T07:06:36.038Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-001-page-goto-9273fb64055ee4d060a6394f8e18739115aae310.png"
+                        },
+                        {
+                          "name": "step-002: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-002-page-goto-3b47ba971cac3fe32d9f0c9c91d75a9643884403.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-003-locator-fill-c1448996a91ad21fcff4f605743a40200af97774.png"
+                        },
+                        {
+                          "name": "step-004: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-004-locator-fill-24aa6cbb358a777c3c87fe73ce3772700e10c0c7.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-005-locator-click-23efa231ecdea23bcb71bcc4e87458adf792f3a5.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-006-locator-click-658d994f96c2c1f4474a7698d015be16d3fa76aa.png"
+                        },
+                        {
+                          "name": "step-007: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-007-locator-click-841b62bab1ab555366d92006199dad0954682369.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\attachments\\step-008-locator-click-063f4d968b8a09e5588c40264e6164dd87151cdd.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-7be09-and-study-navigation-safely-chromium-retry1\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                        "column": 31,
+                        "line": 49
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-968edc919cb31d90cd75",
+              "file": "story2-study-overview.spec.js",
+              "line": 78,
+              "column": 3
+            },
+            {
+              "title": "shows study overview content with safe optional interactions",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 53356,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\n    at navigateToFirstStudy (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:55:3)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:107:23",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                          "column": 31,
+                          "line": 49
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                            "column": 31,
+                            "line": 49
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m\n\u001b[2m    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\u001b[22m\n\u001b[2m    at navigateToFirstStudy (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:55:3)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:107:23\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-05-29T07:07:34.030Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-001-page-goto-c0fd8f5a7f4c68de3e46e080d9e2420ea6503b6b.png"
+                        },
+                        {
+                          "name": "step-002: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-002-page-goto-f52df60fa8f12aee5d692f8c905f869025cafe2e.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-003-locator-fill-353c22861abc9aebd80c4b4bab4dc7be20b53cf8.png"
+                        },
+                        {
+                          "name": "step-004: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-004-locator-fill-7e292d622973acc89f9999cb661cdb3d9c9eecf2.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-005-locator-click-e7e1f6bc2cf9513c9e58a4fd1214de80bb52ac07.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-006-locator-click-7e55b8968667c7e57c7f9ea7ba1e79631ed79ab6.png"
+                        },
+                        {
+                          "name": "step-007: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-007-locator-click-b29d3823e0e55af94e7ebe28f476a1d03779f734.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\attachments\\step-008-locator-click-767aed7b9d11445a034a0ae17839d6c2e9e617f9.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                        "column": 31,
+                        "line": 49
+                      }
+                    },
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 52969,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\n    at navigateToFirstStudy (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:55:3)\n    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:107:23",
+                        "location": {
+                          "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                          "column": 31,
+                          "line": 49
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                            "column": 31,
+                            "line": 49
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeHidden\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByText(/Loading studies\\.\\.\\./i).first()\nExpected: hidden\nReceived: visible\nTimeout:  30000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeHidden\" with timeout 30000ms\u001b[22m\n\u001b[2m  - waiting for getByText(/Loading studies\\.\\.\\./i).first()\u001b[22m\n\u001b[2m    62 × locator resolved to <div class=\"rounded-xl border border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground\">Loading studies...</div>\u001b[22m\n\u001b[2m       - unexpected value \"visible\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m   \u001b[36mconst\u001b[39m loadingText \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mgetByText(\u001b[35m/Loading studies\\.\\.\\./i\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 48 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m loadingText\u001b[33m.\u001b[39misVisible()\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mfalse\u001b[39m)) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loadingText)\u001b[33m.\u001b[39mtoBeHidden({ timeout\u001b[33m:\u001b[39m \u001b[35m30\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   }\n \u001b[90m 51 |\u001b[39m }\n \u001b[90m 52 |\u001b[39m\u001b[0m\n\u001b[2m    at openTableView (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:49:31)\u001b[22m\n\u001b[2m    at navigateToFirstStudy (C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:55:3)\u001b[22m\n\u001b[2m    at C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js:107:23\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-05-29T07:08:33.732Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "step-001: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-001-page-goto-730808fb8a6ef6b70df00c4cfbcb71ebd28467e7.png"
+                        },
+                        {
+                          "name": "step-002: page-goto",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-002-page-goto-82f6ce6baeee3b15512eda818815a624257ac8f2.png"
+                        },
+                        {
+                          "name": "step-003: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-003-locator-fill-34eb0ab59eb6a594800a63305d7adc9b764c200b.png"
+                        },
+                        {
+                          "name": "step-004: locator-fill",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-004-locator-fill-641e6e2a0363027f6538342d83296f6d1c1dd323.png"
+                        },
+                        {
+                          "name": "step-005: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-005-locator-click-a0c341451f4dfdfbd06866e06d76003c86d721c8.png"
+                        },
+                        {
+                          "name": "step-006: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-006-locator-click-d88f7d098f21a1f26980fc7b7d6ccd4ab015e7cc.png"
+                        },
+                        {
+                          "name": "step-007: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-007-locator-click-4fc576e42450d47ca6d67a28139a53173e7a1630.png"
+                        },
+                        {
+                          "name": "step-008: locator-click",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\attachments\\step-008-locator-click-fe496d92331e0d62014cd3123cd331216f079bf1.png"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\test-results\\story2-study-overview-Stor-ab4ea--safe-optional-interactions-chromium-retry1\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\git\\eagle_hackathon\\apps\\qa-testing\\flight_deck_testing\\tests\\story2-study-overview.spec.js",
+                        "column": 31,
+                        "line": 49
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a6888459a7d5473cfa4a-ee75e266f83ed87b5f76",
+              "file": "story2-study-overview.spec.js",
+              "line": 106,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-05-29T07:05:36.550Z",
+    "duration": 244209.317,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}
